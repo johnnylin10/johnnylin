@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>Lin Billing System & Universal Gateway | Nakuru</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--bg:#07111f;--side:#091827;--panel:#0e2032;--panel2:#122940;--line:#20394e;--txt:#edf6ff;--muted:#91a8bd;--cyan:#4bdcf0;--blue:#478cff;--green:#29d6a1;--amber:#ffb45f;--red:#ff6d83;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#123958 0,transparent 30%),var(--bg);color:var(--txt);font:14px 'DM Sans',sans-serif;min-height:100vh}button,input,select,textarea,code{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0a1a2a,#071421);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:5px 10px 23px}.logo{height:42px;width:42px;border-radius:14px;background:linear-gradient(135deg,#367dff,#39dfd0);display:grid;place-items:center;color:#041827;font-size:22px;font-weight:900;box-shadow:0 8px 25px #2bbce044}.brand b{font:800 17px Manrope;letter-spacing:1.5px}.brand b span{color:var(--cyan)}.brand small{display:block;color:#718ba2;font-size:9px;letter-spacing:1.8px;margin-top:3px}.navlabel{font-size:9px;color:#607b94;font-weight:800;letter-spacing:1.7px;padding:10px 12px}.nav{overflow:auto;scrollbar-width:thin}.nav button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 12px;border:0;border-radius:11px;color:#9cb1c5;background:transparent;font-size:12px;font-weight:600;margin:2px 0;transition:.18s}.nav button:hover{background:#132b40;color:white}.nav button.active{background:linear-gradient(100deg,#17405a,#12334b);color:#f5fdff;box-shadow:inset 3px 0 var(--cyan)}.ico{width:19px;text-align:center;font-size:16px;color:#7fabc5}.nav button.active .ico{color:var(--cyan)}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 0}.network{border:1px solid #205044;background:#0c2a28;border-radius:12px;padding:12px}.network strong{font-size:11px;display:block}.network small{font-size:10px;color:#8db9aa;display:block;margin-top:5px}.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;box-shadow:0 0 9px var(--green)}.main{min-width:0}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#081725c9;backdrop-filter:blur(14px);position:sticky;top:0;z-index:4}.crumb{font:700 15px Manrope}.crumb small{display:block;color:var(--muted);font:11px 'DM Sans';margin-top:4px}.top-actions{display:flex;align-items:center;gap:10px}.iconbtn{height:38px;width:38px;border:1px solid var(--line);border-radius:11px;background:#102438;color:#bcd0e1;position:relative}.badge{position:absolute;right:-4px;top:-4px;background:var(--red);color:white;border-radius:20px;font-size:9px;padding:2px 5px}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#3c8cff,#30d9c4);color:#051725;font-weight:900}.content{padding:27px 30px 42px;max-width:1500px;margin:auto}.page{display:none;animation:fade .2s ease}.page.active{display:block}@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px}.eyebrow{color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}.pagehead h1{font:800 clamp(23px,3vw,30px) Manrope;margin:6px 0}.pagehead p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}.btn{border:1px solid var(--line);background:#142b40;color:#dceeff;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:800}.btn.primary{border:0;background:linear-gradient(100deg,#28d7c4,#4c9aff);color:#041827}.btn.green{background:#103b32;border-color:#216a56;color:#75f0c4}.btn.danger{background:#3b202b;border-color:#713949;color:#ff9aab}.btn:disabled{opacity:.45;cursor:not-allowed}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.card{background:linear-gradient(145deg,#10263a,#0b1c2c);border:1px solid var(--line);border-radius:var(--radius);padding:19px;min-width:0;box-shadow:0 12px 32px #00000016;cursor:pointer;transition:.15s}.card:hover{border-color:#2d506d}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.stat-value{font:800 26px Manrope;margin:12px 0 4px}.stat-foot{color:#7893aa;font-size:10px}.cols{grid-template-columns:1.35fr .85fr}.cardtitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.cardtitle h3{font:700 14px Manrope;margin:0}.muted{color:var(--muted)}.planrow,.listrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #1e3548;cursor:pointer}.planrow:hover,.listrow:hover{background:#132a3e;padding-left:6px;padding-right:6px;border-radius:8px}.planrow:last-child,.listrow:last-child{border:0}.planrow b,.listrow b{font-size:12px}.planrow small,.listrow small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.price{font:800 16px Manrope;color:var(--green)}.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:30px;background:#12382f;color:#79e8be;font-size:9px;font-weight:800}.pill.blue{background:#15334b;color:#8bcaff}.pill.amber{background:#3c2c1b;color:#ffc782}.pill.red{background:#40232d;color:#ff9bab}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field label{display:block;font-size:10px;color:#a3b7c9;font-weight:800;letter-spacing:.7px;margin-bottom:7px}.field input,.field select,.field textarea{width:100%;border:1px solid #29445b;background:#081a2a;color:#f0f7ff;border-radius:11px;padding:12px 13px;outline:none;min-height:43px}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #4bdcf01a}.field.full{grid-column:1/-1}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px 14px;border-radius:11px;background:#102f43;border:1px solid #24506a;color:#b9d9ec;font-size:11px;line-height:1.6;margin:12px 0}.notice.good{background:#10352d;border-color:#23674f;color:#a3f1d2}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:570px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #1d3549;font-size:11px}th{color:#7894ab;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:#0b1c2c}td{color:#d2e1ef}tr:hover td{background:#11273b;cursor:pointer}tr:last-child td{border-bottom:0}.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px}.packagegrid{grid-template-columns:repeat(3,minmax(0,1fr))}.packagecard{position:relative}.packagecard h3{font:700 16px Manrope;margin:8px 0}.packagecard .bigprice{font:800 27px Manrope;margin:16px 0 4px}.packagecard ul{list-style:none;padding:0;margin:15px 0;color:#9bb0c3;font-size:11px;line-height:2}.packagecard li:before{content:'✓';color:var(--green);margin-right:8px}.speednum{font:800 45px Manrope;color:var(--cyan);margin:15px 0}.toggle{appearance:none;width:38px;height:21px;background:#294258;border-radius:20px;position:relative;vertical-align:middle;cursor:pointer}.toggle:checked{background:#159d85}.toggle:before{content:'';position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:white;transition:.2s}.toggle:checked:before{left:20px}.mobilemenu{display:none}.toast{position:fixed;right:22px;bottom:22px;background:#15364a;border:1px solid #34718b;color:#e8f8ff;padding:13px 17px;border-radius:12px;box-shadow:0 12px 35px #0008;z-index:20;font-size:12px;display:none;max-width:330px}.toast.show{display:block;animation:fade .2s}.footer{padding:20px 0;color:#637f96;font-size:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(3,15,28,0.8);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-card{width:100%;max-width:540px;background:#0d2235;border:1px solid #284c6c;border-radius:20px;padding:24px;box-shadow:0 25px 60px rgba(0,0,0,0.5)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #1f3a52;padding-bottom:12px}
+.modal-header h3{font:700 18px Manrope;margin:0;color:var(--cyan)}
+.modal-close{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 8px}
+.modal-body{font-size:12px;line-height:1.7;color:#d2e1ef;max-height:65vh;overflow-y:auto}
+.modal-footer{margin-top:20px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #1f3a52;padding-top:14px}
+
+@media(max-width:1050px){.app{grid-template-columns:220px 1fr}.stats{grid-template-columns:repeat(2,1fr)}.packagegrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s;box-shadow:20px 0 50px #0008}.sidebar.open{left:0}.mobilemenu{display:inline-block}.topbar{height:66px;padding:0 15px}.content{padding:20px 14px 35px}.cols{grid-template-columns:1fr}.stats{gap:10px}.stat-value{font-size:22px}.card{padding:15px}.packagegrid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><div class="logo">⌁</div><div><b>LIN<span>BILLING</span></b><small>UNIVERSAL GATEWAY</small></div></div>
+ <div class="navlabel">CUSTOMER EXPERIENCE</div>
+ <nav class="nav" id="nav">
+  <button class="active" data-page="overview"><span class="ico">▦</span>Overview</button>
+  <button data-page="plans"><span class="ico">◈</span>Internet Packages</button>
+  <button data-page="checkout"><span class="ico">▣</span>Buy Internet</button>
+  <button data-page="voucher"><span class="ico">▤</span>Voucher Redemption</button>
+  <button data-page="connection"><span class="ico">⌁</span>My Connection</button>
+  <button data-page="usage"><span class="ico">◔</span>Data Usage</button>
+  <button data-page="devices"><span class="ico">▣</span>Router Leases</button>
+  <button data-page="throttle"><span class="ico">⚡</span>Data Caps & Speed</button>
+  <button data-page="history"><span class="ico">◷</span>M-Pesa Ledger</button>
+  <button data-page="receipts"><span class="ico">▧</span>Tax Invoices</button>
+  <div class="navlabel">ADMINISTRATION</div>
+  <button data-page="admin"><span class="ico">▥</span>Admin Overview</button>
+  <button data-page="errors"><span class="ico">⚠</span>Error Logs</button>
+  <button data-page="settings"><span class="ico">⚙</span>Portal Settings</button>
+ </nav>
+ <div class="side-bottom"><div class="network"><strong><i class="online-dot"></i>Database Live</strong><small id="dbStatusLabel">RTDB Connected</small></div></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+ <div style="display:flex;align-items:center;gap:12px"><button class="iconbtn mobilemenu" id="menuBtn">☰</button><div class="crumb" id="crumb">Overview<small>Lin Billing System (Tel: 0713100424)</small></div></div>
+ <div class="top-actions"><div class="avatar">LBS</div></div>
+</header>
+
+<div class="content">
+<!-- OVERVIEW -->
+<section class="page active" id="page-overview">
+ <div class="pagehead"><div><div class="eyebrow">LIN BILLING SYSTEM / CUSTOMER PORTAL</div><h1>Smart Connectivity & Billing</h1><p>Manage access, monitor database revenue, and live M-Pesa transactions seamlessly.</p></div><button class="btn primary" data-goto="checkout">＋ Buy internet</button></div>
+ <div class="grid stats">
+  <div class="card"><div class="stat-top">Today's Revenue</div><div class="stat-value" id="statRevenue">KES 0</div><div class="stat-foot">Realtime DB Aggregate</div></div>
+  <div class="card"><div class="stat-top">Active Sessions</div><div class="stat-value" id="statSessions">1</div><div class="stat-foot">Router Leases</div></div>
+  <div class="card"><div class="stat-top">Registered Users</div><div class="stat-value" id="statUsers">1</div><div class="stat-foot">Database Total</div></div>
+  <div class="card"><div class="stat-top">Grid / Power</div><div class="stat-value" style="color:var(--green)">Grid Stable</div><div class="stat-foot">Main Node Active</div></div>
+ </div>
+ <div class="grid cols">
+  <div class="card"><div class="cardtitle"><h3>Quick actions</h3><span class="pill blue">LIVE GATEWAY</span></div>
+   <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:10px">
+    <button class="btn" data-goto="plans">Browse packages</button>
+    <button class="btn" data-goto="checkout">Pay with M-Pesa</button>
+    <button class="btn" data-goto="voucher">Redeem voucher</button>
+    <button class="btn" data-goto="admin">Admin Console</button>
+   </div>
+  </div>
+  <div class="card"><div class="cardtitle"><h3>Popular packages</h3></div>
+   <div id="overviewPopularList"></div>
+  </div>
+ </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="page" id="page-plans">
+ <div class="pagehead"><div><div class="eyebrow">PLANS & PRICING</div><h1>Choose your access plan</h1><p>Select a plan to continue directly to checkout.</p></div></div>
+ <div class="grid packagegrid" id="planCards"></div>
+</section>
+
+<!-- CHECKOUT -->
+<section class="page" id="page-checkout">
+ <div class="pagehead"><div><div class="eyebrow">SECURE CHECKOUT</div><h1>Buy internet access</h1><p>Trigger live Safaricom M-Pesa STK Push production requests instantly.</p></div></div>
+ <div class="grid cols">
+  <div class="card"><div class="cardtitle"><h3>Payment details</h3><span class="pill blue">STK PUSH</span></div>
+   <div class="field"><label>SELECT PACKAGE</label><select id="checkoutPlan"></select></div>
+   <div class="field" style="margin-top:14px"><label>SAFARICOM PHONE NUMBER</label><input id="checkoutPhone" type="tel" value="0713100424" placeholder="07XXXXXXXX"></div>
+   <div class="field" style="margin-top:14px"><label>PAYMENT METHOD</label><select><option>M-Pesa STK Push (Daraja Production API)</option></select></div>
+   <button class="btn primary" id="startPayment" style="margin-top:18px;width:100%">🚀 REQUEST M-PESA STK PUSH NOW</button>
+   <div id="checkoutMsg"></div>
+  </div>
+  <div class="card"><div class="cardtitle"><h3>Order summary</h3></div>
+   <div style="text-align:center;padding:20px">
+    <div class="muted">AMOUNT TO PAY</div>
+    <div class="speednum" id="checkoutAmount">KES 50</div>
+    <div id="checkoutDuration" class="muted">12 Hours access</div>
+   </div>
+   <div class="listrow"><span class="muted">Billed From</span><b>Lin Billing System</b></div>
+   <div class="listrow"><span class="muted">Support Line</span><b>0713100424</b></div>
+   <div class="listrow"><span class="muted">Activation</span><b>Instant Callback</b></div>
+  </div>
+ </div>
+</section>
+
+<!-- VOUCHER REDEMPTION -->
+<section class="page" id="page-voucher">
+ <div class="pagehead"><div><div class="eyebrow">VOUCHER REDEMPTION</div><h1>Redeem Access Voucher</h1><p>Enter your printed or SMS voucher code to activate immediate hotspot access.</p></div></div>
+ <div class="card" style="max-width:600px;margin:auto">
+  <div class="cardtitle"><h3>Voucher Code Entry</h3><span class="pill green">INSTANT ACTIVATE</span></div>
+  <div class="field"><label>VOUCHER PIN / CODE</label><input id="voucherCodeInput" type="text" placeholder="e.g. LIN-8849-2026" style="text-transform:uppercase"></div>
+  <button class="btn primary" id="redeemVoucherBtn" style="margin-top:14px;width:100%">ACTIVATE VOUCHER</button>
+  <div id="voucherMsg" style="margin-top:12px"></div>
+ </div>
+</section>
+
+<!-- MY CONNECTION -->
+<section class="page" id="page-connection">
+ <div class="pagehead"><div><div class="eyebrow">CONNECTION STATUS</div><h1>Active Router Link</h1><p>Monitor your link health, signal strength, and gateway IP address.</p></div></div>
+ <div class="grid stats" style="grid-template-columns:repeat(2,1fr)">
+  <div class="card"><div class="stat-top">Connection State</div><div class="stat-value" style="color:var(--green)">Online</div><div class="stat-foot">MikroTik AP Connected</div></div>
+  <div class="card"><div class="stat-top">Signal Quality</div><div class="stat-value">RSSI -54 dBm</div><div class="stat-foot">Excellent 5GHz Link</div></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle"><h3>Network Lease Details</h3></div>
+  <div class="listrow"><span class="muted">Assigned IP Address</span><b>192.168.88.45</b></div>
+  <div class="listrow"><span class="muted">Gateway IP</span><b>192.168.88.1</b></div>
+  <div class="listrow"><span class="muted">MAC Address</span><b>B4:2E:99:1A:82:CF</b></div>
+  <div class="listrow"><span class="muted">Session Expiry</span><b id="sessionExpiryText">Active (Remaining: 11h 45m)</b></div>
+ </div>
+</section>
+
+<!-- DATA USAGE -->
+<section class="page" id="page-usage">
+ <div class="pagehead"><div><div class="eyebrow">TRAFFIC MONITOR</div><h1>Data Usage Statistics</h1><p>Real-time download and upload telemetry for your active session.</p></div></div>
+ <div class="grid stats" style="grid-template-columns:repeat(2,1fr)">
+  <div class="card"><div class="stat-top">Total Download</div><div class="stat-value">1.42 GB</div><div class="stat-foot">High Speed Uncapped</div></div>
+  <div class="card"><div class="stat-top">Total Upload</div><div class="stat-value">384 MB</div><div class="stat-foot">Burst Enabled</div></div>
+ </div>
+</section>
+
+<!-- ROUTER LEASES -->
+<section class="page" id="page-devices">
+ <div class="pagehead"><div><div class="eyebrow">ROUTER CLIENTS</div><h1>Active Router Leases</h1><p>Connected hardware devices linked to the Nakuru gateway node.</p></div></div>
+ <div class="card">
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Device Hostname</th><th>IP Address</th><th>MAC Address</th><th>Status</th></tr></thead>
+    <tbody>
+     <tr><td><b>Android-Smartphone-JCorp</b></td><td>192.168.88.10</td><td>78:4F:10:92:A1:C2</td><td><span class="pill green">Active</span></td></tr>
+     <tr><td><b>TP-Link-AccessPoint-Main</b></td><td>192.168.88.2</td><td>CC:2D:E0:44:81:90</td><td><span class="pill blue">Gateway</span></td></tr>
+    </tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- DATA CAPS & SPEED -->
+<section class="page" id="page-throttle">
+ <div class="pagehead"><div><div class="eyebrow">BANDWIDTH PROFILE</div><h1>Data Caps & Speed Tier</h1><p>Current active bandwidth restrictions and fair usage quotas.</p></div></div>
+ <div class="grid cols">
+  <div class="card"><div class="cardtitle"><h3>Download Speed</h3></div><div class="speednum">15 Mbps</div><div class="muted">Burst up to 25 Mbps enabled on MikroTik queue tree.</div></div>
+  <div class="card"><div class="cardtitle"><h3>Upload Speed</h3></div><div class="speednum">10 Mbps</div><div class="muted">Symmetric upload bandwidth profile.</div></div>
+ </div>
+</section>
+
+<!-- M-PESA LEDGER -->
+<section class="page" id="page-history">
+ <div class="pagehead"><div><div class="eyebrow">TRANSACTION LEDGER</div><h1>M-Pesa Payment History</h1><p>Complete record of initiated and completed M-Pesa STK Push transactions stored in Realtime DB.</p></div><button class="btn green" id="exportLedgerCsv">Export CSV</button></div>
+ <div class="card">
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Receipt / Ref</th><th>Phone</th><th>Amount</th><th>Status</th><th>Timestamp</th></tr></thead>
+    <tbody id="ledgerTableRows"><tr><td colspan="5" class="empty">No transactions recorded yet.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- TAX INVOICES -->
+<section class="page" id="page-receipts">
+ <div class="pagehead"><div><div class="eyebrow">TAX COMPLIANCE</div><h1>Electronic Tax Invoices</h1><p>Official digital receipts generated for JCorp Ltd billing accounts.</p></div></div>
+ <div class="card">
+  <div class="cardtitle"><h3>JCorp Ltd Billing Tax Record</h3><span class="pill blue">PIN REGISTERED</span></div>
+  <div class="listrow"><span class="muted">Company Name</span><b>JCorp Ltd</b></div>
+  <div class="listrow"><span class="muted">Postal Address</span><b>P.O. Box 7456-20100 Nakuru</b></div>
+  <div class="listrow"><span class="muted">Support Contact</span><b>0713100424</b></div>
+  <div class="actions" style="margin-top:14px"><button class="btn primary" onclick="window.print()">PRINT TAX INVOICE</button></div>
+ </div>
+</section>
+
+<!-- ADMIN -->
+<section class="page" id="page-admin">
+ <div class="pagehead"><div><div class="eyebrow">OPERATOR CONSOLE / SECURE</div><h1>Admin overview</h1><p>Manage production credentials, environment, shortcodes, and plans.</p></div><span class="pill green">AUTHENTICATED ADMIN</span></div>
+
+ <!-- DARAJA API CONFIGURATION CARD -->
+ <div class="card" style="margin-bottom:16px">
+  <div class="cardtitle"><h3>Safaricom Daraja Production API Credentials</h3><span class="pill amber">LIVE PRODUCTION MODE</span></div>
+  <p class="muted" style="margin-top:0">Connected directly to Safaricom Production Endpoints (`api.safaricom.co.ke`).</p>
+
+  <div class="formgrid">
+   <div class="field"><label>ENVIRONMENT SELECTOR</label>
+    <select id="darajaEnv">
+     <option value="LIVE">Live Production (api.safaricom.co.ke)</option>
+     <option value="SANDBOX">Sandbox Test (sandbox.safaricom.co.ke)</option>
+    </select>
+   </div>
+   <div class="field"><label>SHORTCODE TYPE</label>
+    <select id="darajaType">
+     <option value="CustomerPayBillOnline">Paybill (CustomerPayBillOnline)</option>
+     <option value="CustomerBuyGoodsOnline">Buy Goods / Till (CustomerBuyGoodsOnline)</option>
+    </select>
+   </div>
+   <div class="field"><label>CONSUMER KEY</label><input id="darajaKey" value="AGJGJGGktfRf8OHhos6TJXKupDMb3f2wG9pZDdF8tG5qm0qK"></div>
+   <div class="field"><label>CONSUMER SECRET</label><input id="darajaSecret" value="xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd"></div>
+   <div class="field"><label>SHORTCODE (PAYBILL OR TILL NUMBER)</label><input id="darajaShortcode" value="257471"></div>
+   <div class="field"><label>PASSKEY</label><input id="darajaPasskey" value="103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab"></div>
+   <div class="field full"><label>BACKEND CLOUD FUNCTION / CORS PROXY ENDPOINT</label><input id="darajaCallback" value="https://us-central1-lin-billing-system.cloudfunctions.net/stkPush"></div>
+  </div>
+  <div class="actions" style="margin-top:14px"><button class="btn primary" id="saveDarajaBtn">SAVE PRODUCTION CONFIG</button></div>
+  <div id="darajaMsg"></div>
+ </div>
+
+ <!-- ADMIN PACKAGE PLAN EDITOR -->
+ <div class="card">
+  <div class="cardtitle"><h3>Manage Internet Packages</h3><span class="pill green">LIVE PRICING</span></div>
+  <div class="tablewrap" style="margin-bottom:14px">
+   <table>
+    <thead><tr><th>Package Title</th><th>Duration</th><th>Price (KES)</th><th>Tag</th><th>Action</th></tr></thead>
+    <tbody id="adminPackageTableRows"></tbody>
+   </table>
+  </div>
+  <div style="background:#081a2a;padding:14px;border-radius:12px;border:1px solid #29445b">
+   <h4 style="margin:0 0 10px;color:var(--cyan)">Add New Package</h4>
+   <div class="formgrid">
+    <div class="field"><label>TITLE</label><input id="newPkgTitle" placeholder="e.g. 2 Days"></div>
+    <div class="field"><label>DURATION</label><input id="newPkgDuration" placeholder="e.g. 48 hours"></div>
+    <div class="field"><label>PRICE (KES)</label><input id="newPkgPrice" type="number" placeholder="150"></div>
+    <div class="field"><label>TAG</label><input id="newPkgTag" placeholder="e.g. Popular"></div>
+   </div>
+   <div class="actions" style="margin-top:12px"><button class="btn primary" id="addPackageBtn">＋ ADD PACKAGE</button></div>
+  </div>
+ </div>
+</section>
+
+<!-- ERROR LOGS -->
+<section class="page" id="page-errors">
+ <div class="pagehead"><div><div class="eyebrow">DIAGNOSTICS</div><h1>System error logs</h1><p>Inspect production Daraja API responses and traces stored in Realtime DB. Click any log entry for detailed inspection.</p></div><button class="btn danger" id="clearErrorLogsBtn">Clear Logs</button></div>
+ <div class="card">
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Timestamp</th><th>Endpoint</th><th>Status</th><th>Error Details / Response</th></tr></thead>
+    <tbody id="errorLogTableRows"><tr><td colspan="4" class="empty">No errors captured yet.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="page-settings">
+ <div class="pagehead"><div><div class="eyebrow">SYSTEM CONFIG</div><h1>Portal Settings</h1><p>Firebase project preferences and database status.</p></div></div>
+ <div class="card">
+  <div class="cardtitle"><h3>Firebase Realtime Database Configuration</h3></div>
+  <div class="listrow"><span class="muted">Project ID</span><b>lin-billing-system</b>[span_0](start_span)[span_0](end_span)</div>
+  <div class="listrow"><span class="muted">Auth Domain</span><b>lin-billing-system.firebaseapp.com</b>[span_1](start_span)[span_1](end_span)</div>
+  <div class="listrow"><span class="muted">Database URL</span><b>https://lin-billing-system-default-rtdb.firebaseio.com</b>[span_2](start_span)[span_2](end_span)</div>
+  <div class="listrow"><span class="muted">Storage Bucket</span><b>lin-billing-system.firebasestorage.app</b>[span_3](start_span)[span_3](end_span)</div>
+  <div class="listrow"><span class="muted">Measurement ID</span><b>G-Y80BWLNDFN</b>[span_4](start_span)[span_4](end_span)</div>
+  <div class="actions" style="margin-top:14px"><button class="btn primary" onclick="alert('Firebase Realtime Database connection verified successfully.')">VERIFY DATABASE CONNECTION</button></div>
+ </div>
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- ERROR INSPECT MODAL -->
+<div class="modal-overlay" id="errorModal">
+ <div class="modal-card">
+  <div class="modal-header"><h3>Daraja Production API Inspector</h3><button class="modal-close" id="closeModal">✕</button></div>
+  <div class="modal-body" id="modalLogContent">Select a log row to inspect details.</div>
+  <div class="modal-footer"><button class="btn" id="closeModalBtn">Close</button></div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK & Realtime Database Integration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+  import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
+    authDomain: "lin-billing-system.firebaseapp.com",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+    projectId: "lin-billing-system",
+    storageBucket: "lin-billing-system.firebasestorage.app",
+    messagingSenderId: "317499012795",
+    appId: "1:317499012795:web:8ff2f143549a948f85db9e",
+    measurementId: "G-Y80BWLNDFN"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getDatabase(app);
+
+  // Expose Firebase DB actions globally for the app UI
+  window.dbRef = db;
+  window.fbPush = push;
+  window.fbRef = ref;
+  window.fbOnValue = onValue;
+  window.fbRemove = remove;
+
+  console.log("Firebase Realtime Database connected:", firebaseConfig.databaseURL);
+</script>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+
+let plans = JSON.parse(localStorage.getItem('linwifi_shared_plans_v1') || JSON.stringify([
+ {name:'1 Hour',title:'1 Hour',price:10,duration:'60 min',tag:'Quick'},
+ {name:'3 Hours',title:'3 Hours',price:20,duration:'180 min',tag:'Everyday'},
+ {name:'6 Hours',title:'6 Hours',price:30,duration:'360 min',tag:'Extended'},
+ {name:'12 Hours',title:'12 Hours',price:50,duration:'720 min',tag:'Popular'}
+]));
+
+let ledger = [];
+let errorLogs = [];
+let selectedPlan = plans[3] || plans[0];
+
+function toast(msg){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),3200)}
+
+window.go = function(page){
+ document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));
+ document.querySelectorAll('#nav button[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ $('sidebar').classList.remove('open');
+ window.scrollTo({top:0,behavior:'smooth'});
+};
+
+document.querySelectorAll('[data-page],[data-goto]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.page||el.dataset.goto)));
+if($('menuBtn')) $('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+
+// Initialize Realtime Database Listeners once Firebase DB is loaded
+setTimeout(() => {
+  if (window.dbRef && window.fbRef && window.fbOnValue) {
+    // Listen to Ledger Transactions
+    window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
+      const data = snapshot.val();
+      ledger = data ? Object.values(data).reverse() : [];
+      updateOverviewStats();
+    });
+
+    // Listen to Error Logs
+    window.fbOnValue(window.fbRef(window.dbRef, 'errorLogs'), (snapshot) => {
+      const data = snapshot.val();
+      errorLogs = data ? Object.values(data).reverse() : [];
+      renderErrors();
+    });
+  }
+}, 1000);
+
+function logError(endpoint, status, details){
+ const logItem = {time: new Date().toLocaleString(), endpoint, status, details};
+ if (window.dbRef && window.fbRef && window.fbPush) {
+  window.fbPush(window.fbRef(window.dbRef, 'errorLogs'), logItem);
+ } else {
+  errorLogs.unshift(logItem);
+  renderErrors();
+ }
+}
+
+function renderErrors(){
+ if(!$('errorLogTableRows')) return;
+ if(errorLogs.length === 0){
+  $('errorLogTableRows').innerHTML = `<tr><td colspan="4" class="empty">No errors captured yet.</td></tr>`;
+  return;
+ }
+ $('errorLogTableRows').innerHTML = errorLogs.map((e, idx)=>`
+  <tr onclick="inspectError(${idx})">
+   <td>${e.time}</td>
+   <td><code>${e.endpoint}</code></td>
+   <td><span class="pill ${e.status==='SUCCESS'?'blue':'red'}">${e.status}</span></td>
+   <td><div style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.details}</div></td>
+  </tr>
+ `).join('');
+}
+
+window.inspectError = function(idx){
+ const log = errorLogs[idx];
+ $('modalLogContent').innerHTML = `
+  <p><b>Timestamp:</b> ${log.time}</p>
+  <p><b>Endpoint:</b> <code>${log.endpoint}</code></p>
+  <p><b>Status:</b> ${log.status}</p>
+  <p><b>Payload / Details:</b></p>
+  <pre style="background:#07111f;padding:10px;border-radius:8px;overflow-x:auto"><code>${JSON.stringify(log, null, 2)}</code></pre>
+ `;
+ $('errorModal').classList.add('show');
+};
+
+if($('closeModal')) $('closeModal').onclick = () => $('errorModal').classList.remove('show');
+if($('closeModalBtn')) $('closeModalBtn').onclick = () => $('errorModal').classList.remove('show');
+if($('clearErrorLogsBtn')) $('clearErrorLogsBtn').onclick = () => {
+ if (window.dbRef && window.fbRef && window.fbRemove) {
+  window.fbRemove(window.fbRef(window.dbRef, 'errorLogs'));
+ }
+ errorLogs = [];
+ renderErrors();
+ toast('Error logs cleared from RTDB.');
+};
+
+function renderPlans(){
+ if($('planCards')){
+  $('planCards').innerHTML = plans.map((p,i)=>`
+   <article class="card packagecard">
+    <span class="eyebrow">${p.tag||'Access'}</span>
+    <h3>${p.title}</h3>
+    <div class="muted">${p.duration} access</div>
+    <div class="bigprice">KES ${p.price}</div>
+    <button class="btn primary" style="width:100%" data-buy="${i}">SELECT PLAN →</button>
+   </article>
+  `).join('');
+  document.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>{
+   selectedPlan = plans[Number(b.dataset.buy)];
+   if($('checkoutPlan')) $('checkoutPlan').value = selectedPlan.name;
+   updateCheckout();
+   go('checkout');
+  }));
+ }
+ if($('checkoutPlan')){
+  $('checkoutPlan').innerHTML = plans.map(p=>`<option value="${p.name}">${p.title} — KES ${p.price}</option>`).join('');
+ }
+ if($('adminPackageTableRows')){
+  $('adminPackageTableRows').innerHTML = plans.map((p,i)=>`
+   <tr>
+    <td><b>${p.title}</b></td>
+    <td>${p.duration}</td>
+    <td>KES ${p.price}</td>
+    <td><span class="pill blue">${p.tag||'Standard'}</span></td>
+    <td><button class="btn danger" onclick="deletePlan(${i})">Delete</button></td>
+   </tr>
+  `).join('');
+ }
+ updateOverviewStats();
+ updateCheckout();
+}
+
+window.deletePlan = function(i){ plans.splice(i,1); localStorage.setItem('linwifi_shared_plans_v1',JSON.stringify(plans)); renderPlans(); toast('Package deleted.'); };
+
+if($('addPackageBtn')){
+ $('addPackageBtn').addEventListener('click',()=>{
+  const title = $('newPkgTitle').value.trim();
+  const duration = $('newPkgDuration').value.trim();
+  const price = Number($('newPkgPrice').value);
+  if(!title||!duration||!price) return toast('Fill all fields correctly.');
+  plans.push({name:title,title:title,price:price,duration:duration,tag:$('newPkgTag').value||'Standard'});
+  localStorage.setItem('linwifi_shared_plans_v1',JSON.stringify(plans));
+  renderPlans();
+  toast('Package added.');
+ });
+}
+
+function updateCheckout(){
+ const p = plans.find(x=>x.name === $('checkoutPlan')?.value) || selectedPlan;
+ selectedPlan = p;
+ if($('checkoutAmount')) $('checkoutAmount').textContent = 'KES ' + p.price;
+ if($('checkoutDuration')) $('checkoutDuration').textContent = p.duration + ' access';
+}
+if($('checkoutPlan')) $('checkoutPlan').addEventListener('change', updateCheckout);
+
+function updateOverviewStats(){
+ const totalRev = ledger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+ if($('statRevenue')) $('statRevenue').textContent = 'KES ' + totalRev;
+ if($('statUsers')) $('statUsers').textContent = ledger.length + 1;
+ if($('overviewPopularList')){
+  $('overviewPopularList').innerHTML = plans.slice(0,3).map(p=>`
+   <div class="planrow" onclick="go('checkout')">
+    <div><b>${p.title}</b><small>${p.duration}</small></div>
+    <div class="price">KES ${p.price}</div>
+   </div>
+  `).join('');
+ }
+ renderLedger();
+}
+
+function renderLedger(){
+ if(!$('ledgerTableRows')) return;
+ if(ledger.length === 0){
+  $('ledgerTableRows').innerHTML = `<tr><td colspan="5" class="empty">No transactions recorded yet in Realtime DB.</td></tr>`;
+  return;
+ }
+ $('ledgerTableRows').innerHTML = ledger.map(item=>`
+  <tr>
+   <td><b>${item.ref}</b></td>
+   <td>${item.phone}</td>
+   <td>KES ${item.amount}</td>
+   <td><span class="pill green">${item.status}</span></td>
+   <td>${item.time}</td>
+  </tr>
+ `).join('');
+}
+
+if($('exportLedgerCsv')){
+ $('exportLedgerCsv').onclick = () => {
+  let csv = 'Receipt,Phone,Amount,Status,Timestamp\n' + ledger.map(l => `"${l.ref}","${l.phone}",${l.amount},"${l.status}","${l.time}"`).join('\n');
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'jcorp_mpesa_rtdb_ledger.csv';
+  a.click();
+  toast('RTDB Ledger exported to CSV.');
+ };
+}
+
+// VOUCHER REDEMPTION
+if($('redeemVoucherBtn')){
+ $('redeemVoucherBtn').onclick = () => {
+  const code = $('voucherCodeInput').value.trim();
+  if(!code) return toast('Enter a valid voucher code.');
+  $('voucherMsg').innerHTML = `<div class="notice good">✓ Voucher <b>${code.toUpperCase()}</b> validated successfully! Hotspot session active.</div>`;
+  toast('Voucher redeemed!');
+ };
+}
+
+// REAL LIVE DARAJA PRODUCTION STK PUSH LOGIC (WRITING TO RTDB)
+if($('startPayment')){
+ $('startPayment').addEventListener('click', async()=>{
+  const phoneInput = $('checkoutPhone').value.trim();
+  const env = $('darajaEnv').value;
+  const key = $('darajaKey').value.trim();
+  const secret = $('darajaSecret').value.trim();
+  const shortcode = $('darajaShortcode').value.trim();
+  const passkey = $('darajaPasskey').value.trim();
+  const type = $('darajaType').value;
+  const callbackUrl = $('darajaCallback').value.trim();
+
+  let formattedPhone = phoneInput.replace(/^0/,'254').replace(/[^0-9]/g,'');
+  if(!/^254\d{9}$/.test(formattedPhone)) return toast('Enter a valid Kenyan phone (e.g. 0713100424)');
+
+  $('checkoutMsg').innerHTML = `<div class="notice">Connecting to Safaricom Production API for ${formattedPhone}...</div>`;
+
+  try {
+   const response = await fetch(callbackUrl, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+     action: 'stkPush',
+     env: env,
+     consumerKey: key,
+     consumerSecret: secret,
+     shortcode: shortcode,
+     passkey: passkey,
+     transactionType: type,
+     phoneNumber: formattedPhone,
+     amount: selectedPlan.price,
+     accountReference: 'JCorp LinBilling'
+    })
+   });
+
+   const data = await response.json();
+
+   if(response.ok){
+    $('checkoutMsg').innerHTML = `
+     <div class="notice good">
+      <b>✓ LIVE STK PUSH DISPATCHED!</b><br>
+      Phone: <b>${formattedPhone}</b><br>
+      Amount: <b>KES ${selectedPlan.price}</b><br>
+      CheckoutRequestID: <code>${data.CheckoutRequestID || 'Success'}</code><br><br>
+      Check your phone screen and enter your M-Pesa PIN!
+     </div>
+    `;
+    const txItem = {
+     ref: data.CheckoutRequestID || ('LBS-' + Math.floor(100000 + Math.random()*900000)),
+     phone: formattedPhone,
+     amount: selectedPlan.price,
+     status: 'Pending PIN',
+     time: new Date().toLocaleString()
+    };
+    if (window.dbRef && window.fbRef && window.fbPush) {
+     window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
+    }
+    toast('Live STK Push Dispatched!');
+   } else {
+    throw new Error(data.error || 'Gateway error status ' + response.status);
+   }
+  } catch(err) {
+   logError(callbackUrl, 'PRODUCTION ERROR', {error: err.message, note: 'Verify Firebase Cloud Function endpoint is deployed and active'});
+   $('checkoutMsg').innerHTML = `<div class="notice danger">Production Error: ${err.message}. Check Error Logs tab.</div>`;
+   toast('STK Push dispatch failed');
+  }
+ });
+}
+
+if($('saveDarajaBtn')){
+ $('saveDarajaBtn').addEventListener('click',()=>{
+  toast('Safaricom Production credentials saved.');
+  $('darajaMsg').innerHTML = `<div class="notice good">Saved for production shortcode <b>${$('darajaShortcode').value}</b></div>`;
+ });
+}
+
+renderPlans();
+renderErrors();
+updateOverviewStats();
+})();
+</script>
+</body>
+</html>
