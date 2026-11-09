@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="ag-utils.js"></script>
+<script src="ag-config.js"></script>
+<meta charset="UTF-8">
+<title>lin Billing-system</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="error-utils.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+* { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+body { margin: 0; height: 100vh; background: radial-gradient(circle at center, #2c5364, #0f2027); display: flex; flex-direction: column; align-items: center; overflow: hidden; padding-top: 50px; }
+#notification { position: fixed; top: 20px; background: #333; color: #fff; padding: 12px 25px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; z-index: 5000; animation: slideDown 0.4s ease-out; }
+@keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
+.hero-content h1 { margin: 0; font-size: 2.3rem; color: white; text-align: center; }
+.top-nav { width: 90%; max-width: 280px; background: linear-gradient(145deg, #1e3a46, #2c5364); border-radius: 50px; padding: 6px 15px; display: flex; justify-content: space-between; align-items: center; margin: 20px 0; }
+.logo { color: #fff; font-weight: 800; font-size: 0.7rem; letter-spacing: 0.5px; }
+.menu-btn { background: #fff; color: #2c5364; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
+.auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(8px); }
+.scene { width: 360px; height: 580px; perspective: 1200px; }
+.card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s; }
+.card.flip-register { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; background: #fff; border-radius: 20px; padding: 24px 22px; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto; }
+.register { transform: rotateY(180deg); }
+h2 { margin-bottom: 12px; color: #2c5364; font-weight: 800; font-size: 1.25rem; }
+input, select, textarea { width: 100%; padding: 10px 12px; margin: 6px 0; border-radius: 10px; border: 1px solid #ddd; outline: none; background: #f9fbff; font-size: 13px; }
+textarea { resize: vertical; min-height: 48px; }
+button.action-btn { width: 100%; padding: 12px; margin-top: 12px; background: #2c5364; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
+button.action-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+.link { text-align: center; margin-top: 8px; font-size: 0.8rem; color: #2c5364; cursor: pointer; font-weight: 600; }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 4000; }
+.modal-content { background: #fff; padding: 30px; border-radius: 15px; width: 300px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div id="notification"></div>
+
+<div class="hero-content">
+  <h1>wifi Billing-system</h1>
+  <nav class="top-nav">
+    <div class="logo">PORTAL SYSTEM</div>
+    <button class="menu-btn" onclick="toggleAuth()">LOG IN</button>
+  </nav>
+</div>
+
+<div class="auth-overlay" id="authOverlay" onclick="closeIfOutside(event)">
+  <div class="scene" onclick="event.stopPropagation()">
+    <div class="card" id="card">
+      
+      <!-- Sign In Face -->
+      <div class="face login">
+        <h2>Log In</h2>
+
+        <input id="l_email" type="email" placeholder="Email Address">
+        <input id="l_pin" type="password" placeholder="Password / PIN">
+
+        <button class="action-btn" id="loginBtn" onclick="doLogin()">Log In</button>
+        <div class="link" onclick="showForgotModal()">Forgot Access?</div>
+        <div class="link" style="color:#64748b; margin-top:16px;" onclick="goRegister()">Create New Account</div>
+      </div>
+
+      <!-- Register Face -->
+      <div class="face register">
+        <h2>New Account</h2>
+
+        <input id="r_user" placeholder="Full Name">
+        <input id="r_email" type="email" placeholder="Email Address">
+        <input id="r_phone" type="tel" placeholder="Phone Number (e.g. 07XXXXXXXX)">
+        <input id="r_pass" type="password" placeholder="Password">
+        <input id="r_pass_confirm" type="password" placeholder="Confirm Password">
+        <button class="action-btn" id="regBtn" onclick="doSignup()">Create Account</button>
+        <div class="link" onclick="goLogin()">Return to Log In</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="forgotModal">
+  <div class="modal-content">
+    <h2 style="margin-top:0;">Reset PIN</h2>
+    <input id="f_email" type="email" placeholder="Registered Email">
+    <button class="action-btn" onclick="doReset()">Send Reset Link</button>
+    <div class="link" style="color:red; margin-top:15px;" onclick="closeForgotModal()">Cancel</div>
+  </div>
+</div>
+
+<script>
+const DASHBOARD_URL = "Billing-system.html"; 
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(AG_FIREBASE_CONFIG);
+}
+const auth = firebase.auth();
+const rtdb = firebase.database();
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (new URLSearchParams(window.location.search).get("authError")) {
+    msg("Session could not be verified. Please sign in again.");
+  }
+});
+
+function msg(text, color="#ef4444") {
+  const el = document.getElementById("notification");
+  el.innerText = text; el.style.backgroundColor = color; el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 4000);
+}
+
+function toggleAuth() {
+  const o = document.getElementById("authOverlay");
+  o.style.display = (o.style.display === "flex") ? "none" : "flex";
+}
+function closeIfOutside(e) { if (e.target.id === "authOverlay") toggleAuth(); }
+function goRegister() { document.getElementById("card").className = "card flip-register"; }
+function goLogin() { document.getElementById("card").className = "card"; }
+function showForgotModal() { document.getElementById("forgotModal").style.display = "flex"; }
+function closeForgotModal() { document.getElementById("forgotModal").style.display = "none"; }
+
+async function doLogin() {
+  const email = document.getElementById("l_email").value.trim().toLowerCase();
+  const pass = document.getElementById("l_pin").value.trim();
+
+  if (!email || !pass) return msg("Please enter your email and password.");
+
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true; 
+  btn.innerText = "Authenticating...";
+
+  try {
+    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    const userCredential = await auth.signInWithEmailAndPassword(email, pass);
+    const user = userCredential.user;
+
+    localStorage.setItem("ag_active_uid", user.uid);
+    localStorage.setItem("ag_session_active", "true");
+
+    const updatePayload = {
+      lastLogin: Date.now()
+    };
+
+    await rtdb.ref(`users/${user.uid}`).update(updatePayload);
+    await rtdb.ref(`user_statuses/${user.uid}`).set("Active");
+
+    await rtdb.ref(`user_activity_logs`).push({
+      uid: user.uid,
+      category: "SECURITY",
+      action: "User Online Login",
+      description: `User logged in successfully to lin Billing-system.`,
+      timestamp: Date.now(),
+      device: navigator.userAgent
+    });
+
+    window.location.href = DASHBOARD_URL;
+
+  } catch (err) {
+    console.error("Login Error:", err);
+    msg("Login failed: " + err.message);
+    btn.disabled = false; 
+    btn.innerText = "Log In";
+  }
+}
+
+async function doSignup() {
+  const name = document.getElementById("r_user").value.trim();
+  const email = document.getElementById("r_email").value.trim().toLowerCase();
+  const phone = document.getElementById("r_phone").value.trim();
+  const pass = document.getElementById("r_pass").value;
+  const confirm = document.getElementById("r_pass_confirm").value;
+
+  if (!navigator.onLine) return msg("Internet required for setup");
+  if (!email || !pass || !name) return msg("Please fill in all required fields");
+  if (pass !== confirm) return msg("Passwords do not match");
+
+  try {
+    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+    const user = userCredential.user;
+
+    const userPayload = {
+      uid: user.uid,
+      fullName: name,
+      email: email,
+      phone: phone || "Not provided",
+      joinedAt: Date.now(),
+      lastLogin: Date.now()
+    };
+
+    await rtdb.ref(`users/${user.uid}`).set(userPayload);
+    await rtdb.ref(`user_statuses/${user.uid}`).set("Active");
+    
+    msg("Account Created Successfully!", "#10b981");
+    setTimeout(() => { goLogin(); }, 1200);
+  } catch (err) { 
+    console.error("Signup Error:", err);
+    alert("Database / Signup Error: " + err.message); 
+  }
+}
+
+async function doReset() {
+  const email = document.getElementById("f_email").value.trim();
+  if (!email) return msg("Enter email first");
+  try {
+    await auth.sendPasswordResetEmail(email);
+    msg("Reset link sent!", "#10b981");
+    closeForgotModal();
+  } catch (e) { msg(e.message); }
+}
+</script>
+</body>
+</html>
