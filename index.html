@@ -220,7 +220,7 @@
    <div class="field"><label>CONSUMER SECRET</label><input id="darajaSecret" value="xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd"></div>
    <div class="field"><label>SHORTCODE (PAYBILL OR TILL NUMBER)</label><input id="darajaShortcode" value="257471"></div>
    <div class="field"><label>PASSKEY</label><input id="darajaPasskey" value="103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab"></div>
-   <div class="field full"><label>BACKEND CLOUD FUNCTION / CORS PROXY ENDPOINT</label><input id="darajaCallback" value="https://us-central1-lin-billing-system.cloudfunctions.net/stkPush"></div>
+   <div class="field full"><label>BACKEND CLOUD FUNCTION / CORS PROXY ENDPOINT</label><input id="darajaCallback" value="https://johnnylin.karanjajmwangi-10.workers.dev"></div>
   </div>
   <div class="actions" style="margin-top:14px"><button class="btn primary" id="saveDarajaBtn">SAVE PRODUCTION CONFIG</button></div>
   <div id="darajaMsg"></div>
@@ -266,11 +266,11 @@
  <div class="pagehead"><div><div class="eyebrow">SYSTEM CONFIG</div><h1>Portal Settings</h1><p>Firebase project preferences and database status.</p></div></div>
  <div class="card">
   <div class="cardtitle"><h3>Firebase Realtime Database Configuration</h3></div>
-  <div class="listrow"><span class="muted">Project ID</span><b>lin-billing-system</b>[span_0](start_span)[span_0](end_span)</div>
-  <div class="listrow"><span class="muted">Auth Domain</span><b>lin-billing-system.firebaseapp.com</b>[span_1](start_span)[span_1](end_span)</div>
-  <div class="listrow"><span class="muted">Database URL</span><b>https://lin-billing-system-default-rtdb.firebaseio.com</b>[span_2](start_span)[span_2](end_span)</div>
-  <div class="listrow"><span class="muted">Storage Bucket</span><b>lin-billing-system.firebasestorage.app</b>[span_3](start_span)[span_3](end_span)</div>
-  <div class="listrow"><span class="muted">Measurement ID</span><b>G-Y80BWLNDFN</b>[span_4](start_span)[span_4](end_span)</div>
+  <div class="listrow"><span class="muted">Project ID</span><b>lin-billing-system</b></div>
+  <div class="listrow"><span class="muted">Auth Domain</span><b>lin-billing-system.firebaseapp.com</b></div>
+  <div class="listrow"><span class="muted">Database URL</span><b>https://lin-billing-system-default-rtdb.firebaseio.com</b></div>
+  <div class="listrow"><span class="muted">Storage Bucket</span><b>lin-billing-system.firebasestorage.app</b></div>
+  <div class="listrow"><span class="muted">Measurement ID</span><b>G-Y80BWLNDFN</b></div>
   <div class="actions" style="margin-top:14px"><button class="btn primary" onclick="alert('Firebase Realtime Database connection verified successfully.')">VERIFY DATABASE CONNECTION</button></div>
  </div>
 </section>
@@ -311,7 +311,6 @@
   const analytics = getAnalytics(app);
   const db = getDatabase(app);
 
-  // Expose Firebase DB actions globally for the app UI
   window.dbRef = db;
   window.fbPush = push;
   window.fbRef = ref;
@@ -349,17 +348,14 @@ window.go = function(page){
 document.querySelectorAll('[data-page],[data-goto]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.page||el.dataset.goto)));
 if($('menuBtn')) $('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
 
-// Initialize Realtime Database Listeners once Firebase DB is loaded
 setTimeout(() => {
   if (window.dbRef && window.fbRef && window.fbOnValue) {
-    // Listen to Ledger Transactions
     window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
       const data = snapshot.val();
       ledger = data ? Object.values(data).reverse() : [];
       updateOverviewStats();
     });
 
-    // Listen to Error Logs
     window.fbOnValue(window.fbRef(window.dbRef, 'errorLogs'), (snapshot) => {
       const data = snapshot.val();
       errorLogs = data ? Object.values(data).reverse() : [];
@@ -389,7 +385,7 @@ function renderErrors(){
    <td>${e.time}</td>
    <td><code>${e.endpoint}</code></td>
    <td><span class="pill ${e.status==='SUCCESS'?'blue':'red'}">${e.status}</span></td>
-   <td><div style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.details}</div></td>
+   <td><div style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${typeof e.details === 'object' ? JSON.stringify(e.details) : e.details}</div></td>
   </tr>
  `).join('');
 }
@@ -520,7 +516,6 @@ if($('exportLedgerCsv')){
  };
 }
 
-// VOUCHER REDEMPTION
 if($('redeemVoucherBtn')){
  $('redeemVoucherBtn').onclick = () => {
   const code = $('voucherCodeInput').value.trim();
@@ -530,7 +525,7 @@ if($('redeemVoucherBtn')){
  };
 }
 
-// REAL LIVE DARAJA PRODUCTION STK PUSH LOGIC (WRITING TO RTDB)
+// UPDATED REAL LIVE DARAJA PRODUCTION STK PUSH LOGIC
 if($('startPayment')){
  $('startPayment').addEventListener('click', async()=>{
   const phoneInput = $('checkoutPhone').value.trim();
@@ -552,7 +547,6 @@ if($('startPayment')){
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-     action: 'stkPush',
      env: env,
      consumerKey: key,
      consumerSecret: secret,
@@ -565,9 +559,15 @@ if($('startPayment')){
     })
    });
 
-   const data = await response.json();
+   const resText = await response.text();
+   let data;
+   try {
+     data = JSON.parse(resText);
+   } catch(e) {
+     throw new Error("Invalid response from serverless backend: " + (resText || "Empty body"));
+   }
 
-   if(response.ok){
+   if(response.ok && (data.ResponseCode === "0" || data.CheckoutRequestID)){
     $('checkoutMsg').innerHTML = `
      <div class="notice good">
       <b>✓ LIVE STK PUSH DISPATCHED!</b><br>
@@ -589,10 +589,10 @@ if($('startPayment')){
     }
     toast('Live STK Push Dispatched!');
    } else {
-    throw new Error(data.error || 'Gateway error status ' + response.status);
+    throw new Error(data.error || data.errorMessage || data.ResponseDescription || ('Gateway error status ' + response.status));
    }
   } catch(err) {
-   logError(callbackUrl, 'PRODUCTION ERROR', {error: err.message, note: 'Verify Firebase Cloud Function endpoint is deployed and active'});
+   logError(callbackUrl, 'PRODUCTION ERROR', {error: err.message, note: 'Check Cloudflare Worker logs and Safaricom credentials'});
    $('checkoutMsg').innerHTML = `<div class="notice danger">Production Error: ${err.message}. Check Error Logs tab.</div>`;
    toast('STK Push dispatch failed');
   }
