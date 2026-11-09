@@ -198,31 +198,17 @@
 <section class="page" id="page-admin">
  <div class="pagehead"><div><div class="eyebrow">OPERATOR CONSOLE / SECURE</div><h1>Admin overview</h1><p>Manage production credentials, environment, shortcodes, and plans.</p></div><span class="pill green">AUTHENTICATED ADMIN</span></div>
 
- <!-- DARAJA API CONFIGURATION CARD -->
+ <!-- LIN BILLING STK GATEWAY CONFIGURATION -->
  <div class="card" style="margin-bottom:16px">
-  <div class="cardtitle"><h3>Safaricom Daraja Production API Credentials</h3><span class="pill amber">LIVE PRODUCTION MODE</span></div>
-  <p class="muted" style="margin-top:0">Connected directly to Safaricom Production Endpoints (`api.safaricom.co.ke`).</p>
-
+  <div class="cardtitle"><h3>LIN BILLING STK Gateway</h3><span class="pill green">BACKEND MANAGED</span></div>
+  <p class="muted" style="margin-top:0">Checkout requests are sent to your Cloudflare Worker. Daraja Consumer Key, Consumer Secret and Passkey must remain in Worker secrets and are never exposed in this browser page.</p>
   <div class="formgrid">
-   <div class="field"><label>ENVIRONMENT SELECTOR</label>
-    <select id="darajaEnv">
-     <option value="LIVE">Live Production (api.safaricom.co.ke)</option>
-     <option value="SANDBOX">Sandbox Test (sandbox.safaricom.co.ke)</option>
-    </select>
-   </div>
-   <div class="field"><label>SHORTCODE TYPE</label>
-    <select id="darajaType">
-     <option value="CustomerPayBillOnline">Paybill (CustomerPayBillOnline)</option>
-     <option value="CustomerBuyGoodsOnline">Buy Goods / Till (CustomerBuyGoodsOnline)</option>
-    </select>
-   </div>
-   <div class="field"><label>CONSUMER KEY</label><input id="darajaKey" value="AGJGJGGktfRf8OHhos6TJXKupDMb3f2wG9pZDdF8tG5qm0qK"></div>
-   <div class="field"><label>CONSUMER SECRET</label><input id="darajaSecret" value="xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd"></div>
-   <div class="field"><label>SHORTCODE (PAYBILL OR TILL NUMBER)</label><input id="darajaShortcode" value="257471"></div>
-   <div class="field"><label>PASSKEY</label><input id="darajaPasskey" value="103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab"></div>
-   <div class="field full"><label>BACKEND CLOUD FUNCTION / CORS PROXY ENDPOINT</label><input id="darajaCallback" value="https://johnnylin.karanjajmwangi-10.workers.dev"></div>
+   <div class="field full"><label>STK PUSH ENDPOINT</label><input id="darajaCallback" type="url" value="https://johnnylin.karanjajmwangi-10.workers.dev/stkPush" placeholder="https://your-worker.workers.dev/stkPush"></div>
+   <div class="field"><label>PAYMENT CHANNEL</label><select id="darajaType"><option value="CustomerPayBillOnline">Paybill</option><option value="CustomerBuyGoodsOnline">Buy Goods / Till</option></select></div>
+   <div class="field"><label>ENVIRONMENT</label><input value="Production — configured on gateway" disabled></div>
   </div>
-  <div class="actions" style="margin-top:14px"><button class="btn primary" id="saveDarajaBtn">SAVE PRODUCTION CONFIG</button></div>
+  <div class="notice">Security: if the Daraja credentials previously placed in this HTML are real, rotate them in Safaricom / your Worker environment. Do not publish API secrets in frontend files.</div>
+  <div class="actions" style="margin-top:14px"><button class="btn primary" id="saveDarajaBtn">SAVE GATEWAY ENDPOINT</button><button class="btn" id="testGatewayBtn" type="button">TEST GATEWAY</button></div>
   <div id="darajaMsg"></div>
  </div>
 
@@ -525,86 +511,76 @@ if($('redeemVoucherBtn')){
  };
 }
 
-// UPDATED REAL LIVE DARAJA PRODUCTION STK PUSH LOGIC
+// LIN BILLING STK GATEWAY: Daraja secrets remain server-side.
 if($('startPayment')){
  $('startPayment').addEventListener('click', async()=>{
-  const phoneInput = $('checkoutPhone').value.trim();
-  const env = $('darajaEnv').value;
-  const key = $('darajaKey').value.trim();
-  const secret = $('darajaSecret').value.trim();
-  const shortcode = $('darajaShortcode').value.trim();
-  const passkey = $('darajaPasskey').value.trim();
-  const type = $('darajaType').value;
-  const callbackUrl = $('darajaCallback').value.trim();
-
-  let formattedPhone = phoneInput.replace(/^0/,'254').replace(/[^0-9]/g,'');
-  if(!/^254\d{9}$/.test(formattedPhone)) return toast('Enter a valid Kenyan phone (e.g. 0713100424)');
-
-  $('checkoutMsg').innerHTML = `<div class="notice">Connecting to Safaricom Production API for ${formattedPhone}...</div>`;
-
-  try {
-   const response = await fetch(callbackUrl, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-     env: env,
-     consumerKey: key,
-     consumerSecret: secret,
-     shortcode: shortcode,
-     passkey: passkey,
-     transactionType: type,
-     phoneNumber: formattedPhone,
-     amount: selectedPlan.price,
-     accountReference: 'JCorp LinBilling'
-    })
-   });
-
-   const resText = await response.text();
-   let data;
-   try {
-     data = JSON.parse(resText);
-   } catch(e) {
-     throw new Error("Invalid response from serverless backend: " + (resText || "Empty body"));
-   }
-
-   if(response.ok && (data.ResponseCode === "0" || data.CheckoutRequestID)){
-    $('checkoutMsg').innerHTML = `
-     <div class="notice good">
-      <b>✓ LIVE STK PUSH DISPATCHED!</b><br>
-      Phone: <b>${formattedPhone}</b><br>
-      Amount: <b>KES ${selectedPlan.price}</b><br>
-      CheckoutRequestID: <code>${data.CheckoutRequestID || 'Success'}</code><br><br>
-      Check your phone screen and enter your M-Pesa PIN!
-     </div>
-    `;
-    const txItem = {
-     ref: data.CheckoutRequestID || ('LBS-' + Math.floor(100000 + Math.random()*900000)),
-     phone: formattedPhone,
-     amount: selectedPlan.price,
-     status: 'Pending PIN',
-     time: new Date().toLocaleString()
-    };
-    if (window.dbRef && window.fbRef && window.fbPush) {
-     window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
-    }
-    toast('Live STK Push Dispatched!');
-   } else {
-    throw new Error(data.error || data.errorMessage || data.ResponseDescription || ('Gateway error status ' + response.status));
-   }
-  } catch(err) {
-   logError(callbackUrl, 'PRODUCTION ERROR', {error: err.message, note: 'Check Cloudflare Worker logs and Safaricom credentials'});
-   $('checkoutMsg').innerHTML = `<div class="notice danger">Production Error: ${err.message}. Check Error Logs tab.</div>`;
-   toast('STK Push dispatch failed');
-  }
+  const phoneInput=$('checkoutPhone').value.trim();
+  const endpointInput=$('darajaCallback')?.value.trim() || 'https://johnnylin.karanjajmwangi-10.workers.dev/stkPush';
+  const transactionType=$('darajaType')?.value || 'CustomerPayBillOnline';
+  const plan=plans.find(x=>x.name === $('checkoutPlan')?.value) || selectedPlan;
+  let formattedPhone=phoneInput.replace(/\D/g,'');
+  if(formattedPhone.startsWith('0')) formattedPhone='254'+formattedPhone.slice(1);
+  if(formattedPhone.startsWith('+')) formattedPhone=formattedPhone.slice(1);
+  if(!/^254[17]\d{8}$/.test(formattedPhone)) return toast('Enter a valid Kenyan mobile number, e.g. 0712345678.');
+  if(!endpointInput) return toast('Set the STK Push endpoint in Admin Overview.');
+  const endpoint=endpointInput.replace(/\/+$/,'').endsWith('/stkPush') ? endpointInput.replace(/\/+$/,'') : endpointInput.replace(/\/+$/,'')+'/stkPush';
+  const amount=Math.round(Number(plan.price));
+  if(!Number.isFinite(amount)||amount<1) return toast('Selected package has an invalid amount.');
+  const requestBody={phoneNumber:formattedPhone,phone:formattedPhone,amount,accountReference:'LINBILLING',transactionDesc:(plan.title||plan.name||'WiFi access').toString().slice(0,40),package:plan.title||plan.name,packageName:plan.title||plan.name,duration:plan.duration,transactionType};
+  const requestKey='LBS-'+(crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random().toString(16).slice(2));
+  const button=$('startPayment'); button.disabled=true; button.textContent='SENDING STK REQUEST…';
+  $('checkoutMsg').innerHTML='<div class="notice">Connecting securely to LIN BILLING STK Gateway for '+formattedPhone+'…</div>';
+  try{
+   const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','X-Idempotency-Key':requestKey},body:JSON.stringify(requestBody)});
+   const raw=await response.text(); let data;
+   try{data=raw?JSON.parse(raw):{}}catch(e){throw new Error('Gateway returned non-JSON data (HTTP '+response.status+').');}
+   if(!response.ok||data.success===false||data.error||(data.ResponseCode&&String(data.ResponseCode)!=='0')) throw new Error(data.errorMessage||data.error||data.ResponseDescription||data.message||('Gateway request failed (HTTP '+response.status+').'));
+   const checkoutId=data.CheckoutRequestID||data.checkoutRequestID||data.checkoutRequestId||data.requestId||data.MerchantRequestID||data.merchantRequestID||'';
+   const accepted=data.success===true||data.ResponseCode==='0'||!!checkoutId||['success','accepted','pending'].includes(String(data.status||'').toLowerCase());
+   if(!accepted) throw new Error(data.message||data.ResponseDescription||'Gateway did not confirm that the STK request was accepted.');
+   const txItem={ref:checkoutId||('LBS-'+Date.now()),checkoutRequestID:checkoutId,phone:formattedPhone,amount,package:requestBody.package,duration:plan.duration,status:'Pending PIN',time:new Date().toLocaleString(),gateway:'LIN BILLING STK GATEWAY'};
+   if(window.dbRef&&window.fbRef&&window.fbPush) await window.fbPush(window.fbRef(window.dbRef,'ledger'),txItem);
+   $('checkoutMsg').innerHTML='<div class="notice good"><b>✓ STK REQUEST ACCEPTED BY GATEWAY</b><br>Phone: <b>'+formattedPhone+'</b><br>Amount: <b>KES '+amount+'</b><br>Package: <b>'+requestBody.package+'</b><br>Reference: <code>'+(checkoutId||txItem.ref)+'</code><br><br>Check your phone and enter your M-Pesa PIN. Access is activated only after the payment callback is confirmed.</div>';
+   toast('STK request accepted. Check your phone.');
+  }catch(err){
+   logError(endpoint,'GATEWAY ERROR',{error:err.message,phone:formattedPhone,amount,package:requestBody.package});
+   const safeError=String(err.message).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+   $('checkoutMsg').innerHTML='<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>STK request failed</b><br>'+safeError+'<br><br>Open Admin Overview → Test Gateway, and check Error Logs if the problem continues.</div>';
+   toast('STK Push failed. See the error message.');
+  }finally{button.disabled=false;button.textContent='🚀 REQUEST M-PESA STK PUSH NOW';}
  });
 }
 
 if($('saveDarajaBtn')){
  $('saveDarajaBtn').addEventListener('click',()=>{
-  toast('Safaricom Production credentials saved.');
-  $('darajaMsg').innerHTML = `<div class="notice good">Saved for production shortcode <b>${$('darajaShortcode').value}</b></div>`;
+  const endpoint=$('darajaCallback').value.trim();
+  if(!/^https:\/\//i.test(endpoint)) return toast('Enter a valid HTTPS gateway URL.');
+  localStorage.setItem('linwifi_stk_endpoint_v1',endpoint);
+  localStorage.setItem('linwifi_stk_type_v1',$('darajaType').value);
+  $('darajaMsg').innerHTML='<div class="notice good">Gateway endpoint saved on this browser.</div>';
+  toast('Gateway endpoint saved.');
  });
 }
+if($('testGatewayBtn')){
+ $('testGatewayBtn').addEventListener('click',async()=>{
+  const base=($('darajaCallback').value.trim()||'').replace(/\/+$/,'').replace(/\/stkPush$/,'');
+  if(!/^https:\/\//i.test(base)) return toast('Enter a valid HTTPS gateway URL.');
+  $('darajaMsg').innerHTML='<div class="notice">Checking gateway status…</div>';
+  try{
+   const r=await fetch(base,{method:'GET',headers:{'Accept':'application/json'}}); const raw=await r.text(); let d;
+   try{d=JSON.parse(raw)}catch(e){d={message:raw.slice(0,200)}}
+   if(!r.ok) throw new Error(d.message||d.error||'Gateway health check returned HTTP '+r.status);
+   $('darajaMsg').innerHTML='<div class="notice good"><b>Gateway reachable.</b><br>'+(d.service||'LIN BILLING STK GATEWAY')+'<br>Status: '+(d.status||r.status)+'<br>STK endpoint: '+base+'/stkPush</div>';
+   toast('Gateway connection verified.');
+  }catch(e){
+   const safe=String(e.message).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+   $('darajaMsg').innerHTML='<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1">Gateway test failed: '+safe+'</div>';
+   logError(base,'GATEWAY TEST ERROR',{error:e.message});
+  }
+ });
+}
+const savedEndpoint=localStorage.getItem('linwifi_stk_endpoint_v1'); if(savedEndpoint&&$('darajaCallback')) $('darajaCallback').value=savedEndpoint;
+const savedType=localStorage.getItem('linwifi_stk_type_v1'); if(savedType&&$('darajaType')) $('darajaType').value=savedType;
 
 renderPlans();
 renderErrors();
