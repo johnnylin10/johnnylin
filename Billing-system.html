@@ -516,6 +516,7 @@ let plans = [
   {name:'24 Hours',title:'24 Hours',price:100,duration:'1440 min',tag:'Full Day'},
   {name:'Weekly Pass',title:'Weekly Pass',price:500,duration:'10080 min',tag:'Best Value'}
 ];
+let rawLedgerEntries = [];
 let ledger = [];
 let errorLogs = [];
 let bypassedDevices = [];
@@ -585,12 +586,31 @@ function toast(msg){
   toast.timer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
+// Automatic timeout checker for uncompleted pending transactions (60 seconds)
+function watchPendingTransactions() {
+  if (!window.dbRef || !window.fbRef || !window.fbUpdate) return;
+  const now = Date.now();
+  rawLedgerEntries.forEach(async (item) => {
+    if (item.status && item.status.includes('Pending')) {
+      const itemTime = new Date(item.time).getTime();
+      if (!isNaN(itemTime) && (now - itemTime > 60000)) { // 60 seconds timeout
+        await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + item.dbKey), {
+          status: 'Cancelled (Timeout / Closed)'
+        });
+      }
+    }
+  });
+}
+
+setInterval(watchPendingTransactions, 10000);
+
 setTimeout(() => {
   if (window.dbRef && window.fbRef && window.fbOnValue) {
     window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
       const data = snapshot.val();
-      // Only count verified completed transactions for the ledger & revenue
-      ledger = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).filter(item => item.status && item.status.includes('Completed')).reverse() : [];
+      rawLedgerEntries = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
+      // Only count verified completed transactions for revenue and financial analytics
+      ledger = rawLedgerEntries.filter(item => item.status && item.status.includes('Completed'));
       updateOverviewStats();
       renderMpesaAudit();
       renderInteractiveAnalytics();
@@ -728,38 +748,40 @@ function renderInteractiveAnalytics(){
 }
 
 function renderMpesaAudit() {
-  const completed = ledger;
-  const failed = errorLogs.map(e => ({
-    ref: 'FAIL-' + Math.floor(Math.random()*90000+10000),
-    phone: e.details?.phone || '254713******',
-    amount: e.details?.amount || 50,
-    package: 'WiFi Access',
-    status: e.status || 'STK Cancelled / Timeout',
-    time: e.time
-  }));
-  const allAttempts = [...completed.map(c => ({...c, isSuccess: true})), ...failed.map(f => ({...f, isSuccess: false}))];
-  if($('auditTotalCount')) $('auditTotalCount').textContent = allAttempts.length;
-  if($('auditCompletedCount')) $('auditCompletedCount').textContent = completed.length;
-  if($('auditFailedCount')) $('auditFailedCount').textContent = failed.length;
-  if($('statFailedMpesaCount')) $('statFailedMpesaCount').textContent = failed.length;
-  const rate = allAttempts.length > 0 ? Math.round((completed.length / allAttempts.length) * 100) : 100;
-  if($('auditSuccessRate')) $('auditSuccessRate').textContent = rate + '%';
   const tbody = $('mpesaAuditTableRows');
   if(!tbody) return;
-  if(allAttempts.length === 0){
+  if(rawLedgerEntries.length === 0){
     tbody.innerHTML = `<tr><td colspan="6" class="empty">No audit records found in database.</td></tr>`;
+    if($('auditTotalCount')) $('auditTotalCount').textContent = '0';
+    if($('auditCompletedCount')) $('auditCompletedCount').textContent = '0';
+    if($('auditFailedCount')) $('auditFailedCount').textContent = '0';
+    if($('statFailedMpesaCount')) $('statFailedMpesaCount').textContent = '0';
+    if($('auditSuccessRate')) $('auditSuccessRate').textContent = '100%s';
     return;
   }
-  tbody.innerHTML = allAttempts.map(item => `
-    <tr>
-      <td><b>${item.ref}</b></td>
-      <td>${item.phone}</td>
-      <td>KES ${item.amount}</td>
-      <td>${item.package || 'WiFi Access'}</td>
-      <td><span class="pill ${item.isSuccess?'green':'red'}">${item.isSuccess ? 'Completed (Success)' : item.status}</span></td>
-      <td>${item.time}</td>
-    </tr>
-  `).join('');
+  const completedCount = rawLedgerEntries.filter(i => i.status && i.status.includes('Completed')).length;
+  const failedCount = rawLedgerEntries.filter(i => i.status && (i.status.includes('Cancelled') || i.status.includes('Failed') || i.status.includes('Timeout'))).length;
+  if($('auditTotalCount')) $('auditTotalCount').textContent = rawLedgerEntries.length;
+  if($('auditCompletedCount')) $('auditCompletedCount').textContent = completedCount;
+  if($('auditFailedCount')) $('auditFailedCount').textContent = failedCount;
+  if($('statFailedMpesaCount')) $('statFailedMpesaCount').textContent = failedCount;
+  const rate = rawLedgerEntries.length > 0 ? Math.round((completedCount / rawLedgerEntries.length) * 100) : 100;
+  if($('auditSuccessRate')) $('auditSuccessRate').textContent = rate + '%';
+
+  tbody.innerHTML = rawLedgerEntries.map(item => {
+    const isSuccess = item.status && item.status.includes('Completed');
+    const isCancelled = item.status && (item.status.includes('Cancelled') || item.status.includes('Failed') || item.status.includes('Timeout'));
+    return `
+      <tr>
+        <td><b>${item.ref}</b></td>
+        <td>${item.phone}</td>
+        <td>KES ${item.amount}</td>
+        <td>${item.package || 'WiFi Access'}</td>
+        <td><span class="pill ${isSuccess ? 'green' : (isCancelled ? 'red' : 'amber')}">${item.status}</span></td>
+        <td>${item.time}</td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function renderThreatLogs(){
