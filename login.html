@@ -1,215 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="ag-utils.js"></script>
-<script src="ag-config.js"></script>
 <meta charset="UTF-8">
-<title>lin Billing-system</title>
+<title>Lin Billing System Auth</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<script src="error-utils.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 <style>
-* { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-body { margin: 0; height: 100vh; background: radial-gradient(circle at center, #2c5364, #0f2027); display: flex; flex-direction: column; align-items: center; overflow: hidden; padding-top: 50px; }
-#notification { position: fixed; top: 20px; background: #333; color: #fff; padding: 12px 25px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; z-index: 5000; animation: slideDown 0.4s ease-out; }
-@keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
-.hero-content h1 { margin: 0; font-size: 2.3rem; color: white; text-align: center; }
-.top-nav { width: 90%; max-width: 280px; background: linear-gradient(145deg, #1e3a46, #2c5364); border-radius: 50px; padding: 6px 15px; display: flex; justify-content: space-between; align-items: center; margin: 20px 0; }
-.logo { color: #fff; font-weight: 800; font-size: 0.7rem; letter-spacing: 0.5px; }
-.menu-btn { background: #fff; color: #2c5364; border: none; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
-.auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(8px); }
-.scene { width: 360px; height: 580px; perspective: 1200px; }
-.card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s; }
-.card.flip-register { transform: rotateY(180deg); }
-.face { position: absolute; inset: 0; background: #fff; border-radius: 20px; padding: 24px 22px; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto; }
-.register { transform: rotateY(180deg); }
-h2 { margin-bottom: 12px; color: #2c5364; font-weight: 800; font-size: 1.25rem; }
-input, select, textarea { width: 100%; padding: 10px 12px; margin: 6px 0; border-radius: 10px; border: 1px solid #ddd; outline: none; background: #f9fbff; font-size: 13px; }
-textarea { resize: vertical; min-height: 48px; }
-button.action-btn { width: 100%; padding: 12px; margin-top: 12px; background: #2c5364; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.95rem; }
-button.action-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-.link { text-align: center; margin-top: 8px; font-size: 0.8rem; color: #2c5364; cursor: pointer; font-weight: 600; }
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 4000; }
-.modal-content { background: #fff; padding: 30px; border-radius: 15px; width: 300px; text-align: center; }
+* { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #0a1a2a, #040d16);
+  overflow: hidden;
+}
+
+.scene {
+  width: 350px;
+  height: 520px;
+  perspective: 1200px;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #0d2235;
+  color: #edf6ff;
+  border: 1px solid #284c6c;
+  border-radius: 15px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  padding: 30px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.login {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.register {
+  transform: rotateY(180deg);
+}
+
+h2 { font-size: 26px; font-weight: 700; margin-bottom: 20px; color: #4bdcf0; margin-top: 0; }
+input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #29445b; background: #061320; color: #f0f7ff; font-size: 15px; outline: none; transition: 0.3s; }
+input:focus { border-color: #4bdcf0; box-shadow: 0 0 5px rgba(75, 220, 240, 0.2); }
+
+button { width: 100%; padding: 14px; margin-top: 15px; background: linear-gradient(100deg,#28d7c4,#4c9aff); color: #041827; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+button:hover { filter: brightness(1.1); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.link { text-align: center; margin-top: 15px; font-size: 14px; color: #4bdcf0; cursor: pointer; font-weight: 500; }
+.link:hover { text-decoration: underline; }
+
+/* Modern Toast Notification */
+#toast {
+  position: fixed;
+  top: 25px;
+  background: #15364a;
+  border: 1px solid #34718b;
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 5000;
+  animation: slideDown 0.3s ease-out;
+  border-left: 4px solid #4bdcf0;
+}
+@keyframes slideDown { from { top: -40px; opacity: 0; } to { top: 25px; opacity: 1; } }
+
+/* Modal Styling */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(3,15,28,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.modal-content {
+  background: #0d2235;
+  border: 1px solid #284c6c;
+  color: #edf6ff;
+  padding: 30px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 </style>
 </head>
 <body>
 
-<div id="notification"></div>
+<div id="toast"></div>
 
-<div class="hero-content">
-  <h1>wifi Billing-system</h1>
-  <nav class="top-nav">
-    <div class="logo">PORTAL SYSTEM</div>
-    <button class="menu-btn" onclick="toggleAuth()">LOG IN</button>
-  </nav>
-</div>
+<div class="scene">
+  <div class="card" id="card">
 
-<div class="auth-overlay" id="authOverlay" onclick="closeIfOutside(event)">
-  <div class="scene" onclick="event.stopPropagation()">
-    <div class="card" id="card">
-      
-      <!-- Sign In Face -->
-      <div class="face login">
-        <h2>Log In</h2>
-
-        <input id="l_email" type="email" placeholder="Email Address">
-        <input id="l_pin" type="password" placeholder="Password / PIN">
-
-        <button class="action-btn" id="loginBtn" onclick="doLogin()">Log In</button>
-        <div class="link" onclick="showForgotModal()">Forgot Access?</div>
-        <div class="link" style="color:#64748b; margin-top:16px;" onclick="goRegister()">Create New Account</div>
-      </div>
-
-      <!-- Register Face -->
-      <div class="face register">
-        <h2>New Account</h2>
-
-        <input id="r_user" placeholder="Full Name">
-        <input id="r_email" type="email" placeholder="Email Address">
-        <input id="r_phone" type="tel" placeholder="Phone Number (e.g. 07XXXXXXXX)">
-        <input id="r_pass" type="password" placeholder="Password">
-        <input id="r_pass_confirm" type="password" placeholder="Confirm Password">
-        <button class="action-btn" id="regBtn" onclick="doSignup()">Create Account</button>
-        <div class="link" onclick="goLogin()">Return to Log In</div>
-      </div>
-
+    <div class="face login">
+        <h2>Login</h2>
+        <input id="l_user" placeholder="Username or Email">
+        <input id="l_pass" type="password" placeholder="Password">
+        <button id="loginBtn" onclick="login()">Login</button>
+        <div class="link" onclick="showForgotModal()">Forgot Password?</div>
+        <div class="link" onclick="showRegister()">Create Account</div>
     </div>
+
+    <div class="face register">
+        <h2>Create Account</h2>
+        <input id="r_user" placeholder="Username">
+        <input id="r_email" type="email" placeholder="Email">
+        <input id="r_pass" type="password" placeholder="Password">
+        <input id="r_pass2" type="password" placeholder="Confirm Password">
+        <button id="regBtn" onclick="register()">Register</button>
+        <div class="link" onclick="showLogin()">Back to Login</div>
+    </div>
+
   </div>
 </div>
 
 <div class="modal" id="forgotModal">
   <div class="modal-content">
-    <h2 style="margin-top:0;">Reset PIN</h2>
-    <input id="f_email" type="email" placeholder="Registered Email">
-    <button class="action-btn" onclick="doReset()">Send Reset Link</button>
-    <div class="link" style="color:red; margin-top:15px;" onclick="closeForgotModal()">Cancel</div>
+    <h2 style="font-size:22px; margin-bottom: 8px; color: #4bdcf0;">Reset Password</h2>
+    <p style="font-size: 13px; color: #91a8bd; margin-bottom: 15px;">Enter your registered email to receive a password reset link.</p>
+    <input id="f_email" type="email" placeholder="Your Registered Email">
+    <button id="resetBtn" onclick="resetPassword()">Send Link</button>
+    <div class="link" style="color: #ff6d83; margin-top: 15px;" onclick="closeForgotModal()">Cancel</div>
   </div>
 </div>
 
+<!-- Firebase SDK configured for Lin Billing-system -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
+    authDomain: "lin-billing-system.firebaseapp.com",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+    projectId: "lin-billing-system",
+    storageBucket: "lin-billing-system.appspot.com",
+    messagingSenderId: "317499012795",
+    appId: "1:317499012795:web:8ff2f143549a948f85db9e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  window.verifyLoginInDatabase = async function(identifier, pass) {
+    try {
+      let emailToUse = identifier;
+      if (!identifier.includes('@')) {
+        const snapshot = await get(child(ref(db), 'users'));
+        if (snapshot.exists()) {
+          snapshot.forEach((childSnap) => {
+            const uData = childSnap.val();
+            if (uData.username && uData.username.toLowerCase() === identifier.toLowerCase()) {
+              emailToUse = uData.email;
+            }
+          });
+        }
+      }
+
+      const userCredential = await signInWithEmailAndPassword(auth, emailToUse, pass);
+      return { success: true, username: userCredential.user.email };
+    } catch (err) {
+      return { success: false, message: "Login failed: " + err.message };
+    }
+  };
+
+  window.registerUserInDatabase = async function(username, email, pass) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      const uid = userCredential.user.uid;
+
+      await set(ref(db, 'users/' + uid), {
+        username: username,
+        email: email,
+        createdAt: new Date().toISOString()
+      });
+
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: "Registration failed: " + err.message };
+    }
+  };
+
+  window.sendFirebasePasswordReset = async function(email) {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  };
+</script>
+
 <script>
-const DASHBOARD_URL = "Billing-system.html"; 
+const card = document.getElementById("card");
+const modal = document.getElementById("forgotModal");
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(AG_FIREBASE_CONFIG);
+function showToast(text, borderColor = "#4bdcf0") {
+  const toast = document.getElementById("toast");
+  toast.innerText = text;
+  toast.style.borderColor = borderColor;
+  toast.style.display = "block";
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 3500);
 }
-const auth = firebase.auth();
-const rtdb = firebase.database();
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (new URLSearchParams(window.location.search).get("authError")) {
-    msg("Session could not be verified. Please sign in again.");
+function showRegister() { card.style.transform = 'rotateY(180deg)'; }
+function showLogin()    { card.style.transform = 'rotateY(0deg)'; }
+function showForgotModal() { modal.style.display = 'flex'; }
+function closeForgotModal() { modal.style.display = 'none'; }
+
+async function login() {
+  const identifier = document.getElementById('l_user').value.trim();
+  const pass = document.getElementById('l_pass').value.trim();
+  const btn = document.getElementById('loginBtn');
+  
+  if(!identifier || !pass) { 
+    showToast("Please fill in all fields", "#ff6d83"); 
+    return; 
   }
-});
 
-function msg(text, color="#ef4444") {
-  const el = document.getElementById("notification");
-  el.innerText = text; el.style.backgroundColor = color; el.style.display = "block";
-  setTimeout(() => { el.style.display = "none"; }, 4000);
-}
-
-function toggleAuth() {
-  const o = document.getElementById("authOverlay");
-  o.style.display = (o.style.display === "flex") ? "none" : "flex";
-}
-function closeIfOutside(e) { if (e.target.id === "authOverlay") toggleAuth(); }
-function goRegister() { document.getElementById("card").className = "card flip-register"; }
-function goLogin() { document.getElementById("card").className = "card"; }
-function showForgotModal() { document.getElementById("forgotModal").style.display = "flex"; }
-function closeForgotModal() { document.getElementById("forgotModal").style.display = "none"; }
-
-async function doLogin() {
-  const email = document.getElementById("l_email").value.trim().toLowerCase();
-  const pass = document.getElementById("l_pin").value.trim();
-
-  if (!email || !pass) return msg("Please enter your email and password.");
-
-  const btn = document.getElementById("loginBtn");
-  btn.disabled = true; 
-  btn.innerText = "Authenticating...";
+  btn.disabled = true;
+  btn.innerText = "Connecting...";
 
   try {
-    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    const userCredential = await auth.signInWithEmailAndPassword(email, pass);
-    const user = userCredential.user;
+    const result = await window.verifyLoginInDatabase(identifier, pass);
+    if (!result.success) {
+      showToast(result.message, "#ff6d83");
+      btn.disabled = false;
+      btn.innerText = "Login";
+      return;
+    }
 
-    localStorage.setItem("ag_active_uid", user.uid);
-    localStorage.setItem("ag_session_active", "true");
-
-    const updatePayload = {
-      lastLogin: Date.now()
-    };
-
-    await rtdb.ref(`users/${user.uid}`).update(updatePayload);
-    await rtdb.ref(`user_statuses/${user.uid}`).set("Active");
-
-    await rtdb.ref(`user_activity_logs`).push({
-      uid: user.uid,
-      category: "SECURITY",
-      action: "User Online Login",
-      description: `User logged in successfully to lin Billing-system.`,
-      timestamp: Date.now(),
-      device: navigator.userAgent
-    });
-
-    window.location.href = DASHBOARD_URL;
-
-  } catch (err) {
-    console.error("Login Error:", err);
-    msg("Login failed: " + err.message);
-    btn.disabled = false; 
-    btn.innerText = "Log In";
+    if (window.AppInventor) {
+        window.AppInventor.setWebViewString("LOGIN:" + result.username + ":" + pass);
+    } else {
+        showToast("Login verified! Welcome back.", "#29d6a1");
+        setTimeout(() => {
+            window.location.href = "billing.html";
+        }, 1000);
+    }
+  } catch(e) {
+    showToast("Verification failed: " + e.message, "#ff6d83");
+    btn.disabled = false;
+    btn.innerText = "Login";
   }
 }
 
-async function doSignup() {
-  const name = document.getElementById("r_user").value.trim();
-  const email = document.getElementById("r_email").value.trim().toLowerCase();
-  const phone = document.getElementById("r_phone").value.trim();
-  const pass = document.getElementById("r_pass").value;
-  const confirm = document.getElementById("r_pass_confirm").value;
+async function register() {
+  const user = document.getElementById('r_user').value.trim();
+  const email = document.getElementById('r_email').value.trim();
+  const pass = document.getElementById('r_pass').value;
+  const pass2 = document.getElementById('r_pass2').value;
+  const btn = document.getElementById('regBtn');
 
-  if (!navigator.onLine) return msg("Internet required for setup");
-  if (!email || !pass || !name) return msg("Please fill in all required fields");
-  if (pass !== confirm) return msg("Passwords do not match");
+  if(!user || !email || !pass) { 
+    showToast("All fields are required", "#ff6d83"); 
+    return; 
+  }
+  if(pass !== pass2) { 
+    showToast("Passwords do not match!", "#ff6d83"); 
+    return; 
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Connecting...";
 
   try {
-    const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
-    const user = userCredential.user;
+    const result = await window.registerUserInDatabase(user, email, pass);
+    if (!result.success) {
+      showToast(result.message, "#ff6d83");
+      btn.disabled = false;
+      btn.innerText = "Register";
+      return;
+    }
 
-    const userPayload = {
-      uid: user.uid,
-      fullName: name,
-      email: email,
-      phone: phone || "Not provided",
-      joinedAt: Date.now(),
-      lastLogin: Date.now()
-    };
-
-    await rtdb.ref(`users/${user.uid}`).set(userPayload);
-    await rtdb.ref(`user_statuses/${user.uid}`).set("Active");
-    
-    msg("Account Created Successfully!", "#10b981");
-    setTimeout(() => { goLogin(); }, 1200);
-  } catch (err) { 
-    console.error("Signup Error:", err);
-    alert("Database / Signup Error: " + err.message); 
+    if (window.AppInventor) {
+        window.AppInventor.setWebViewString("REGISTER:" + user + ":" + email + ":" + pass);
+    } else {
+        showToast("Account successfully registered!", "#29d6a1");
+        setTimeout(() => {
+            showLogin();
+            btn.disabled = false;
+            btn.innerText = "Register";
+        }, 1200);
+    }
+  } catch(e) {
+    showToast("Registration failed: " + e.message, "#ff6d83");
+    btn.disabled = false;
+    btn.innerText = "Register";
   }
 }
 
-async function doReset() {
-  const email = document.getElementById("f_email").value.trim();
-  if (!email) return msg("Enter email first");
+async function resetPassword() {
+  const email = document.getElementById('f_email').value.trim();
+  const btn = document.getElementById('resetBtn');
+
+  if(!email) { 
+    showToast("Please enter your registered email", "#ff6d83"); 
+    return; 
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Sending...";
+
   try {
-    await auth.sendPasswordResetEmail(email);
-    msg("Reset link sent!", "#10b981");
+    const result = await window.sendFirebasePasswordReset(email);
+    if (!result.success) {
+      showToast("Error: " + result.message, "#ff6d83");
+      btn.disabled = false;
+      btn.innerText = "Send Link";
+      return;
+    }
+
+    showToast("Password reset link sent to " + email, "#29d6a1");
     closeForgotModal();
-  } catch (e) { msg(e.message); }
+    btn.disabled = false;
+    btn.innerText = "Send Link";
+  } catch(e) {
+    showToast("Failed to send reset link: " + e.message, "#ff6d83");
+    btn.disabled = false;
+    btn.innerText = "Send Link";
+  }
 }
 </script>
+
 </body>
 </html>
