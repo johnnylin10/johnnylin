@@ -610,9 +610,21 @@ setInterval(watchPendingTransactions, 1000);
 
 setTimeout(() => {
   if (window.dbRef && window.fbRef && window.fbOnValue) {
+    let lastProcessedLedger = {};
     window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
       const data = snapshot.val();
       rawLedgerEntries = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
+      
+      // Check for newly completed transactions to instantly connect
+      rawLedgerEntries.forEach(item => {
+        if (item.status && item.status.includes('Completed') && !lastProcessedLedger[item.dbKey]) {
+          lastProcessedLedger[item.dbKey] = true;
+          toast('✓ Payment Confirmed! Connected to internet instantly.');
+          // Auto-authorize or switch to active session view immediately
+          window.go('connection');
+        }
+      });
+
       ledger = rawLedgerEntries.filter(item => item.status && item.status.includes('Completed'));
       updateOverviewStats();
       renderMpesaAudit();
