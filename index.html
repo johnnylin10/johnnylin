@@ -407,6 +407,20 @@ setTimeout(() => {
                 renderPackages();
             }
         });
+
+        // REALTIME LISTENER FOR LEDGER TRANSACTIONS (Auto-detects M-Pesa payment completion)
+        window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                Object.entries(data).forEach(([key, val]) => {
+                    if(val.status && val.status.includes('Completed')) {
+                        setStatus("Connected");
+                        getElement("accessCodePanel").classList.add("hidden");
+                        showMessage("Payment Confirmed Successfully! Internet access is now active.", "success");
+                    }
+                });
+            }
+        });
     }
 }, 300);
 
