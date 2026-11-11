@@ -1,0 +1,8 @@
+{
+  "name": "johnnylin",
+  "version": "1.0.0",
+  "description": "Netfy WiFi Payment Gateway",
+  "dependencies": {
+    "firebase-admin": "^11.11.0"
+  }
+}
