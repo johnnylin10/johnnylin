@@ -121,7 +121,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push, get, update, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, push, get, update, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
@@ -142,6 +142,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
   window.fbGet = get;
   window.fbChild = child;
   window.fbUpdate = update;
+  window.fbOnValue = onValue;
 </script>
 </head>
 
@@ -312,6 +313,7 @@ let plans = JSON.parse(localStorage.getItem('netfy_shared_plans_v1') || localSto
 
 let purchaseType = "Myself";
 let selectedPlan = null; 
+let activeCheckoutRequestId = null;
 
 function getElement(id) { return document.getElementById(id); }
 
@@ -470,6 +472,35 @@ function setStatus(text) {
     if(statusEl) statusEl.textContent = text;
 }
 
+// REALTIME LISTENER TO INSTANTLY CATCH SUCCESS OR WRONG PIN FROM FIREBASE
+function listenToActiveTransaction(checkoutId) {
+    if(!window.dbRef || !window.fbRef || !window.fbOnValue) return;
+    
+    const ledgerRef = window.fbRef(window.dbRef, 'ledger');
+    window.fbOnValue(ledgerRef, (snapshot) => {
+        if(!snapshot.exists()) return;
+        
+        snapshot.forEach((childSnap) => {
+            const val = childSnap.val();
+            if(val.ref === checkoutId) {
+                const status = String(val.status || '');
+                
+                if(status.includes('Completed') || status.includes('Verified')) {
+                    setStatus("Connected");
+                    setPaymentButton(false, "PAY WITH M-PESA");
+                    showMessage("✓ Payment confirmed successfully! Internet access unlocked.", "success");
+                    getElement("accessCodePanel").classList.add("hidden");
+                } else if(status.includes('Failed') || status.includes('Cancelled') || status.includes('insufficient')) {
+                    setStatus("Payment failed");
+                    setPaymentButton(false, "PAY WITH M-PESA");
+                    showMessage(status, "error");
+                    getElement("accessCodePanel").classList.add("hidden");
+                }
+            }
+        });
+    });
+}
+
 async function payNow() {
     hideMessage();
     
@@ -535,6 +566,7 @@ async function payNow() {
         }
 
         const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('NBS-' + Date.now());
+        activeCheckoutRequestId = checkoutId;
 
         if(window.dbRef && window.fbRef && window.fbPush) {
             const txItem = {
@@ -556,6 +588,9 @@ async function payNow() {
             }
         }
 
+        // Start listening live for database updates on this transaction
+        listenToActiveTransaction(checkoutId);
+
         setStatus("Awaiting PIN");
         setPaymentButton(false, "PAY WITH M-PESA");
         
@@ -571,7 +606,6 @@ async function payNow() {
     }
 }
 
-// INSTANT M-PESA UNIQUE CODE VERIFICATION & ANTI-SHARING LOCK
 async function verifyAndActivateUniqueCode() {
     const codeBox = getElement("voucherCodeInput");
     const msgBox = getElement("voucherMessage");
@@ -609,10 +643,10 @@ async function verifyAndActivateUniqueCode() {
 
         snapshot.forEach((childSnap) => {
             const val = childSnap.val();
-            // Match either Firebase push key, transaction ref, or custom voucher code
             const recordRef = String(val.ref || '').toUpperCase();
             const recordCode = String(val.code || '').toUpperCase();
-            if(childSnap.key.toUpperCase() === code || recordRef.includes(code) || recordCode === code) {
+            const recordReceipt = String(val.mpesaReceipt || '').toUpperCase();
+            if(childSnap.key.toUpperCase() === code || recordRef.includes(code) || recordCode === code || recordReceipt.includes(code)) {
                 foundKey = childSnap.key;
                 matchedRecord = val;
             }
@@ -622,19 +656,16 @@ async function verifyAndActivateUniqueCode() {
             throw new Error("Invalid code. This code does not exist in the system.");
         }
 
-        // Check if already used / bound to another device
         if(matchedRecord.used === true || matchedRecord.deviceBound) {
-            throw new Error("Security Alert: This code has already been redeemed and locked to another device. It cannot be used on two devices.");
+            throw new Error("Security Alert: This code has already been redeemed and locked to another device.");
         }
 
-        // Generate a unique browser device fingerprint/token to bind this session
         let deviceToken = localStorage.getItem('netfy_device_token_v1');
         if(!deviceToken) {
             deviceToken = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now();
             localStorage.setItem('netfy_device_token_v1', deviceToken);
         }
 
-        // Instant lock update in Firebase
         const recordRefPath = window.fbRef(window.dbRef, 'ledger/' + foundKey);
         await window.fbUpdate(recordRefPath, {
             used: true,
