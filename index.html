@@ -302,7 +302,8 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 <script>
 "use strict";
 
-const getEndpoint = () => localStorage.getItem('netfy_stk_endpoint_v1') || localStorage.getItem('linwifi_stk_endpoint_v1') || "https://weathered-glade-c60b.assetguardinfo.workers.dev";
+// Updated fallback endpoint pointing to your active worker domain
+const getEndpoint = () => localStorage.getItem('netfy_stk_endpoint_v1') || localStorage.getItem('linwifi_stk_endpoint_v1') || "https://johnnylin.karanjajmwangi-10.workers.dev";
 
 let plans = JSON.parse(localStorage.getItem('netfy_shared_plans_v1') || localStorage.getItem('linwifi_shared_plans_v1') || JSON.stringify([
  {name:'1 Hour',title:'1 Hour',price:10,duration:'60 min',tag:'Quick browsing'},
