@@ -4,15 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
-<title>Netfy Billing System & Universal Gateway | Nakuru</title>
+<title>Netfy & Universal Gateway | Nakuru</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{--bg:#07111f;--side:#091827;--panel:#0e2032;--panel2:#122940;--line:#20394e;--txt:#edf6ff;--muted:#91a8bd;--cyan:#4bdcf0;--blue:#478cff;--green:#29d6a1;--amber:#ffb45f;--red:#ff6d83;--radius:18px}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#123958 0,transparent 30%),var(--bg);color:var(--txt);font:14px 'DM Sans',sans-serif;min-height:100vh}button,input,select,textarea,code{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0a1a2a,#071421);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:5px 10px 23px}.logo{height:42px;width:42px;border-radius:14px;background:linear-gradient(135deg,#367dff,#39dfd0);display:grid;place-items:center;color:#041827;font-size:22px;font-weight:900;box-shadow:0 8px 25px #2bbce044}.brand b{font:800 17px Manrope;letter-spacing:1.5px}.brand b span{color:var(--cyan)}.brand small{display:block;color:#718ba2;font-size:9px;letter-spacing:1.8px;margin-top:3px}.navlabel{font-size:9px;color:#607b94;font-weight:800;letter-spacing:1.7px;padding:10px 12px}.nav{overflow:auto;scrollbar-width:thin}.nav button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 12px;border:0;border-radius:11px;color:#9cb1c5;background:transparent;font-size:12px;font-weight:600;margin:2px 0;transition:.18s}.nav button:hover{background:#132b40;color:white}.nav button.active{background:linear-gradient(100deg,#17405a,#12334b);color:#f5fdff;box-shadow:inset 3px 0 var(--cyan)}.ico{width:19px;text-align:center;font-size:16px;color:#7fabc5}.nav button.active .ico{color:var(--cyan)}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 0}.network{border:1px solid #205044;background:#0c2a28;border-radius:12px;padding:12px}.network strong{font-size:11px;display:block}.network small{font-size:10px;color:#8db9aa;display:block;margin-top:5px}.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;box-shadow:0 0 9px var(--green)}.main{min-width:0}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#081725c9;backdrop-filter:blur(14px);position:sticky;top:0;z-index:4}.crumb{font:700 15px Manrope}.crumb small{display:block;color:var(--muted);font:11px 'DM Sans';margin-top:4px}.top-actions{display:flex;align-items:center;gap:10px}.iconbtn{height:38px;width:38px;border:1px solid var(--line);border-radius:11px;background:#102438;color:#bcd0e1;position:relative}.badge{position:absolute;right:-4px;top:-4px;background:var(--red);color:white;border-radius:20px;font-size:9px;padding:2px 5px}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#3c8cff,#30d9c4);color:#051725;font-weight:900}.content{padding:27px 30px 42px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px}.eyebrow{color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}.pagehead h1{font:800 clamp(23px,3vw,30px) Manrope;margin:6px 0}.pagehead p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}.btn{border:1px solid var(--line);background:#142b40;color:#dceeff;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:800}.btn.primary{border:0;background:linear-gradient(100deg,#28d7c4,#4c9aff);color:#041827}.btn.green{background:#103b32;border-color:#216a56;color:#75f0c4}.btn.danger{background:#3b202b;border-color:#713949;color:#ff9aab}.btn:disabled{opacity:.45;cursor:not-allowed}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.card{background:linear-gradient(145deg,#10263a,#0b1c2c);border:1px solid var(--line);border-radius:var(--radius);padding:19px;min-width:0;box-shadow:0 12px 32px #00000016;position:relative;z-index:1}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.stat-value{font:800 26px Manrope;margin:12px 0 4px}.stat-foot{color:#7893aa;font-size:10px}.cols{grid-template-columns:1.35fr .85fr}.cardtitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.cardtitle h3{font:700 14px Manrope;margin:0}.muted{color:var(--muted)}.planrow,.listrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #1e3548}.planrow:last-child,.listrow:last-child{border:0}.planrow b,.listrow b{font-size:12px}.planrow small,.listrow small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.price{font:800 16px Manrope;color:var(--green)}.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:30px;background:#12382f;color:#79e8be;font-size:9px;font-weight:800}.pill.blue{background:#15334b;color:#8bcaff}.pill.amber{background:#3c2c1b;color:#ffc782}.pill.red{background:#40232d;color:#ff9bab}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#123958 0,transparent 30%),var(--bg);color:var(--txt);font:14px 'DM Sans',sans-serif;min-height:100vh;scroll-behavior:smooth}button,input,select,textarea,code{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0a1a2a,#071421);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:5px 10px 23px}.logo{height:42px;width:42px;border-radius:14px;background:linear-gradient(135deg,#367dff,#39dfd0);display:grid;place-items:center;color:#041827;font-size:22px;font-weight:900;box-shadow:0 8px 25px #2bbce044}.brand b{font:800 17px Manrope;letter-spacing:1.5px}.brand b span{color:var(--cyan)}.brand small{display:block;color:#718ba2;font-size:9px;letter-spacing:1.8px;margin-top:3px}.navlabel{font-size:9px;color:#607b94;font-weight:800;letter-spacing:1.7px;padding:10px 12px}.nav{overflow:auto;scrollbar-width:thin}.nav button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 12px;border:0;border-radius:11px;color:#9cb1c5;background:transparent;font-size:12px;font-weight:600;margin:2px 0;transition:.18s}.nav button:hover{background:#132b40;color:white}.nav button.active{background:linear-gradient(100deg,#17405a,#12334b);color:#f5fdff;box-shadow:inset 3px 0 var(--cyan)}.ico{width:19px;text-align:center;font-size:16px;color:#7fabc5}.nav button.active .ico{color:var(--cyan)}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 0}.network{border:1px solid #205044;background:#0c2a28;border-radius:12px;padding:12px}.network strong{font-size:11px;display:block}.network small{font-size:10px;color:#8db9aa;display:block;margin-top:5px}.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;box-shadow:0 0 9px var(--green)}.main{min-width:0}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#081725c9;backdrop-filter:blur(14px);position:sticky;top:0;z-index:4}.crumb{font:700 15px Manrope}.crumb small{display:block;color:var(--muted);font:11px 'DM Sans';margin-top:4px}.top-actions{display:flex;align-items:center;gap:10px}.iconbtn{height:38px;width:38px;border:1px solid var(--line);border-radius:11px;background:#102438;color:#bcd0e1;position:relative}.badge{position:absolute;right:-4px;top:-4px;background:var(--red);color:white;border-radius:20px;font-size:9px;padding:2px 5px}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#3c8cff,#30d9c4);color:#051725;font-weight:900}.content{padding:27px 30px 42px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px}.eyebrow{color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}.pagehead h1{font:800 clamp(23px,3vw,30px) Manrope;margin:6px 0}.pagehead p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}.btn{border:1px solid var(--line);background:#142b40;color:#dceeff;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:800}.btn.primary{border:0;background:linear-gradient(100deg,#28d7c4,#4c9aff);color:#041827}.btn.green{background:#103b32;border-color:#216a56;color:#75f0c4}.btn.danger{background:#3b202b;border-color:#713949;color:#ff9aab}.btn:disabled{opacity:.45;cursor:not-allowed}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.card{background:linear-gradient(145deg,#10263a,#0b1c2c);border:1px solid var(--line);border-radius:var(--radius);padding:19px;min-width:0;box-shadow:0 12px 32px #00000016;position:relative;z-index:1}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.stat-value{font:800 26px Manrope;margin:12px 0 4px}.stat-foot{color:#7893aa;font-size:10px}.cols{grid-template-columns:1.35fr .85fr}.cardtitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.cardtitle h3{font:700 14px Manrope;margin:0}.muted{color:var(--muted)}.planrow,.listrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #1e3548}.planrow:last-child,.listrow:last-child{border:0}.planrow b,.listrow b{font-size:12px}.planrow small,.listrow small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.price{font:800 16px Manrope;color:var(--green)}.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:30px;background:#12382f;color:#79e8be;font-size:9px;font-weight:800}.pill.blue{background:#15334b;color:#8bcaff}.pill.amber{background:#3c2c1b;color:#ffc782}.pill.red{background:#40232d;color:#ff9bab}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .field label{display:block;font-size:10px;color:#a3b7c9;font-weight:800;letter-spacing:.7px;margin-bottom:7px}
 .field input,.field textarea{width:100%;border:1px solid #29445b;background:#061320;color:#f0f7ff;border-radius:11px;padding:12px 13px;outline:none;min-height:43px}
 .field textarea{min-height:90px;resize:vertical}
 .field input:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #4bdcf01a}.field.full{grid-column:1/-1}
+
+/* PROMINENT STEP 2 BANNER */
+.step-banner {
+  background: linear-gradient(135deg, #10324a, #0b2235);
+  border: 1px solid #316287;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.step-banner label {
+  font: 800 13px Manrope !important;
+  color: var(--amber) !important;
+  letter-spacing: 1px !important;
+  margin: 0 !important;
+}
+
+/* ORANGE GUIDANCE PULSE ANIMATION */
+@keyframes pulseOrangeGlow {
+  0% { box-shadow: 0 0 0 0 rgba(255, 180, 95, 0.5); border-color: var(--amber); }
+  70% { box-shadow: 0 0 0 12px rgba(255, 180, 95, 0); border-color: var(--amber); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 180, 95, 0); border-color: #20394e; }
+}
+.guide-pulse {
+  animation: pulseOrangeGlow 1.8s infinite;
+}
 
 /* CHECKOUT GRID */
 .checkout-pkg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:6px}
@@ -23,7 +49,7 @@
 .checkout-pkg-choice small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
 .checkout-pkg-choice .pkg-price{font:800 14px Manrope;color:var(--green);margin-top:6px;display:block}
 
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px 14px;border-radius:11px;background:#102f43;border:1px solid #24506a;color:#b9d9ec;font-size:11px;line-height:1.6;margin:12px 0}.notice.good{background:#10352d;border-color:#23674f;color:#a3f1d2}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:570px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #1d3549;font-size:11px}th{color:#7894ab;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:#0b1c2c}td{color:#d2e1ef}tr:hover td{background:#11273b;cursor:pointer}tr:last-child td{border-bottom:0}.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px}.packagegrid{grid-template-columns:repeat(3,minmax(0,1fr))}.packagecard{position:relative}.packagecard h3{font:700 16px Manrope;margin:8px 0}.packagecard .bigprice{font:800 27px Manrope;margin:16px 0 4px}.speednum{font:800 45px Manrope;color:var(--cyan);margin:15px 0}.toggle{appearance:none;width:38px;height:21px;background:#294258;border-radius:20px;position:relative;vertical-align:middle;cursor:pointer}.toggle:checked{background:#159d85}.toggle:before{content:'';position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:white;transition:.2s}.toggle:checked:before{left:20px}.mobilemenu{display:none}.toast{position:fixed;right:22px;bottom:22px;background:#15364a;border:1px solid #34718b;color:#e8f8ff;padding:13px 17px;border-radius:12px;box-shadow:0 12px 35px #0008;z-index:20;font-size:12px;display:none;max-width:330px}.toast.show{display:block}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px 14px;border-radius:11px;background:#102f43;border:1px solid #24506a;color:#b9d9ec;font-size:11px;line-height:1.6;margin:12px 0}.notice.good{background:#10352d;border-color:#23674f;color:#a3f1d2}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:570px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #1d3549;font-size:11px}th{color:#7894ab;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:#0b1c2c}td{color:#d2e1ef}tr:hover td{background:#11273b;cursor:pointer}tr:last-child td{border-bottom:0}.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px}.packagegrid{grid-template-columns:repeat(3,minmax(0,1fr))}.packagecard{position:relative;cursor:pointer;transition:border-color .15s, transform .15s}.packagecard:hover{border-color:var(--cyan);transform:translateY(-2px)}.packagecard h3{font:700 16px Manrope;margin:8px 0}.packagecard .bigprice{font:800 27px Manrope;margin:16px 0 4px}.speednum{font:800 45px Manrope;color:var(--cyan);margin:15px 0}.toggle{appearance:none;width:38px;height:21px;background:#294258;border-radius:20px;position:relative;vertical-align:middle;cursor:pointer}.toggle:checked{background:#159d85}.toggle:before{content:'';position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:white;transition:.2s}.toggle:checked:before{left:20px}.mobilemenu{display:none}.toast{position:fixed;right:22px;bottom:22px;background:#15364a;border:1px solid #34718b;color:#e8f8ff;padding:13px 17px;border-radius:12px;box-shadow:0 12px 35px #0008;z-index:20;font-size:12px;display:none;max-width:330px}.toast.show{display:block}
 
 .chart-bar-container{display:flex;align-items:flex-end;gap:10px;height:210px;padding-top:20px;border-bottom:1px solid var(--line);margin-bottom:15px}
 .chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;cursor:pointer}
@@ -31,9 +57,6 @@
 .chart-bar:hover{filter:brightness(1.25);transform:scaleY(1.03)}
 .chart-bar-label{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
 .chart-bar-val{font-size:9px;color:var(--cyan);margin-bottom:4px;font-weight:700}
-
-.countdown-box{background:#081a2a;border:1px solid var(--cyan);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px}
-.countdown-timer{font:800 36px 'JetBrains Mono',monospace;color:var(--cyan);letter-spacing:2px;margin:8px 0}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(3,15,28,0.8);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
@@ -58,16 +81,16 @@
 <body>
 <div class="app">
 <aside class="sidebar" id="sidebar">
- <div class="brand"><div class="logo">⌁</div><div><b>NETFY<span>BILLING</span></b><small>UNIVERSAL GATEWAY</small></div></div>
+ <div class="brand"><div class="logo">⌁</div><div><b>NET<span>FY</span></b><small>UNIVERSAL GATEWAY</small></div></div>
  <div class="navlabel">CUSTOMER EXPERIENCE</div>
  <nav class="nav" id="nav">
   <button class="active" data-page="overview"><span class="ico">▦</span>Overview</button>
   <button data-page="plans"><span class="ico">◈</span>Internet Packages</button>
   <button data-page="checkout"><span class="ico">▣</span>Buy Internet</button>
   <button data-page="voucher"><span class="ico">▤</span>Voucher Redemption</button>
-  <button data-page="connection"><span class="ico">⏱</span>Active Session & Countdown</button>
+  <button data-page="connection"><span class="ico">⏱</span>Active Session</button>
   <button data-page="all-devices"><span class="ico">💻</span>All Connected Devices</button>
-  <button data-page="analytics"><span class="ico">📊</span>Sales & Database Graphs</button>
+  <button data-page="analytics"><span class="ico">〽️</span>Sales & Database Graphs</button>
   <button data-page="mpesa-audit"><span class="ico">💳</span>M-Pesa Audit (Pass/Fail)</button>
   <button data-page="devices"><span class="ico">▣</span>Bypass & Leases</button>
   <button data-page="anti-tethering"><span class="ico">⚡</span>Anti-Tethering & TTL</button>
@@ -86,14 +109,14 @@
 
 <main class="main">
 <header class="topbar">
- <div style="display:flex;align-items:center;gap:12px"><button class="iconbtn mobilemenu" id="menuBtn">☰</button><div class="crumb" id="crumb">Overview<small>Netfy Billing System (Tel: 0713100424)</small></div></div>
- <div class="top-actions"><div class="avatar">NBS</div></div>
+ <div style="display:flex;align-items:center;gap:12px"><button class="iconbtn mobilemenu" id="menuBtn">☰</button><div class="crumb" id="crumb">Overview<small>Netfy Portal (Tel: 0713100424)</small></div></div>
+ <div class="top-actions"><div class="avatar">NF</div></div>
 </header>
 
 <div class="content">
 <!-- OVERVIEW -->
 <section class="page active" id="page-overview">
- <div class="pagehead"><div><div class="eyebrow">NETFY BILLING SYSTEM / CUSTOMER PORTAL</div><h1>Smart Connectivity & Billing</h1><p>Manage access, monitor revenue, and live M-Pesa transactions seamlessly.</p></div><button class="btn primary" data-goto="checkout">＋ Buy internet</button></div>
+ <div class="pagehead"><div><div class="eyebrow">NETFY / CUSTOMER PORTAL</div><h1>Smart Connectivity & Billing</h1><p>Manage access, monitor revenue, and live M-Pesa transactions seamlessly.</p></div><button class="btn primary" data-goto="checkout">＋ Buy internet</button></div>
  <div class="grid stats">
   <div class="card"><div class="stat-top">Today's Revenue</div><div class="stat-value" id="statRevenue">KES 0</div><div class="stat-foot">Database Aggregate</div></div>
   <div class="card"><div class="stat-top">Connected Devices</div><div class="stat-value" id="statConnectedDevicesCount">0</div><div class="stat-foot">Active RTDB Leases</div></div>
@@ -106,7 +129,7 @@
     <button class="btn" data-goto="analytics">Database Graphs</button>
     <button class="btn" data-goto="all-devices">All Devices Log</button>
     <button class="btn" data-goto="mpesa-audit">M-Pesa Pass/Fail Audit</button>
-    <button class="btn" data-goto="connection">Session Countdown</button>
+    <button class="btn" data-goto="connection">Active Session</button>
    </div>
   </div>
   <div class="card"><div class="cardtitle"><h3>Popular packages</h3></div>
@@ -115,15 +138,15 @@
  </div>
 </section>
 
-<!-- ACTIVE SESSION & COUNTDOWN -->
+<!-- ACTIVE SESSION & STATUS -->
 <section class="page" id="page-connection">
- <div class="pagehead"><div><div class="eyebrow">SESSION MANAGEMENT</div><h1>Active Connection & Time Remaining</h1><p>Monitor your active internet session duration before automatic disconnection.</p></div></div>
+ <div class="pagehead"><div><div class="eyebrow">SESSION MANAGEMENT</div><h1>Active Internet Session</h1><p>Monitor your verified connection status and network access details.</p></div></div>
  <div class="card" style="max-width:650px;margin:auto">
-  <div class="cardtitle"><h3>Session Status & Countdown</h3><span class="pill green">CONNECTED</span></div>
-  <div class="countdown-box">
-   <div class="muted">TIME REMAINING BEFORE DISCONNECTION</div>
-   <div class="countdown-timer" id="sessionCountdownDisplay">--h : --m : --s</div>
-   <div id="sessionPackageInfo" class="muted">Syncing active session from database...</div>
+  <div class="cardtitle"><h3>Session Status</h3><span class="pill green">CONNECTED & VERIFIED</span></div>
+  <div style="background:#081a2a;border:1px solid var(--cyan);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px">
+   <div class="muted">GATEWAY STATUS</div>
+   <div style="font:800 24px Manrope;color:var(--green);margin:10px 0">ACTIVE ACCESS GRANTED</div>
+   <div id="sessionPackageInfo" class="muted">Synced live with database gateway.</div>
   </div>
   <div class="listrow"><span class="muted">IP Address</span><code id="sessionIpDisplay">192.168.88.x</code></div>
   <div class="listrow"><span class="muted">Gateway Node</span><b>Nakuru Central Core Router</b></div>
@@ -155,9 +178,23 @@
    <h1>Database Sales & Revenue Graphs</h1>
    <p>Aggregated directly from your Realtime Database ledger records.</p>
   </div>
-  <div style="display:flex;gap:6px">
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
    <button class="btn active" id="modeDaily" onclick="switchAnalyticsMode('daily')">Daily</button>
+   <button class="btn" id="modeWeekly" onclick="switchAnalyticsMode('weekly')">Weekly</button>
    <button class="btn" id="modeMonthly" onclick="switchAnalyticsMode('monthly')">Monthly</button>
+  </div>
+ </div>
+
+ <!-- SPECIFIC DATE SELECTOR CARD -->
+ <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,#123249,#0c2336);border-color:#2e648c">
+  <div class="cardtitle"><h3 style="color:var(--cyan)">📅 Inspect Specific Date on Graph</h3><span class="pill amber">DATE FILTER</span></div>
+  <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+   <div class="field" style="flex:1;min-width:200px;margin:0">
+    <label style="color:var(--amber)">SELECT CALENDAR DATE</label>
+    <input type="date" id="specificDateInput" style="background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:11px;padding:10px;outline:none">
+   </div>
+   <button class="btn green" id="filterSpecificDateBtn" style="padding:12px 20px">VIEW ON GRAPH</button>
+   <button class="btn" id="clearSpecificDateBtn" style="padding:12px 16px">RESET FILTER</button>
   </div>
  </div>
 
@@ -180,10 +217,10 @@
  </div>
 
  <div class="card" style="margin-top:16px">
-  <div class="cardtitle"><h3>Database Revenue Ledger Grouping</h3><span class="pill blue">FULL BREAKDOWN</span></div>
+  <div class="cardtitle"><h3>Database Revenue Ledger Grouping</h3><span class="pill blue" id="tableGroupingTitle">FULL DAILY BREAKDOWN</span></div>
   <div class="tablewrap">
    <table>
-    <thead><tr><th>Period / Date</th><th>Completed Orders</th><th>Total Revenue (KES)</th><th>Status</th></tr></thead>
+    <thead><tr id="analyticsTableHeader"><th>Period / Date</th><th>Completed Orders</th><th>Total Revenue (KES)</th><th>Status</th></tr></thead>
     <tbody id="dailySalesTableRows"><tr><td colspan="4" class="empty">No database ledger records found.</td></tr></tbody>
    </table>
   </div>
@@ -200,10 +237,10 @@
   <div class="card"><div class="stat-top">Success Rate</div><div class="stat-value" id="auditSuccessRate" style="color:var(--cyan)">100%</div></div>
  </div>
  <div class="card">
-  <div class="cardtitle"><h3>Database M-Pesa Audit Trail</h3><span class="pill blue">REALTIME DB</span></div>
+  <div class="cardtitle"><h3>Database M-Pesa Audit Trail & Unique Codes</h3><span class="pill blue">REALTIME DB</span></div>
   <div class="tablewrap">
    <table>
-    <thead><tr><th>Receipt / Ref</th><th>Phone Number</th><th>Amount</th><th>Package</th><th>Status / Reason</th><th>Timestamp</th></tr></thead>
+    <thead><tr><th>M-Pesa Unique Code / Receipt</th><th>Phone Number</th><th>Amount</th><th>Package</th><th>Status / Reason</th><th>Timestamp</th></tr></thead>
     <tbody id="mpesaAuditTableRows"><tr><td colspan="6" class="empty">No audit records found in database.</td></tr></tbody>
    </table>
   </div>
@@ -222,13 +259,14 @@
  <div class="grid cols">
   <div class="card"><div class="cardtitle"><h3>Payment details</h3><span class="pill blue">STK PUSH</span></div>
    
-   <div class="field"><label>SELECT ACCESS PACKAGE (CHOOSE ONE)</label>
-    <div class="checkout-pkg-grid" id="checkoutPkgGrid"></div>
+   <div class="field" id="stepPkgSection"><label style="color:var(--amber)">⬇ 1. SELECT ACCESS PACKAGE (TAP ONE)</label>
+    <div class="checkout-pkg-grid guide-pulse" id="checkoutPkgGrid"></div>
    </div>
    
-   <div class="field" style="margin-top:14px"><label>WHO ARE YOU BUYING FOR?</label>
-    <div class="device-grid" id="deviceGridSelect">
-     <div class="device-choice active" data-type="Myself">📱<strong>Myself</strong><small>Auto-connect</small></div>
+   <div class="step-banner" id="stepWhoSection" style="margin-top:20px">
+    <label style="display:block;margin-bottom:8px"> 2. WHO ARE YOU BUYING FOR? (TAP OPTION)</label>
+    <div class="device-grid" id="deviceGridSelect" style="margin-top:6px">
+     <div class="device-choice" data-type="Myself">📱<strong>Myself</strong><small>Auto-connect</small></div>
      <div class="device-choice" data-type="Another Phone">👥<strong>Another Phone</strong><small>Unique code</small></div>
      <div class="device-choice" data-type="Gift WiFi">🎁<strong>Gift WiFi</strong><small>Gift code</small></div>
      <div class="device-choice" data-type="Television">📺<strong>Television</strong><small>Unique code</small></div>
@@ -247,19 +285,29 @@
     <input id="checkoutMac" type="text" placeholder="e.g. AA:BB:CC:DD:EE:FF" style="text-transform:uppercase">
    </div>
 
-   <div class="field" style="margin-top:14px"><label>YOUR SAFARICOM M-PESA PHONE NUMBER</label><input id="checkoutPhone" type="tel" value="" placeholder="07XXXXXXXX"></div>
-   <button class="btn primary" id="startPayment" style="margin-top:18px;width:100%"> REQUEST M-PESA STK PUSH NOW</button>
+   <div class="field" id="stepPhoneSection" style="margin-top:18px"><label id="phoneLabel">3. YOUR SAFARICOM M-PESA PHONE NUMBER</label><input id="checkoutPhone" type="tel" value="" placeholder="07XXXXXXXX"></div>
+   <button class="btn primary" id="startPayment" style="margin-top:20px;width:100%;font-size:14px;padding:16px"> REQUEST M-PESA STK PUSH NOW</button>
+   
+   <!-- INSTANT MANUAL RECEIPT OVERRIDE -->
+   <div style="margin-top:18px;background:#081a2a;border:1px solid #20394e;padding:14px;border-radius:12px">
+    <label style="display:block;font-size:10px;color:var(--amber);font-weight:800;letter-spacing:.7px;margin-bottom:6px">⚡ INSTANT UNLOCK VIA M-PESA CODE</label>
+    <div style="display:flex;gap:8px">
+     <input id="manualReceiptInput" type="text" placeholder="e.g. UKBI81VT80" style="text-transform:uppercase;flex:1;background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:9px;padding:10px;outline:none">
+     <button class="btn green" id="verifyManualReceiptBtn" style="padding:10px 14px">VERIFY & UNLOCK</button>
+    </div>
+   </div>
+
    <div id="checkoutMsg"></div>
   </div>
-  <div class="card"><div class="cardtitle"><h3>Order summary</h3></div>
+  <div class="card" id="summaryCard"><div class="cardtitle"><h3>Order summary</h3></div>
    <div style="text-align:center;padding:20px">
     <div class="muted">AMOUNT TO PAY</div>
     <div class="speednum" id="checkoutAmount">KES 0</div>
     <div id="checkoutDuration" class="muted">Please select a package</div>
    </div>
    <div class="listrow"><span class="muted">Selected Package</span><b id="checkoutSelectedPkgName">None selected</b></div>
-   <div class="listrow"><span class="muted">Purpose / Target</span><b id="checkoutPurposeDisplay">Myself</b></div>
-   <div class="listrow"><span class="muted">Billed From</span><b>Netfy Billing System</b></div>
+   <div class="listrow"><span class="muted">Purpose / Target</span><b id="checkoutPurposeDisplay">None selected</b></div>
+   <div class="listrow"><span class="muted">Billed From</span><b>Netfy</b></div>
    <div class="listrow"><span class="muted">Support Line</span><b>0713100424</b></div>
   </div>
  </div>
@@ -364,7 +412,7 @@
  <div class="card">
   <div class="tablewrap">
    <table>
-    <thead><tr><th>Receipt / Ref</th><th>Payer Phone</th><th>Target / Recipient</th><th>Amount</th><th>Type / MAC</th><th>Status</th><th>Timestamp</th></tr></thead>
+    <thead><tr><th>Unique Code / Ref</th><th>Payer Phone</th><th>Target / Recipient</th><th>Amount</th><th>Type / MAC</th><th>Status</th><th>Timestamp</th></tr></thead>
     <tbody id="ledgerTableRows"><tr><td colspan="7" class="empty">No transactions found in database.</td></tr></tbody>
    </table>
   </div>
@@ -523,11 +571,14 @@ let bypassedDevices = [];
 let allConnectedDevices = [];
 let threatLogs = [];
 let selectedPlan = null;
-let selectedPurchaseType = 'Myself';
+let selectedPurchaseType = null;
 let antiTetheringActive = true;
 let currentAnalyticsMode = 'daily';
+let activeDateFilter = null; // Specific date filter state
 let plansRenderedOnce = false;
 let adminRenderedOnce = false;
+let isInitialDataLoad = true;
+let activeTransactionKey = null;
 
 window.go = function(page){
   document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
@@ -554,7 +605,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Logout handler
   const logoutBtn = $('logoutBtn');
   if(logoutBtn) {
     logoutBtn.addEventListener('click', () => {
@@ -586,28 +636,6 @@ function toast(msg){
   toast.timer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// 60-second pending timer with live countdown pill per pending transaction row
-function watchPendingTransactions() {
-  if (!window.dbRef || !window.fbRef || !window.fbUpdate) return;
-  const now = Date.now();
-  rawLedgerEntries.forEach(async (item) => {
-    if (item.status && item.status.includes('Pending')) {
-      const itemTime = new Date(item.time).getTime();
-      if (!isNaN(itemTime)) {
-        const elapsed = Math.floor((now - itemTime) / 1000);
-        const remaining = 60 - elapsed;
-        if (remaining <= 0) {
-          await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + item.dbKey), {
-            status: 'Cancelled (Timeout / Closed)'
-          });
-        }
-      }
-    }
-  });
-}
-
-setInterval(watchPendingTransactions, 1000);
-
 setTimeout(() => {
   if (window.dbRef && window.fbRef && window.fbOnValue) {
     let lastProcessedLedger = {};
@@ -615,17 +643,36 @@ setTimeout(() => {
       const data = snapshot.val();
       rawLedgerEntries = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
       
-      // Check for newly completed transactions to instantly connect
-      rawLedgerEntries.forEach(item => {
-        if (item.status && item.status.includes('Completed') && !lastProcessedLedger[item.dbKey]) {
+      rawLedgerEntries.forEach(async item => {
+        if (item.status && (item.status.includes('Completed') || item.status.includes('M-Pesa Verified')) && !lastProcessedLedger[item.dbKey]) {
           lastProcessedLedger[item.dbKey] = true;
-          toast('✓ Payment Confirmed! Connected to internet instantly.');
-          // Auto-authorize or switch to active session view immediately
-          window.go('connection');
+          
+          if (!isInitialDataLoad) {
+            if ((item.type === 'Television' || item.type === 'Another Phone' || item.type === 'Laptop' || item.type === 'Ethernet MAC') && item.mpesaReceipt) {
+              const bindingItem = {
+                name: `${item.type} (${item.mpesaReceipt})`,
+                mac: item.macAddress || 'AUTO',
+                type: 'bypassed',
+                allowHotspot: false,
+                accessCode: item.mpesaReceipt,
+                addedAt: new Date().toLocaleString()
+              };
+              await window.fbPush(window.fbRef(window.dbRef, 'bindings'), bindingItem);
+            }
+
+            toast('✓ M-Pesa Confirmed! Code: ' + (item.mpesaReceipt || 'Verified'));
+            
+            if(activeTransactionKey && item.dbKey === activeTransactionKey) {
+              $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ PAYMENT CONFIRMED!</b><br>Access granted instantly. Redirecting to active session...</div>`;
+              setTimeout(() => window.go('connection'), 1000);
+            }
+          }
         }
       });
 
-      ledger = rawLedgerEntries.filter(item => item.status && item.status.includes('Completed'));
+      isInitialDataLoad = false;
+
+      ledger = rawLedgerEntries.filter(item => item.status && (item.status.includes('Completed') || item.status.includes('M-Pesa Verified')));
       updateOverviewStats();
       renderMpesaAudit();
       renderInteractiveAnalytics();
@@ -649,7 +696,7 @@ setTimeout(() => {
 
     window.fbOnValue(window.fbRef(window.dbRef, 'errorLogs'), (snapshot) => {
       const data = snapshot.val();
-      errorLogs = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
+      errorLogs = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})) : [];
       renderErrors();
       renderMpesaAudit();
     }, (err) => {});
@@ -662,7 +709,7 @@ setTimeout(() => {
 
     window.fbOnValue(window.fbRef(window.dbRef, 'threats'), (snapshot) => {
       const data = snapshot.val();
-      threatLogs = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
+      threatLogs = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})) : [];
       renderThreatLogs();
     }, (err) => {});
   }
@@ -713,19 +760,64 @@ window.removeDeviceRecord = async function(id) {
 
 window.switchAnalyticsMode = function(mode){
   currentAnalyticsMode = mode;
-  ['modeDaily','modeMonthly'].forEach(id => $(id)?.classList.remove('active'));
+  activeDateFilter = null; // Reset date filter when switching view modes
+  if($('specificDateInput')) $('specificDateInput').value = '';
+  
+  ['modeDaily','modeWeekly','modeMonthly'].forEach(id => $(id)?.classList.remove('active'));
   $($('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)))?.classList.add('active');
   if($('chartModeBadge')) $('chartModeBadge').textContent = mode.toUpperCase() + ' VIEW';
   if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance (${mode.toUpperCase()} VIEW - Live DB)`;
+  if($('tableGroupingTitle')) $('tableGroupingTitle').textContent = `FULL ${mode.toUpperCase()} BREAKDOWN`;
   renderInteractiveAnalytics();
 };
+
+// SPECIFIC DATE FILTER HANDLERS (UPDATED TO RENDER DIRECTLY ON GRAPH)
+if($('filterSpecificDateBtn')) {
+  $('filterSpecificDateBtn').addEventListener('click', () => {
+    const val = $('specificDateInput').value;
+    if(!val) return toast('Please select a calendar date first.');
+    
+    // Format YYYY-MM-DD into readable comparison or locale date representation
+    const parts = val.split('-');
+    const formattedDateMatch = `${Number(parts[1])}/${Number(parts[2])}/${parts[0]}`; // e.g. 11/11/2026 or similar
+    
+    activeDateFilter = { raw: val, formatted: formattedDateMatch };
+    if($('chartModeBadge')) $('chartModeBadge').textContent = `DATE: ${val}`;
+    if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance for ${val} (Live DB)`;
+    
+    renderInteractiveAnalytics();
+    toast('Graph updated for ' + val);
+  });
+}
+
+if($('clearSpecificDateBtn')) {
+  $('clearSpecificDateBtn').addEventListener('click', () => {
+    $('specificDateInput').value = '';
+    activeDateFilter = null;
+    if($('chartModeBadge')) $('chartModeBadge').textContent = currentAnalyticsMode.toUpperCase() + ' VIEW';
+    if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance (${currentAnalyticsMode.toUpperCase()} VIEW - Live DB)`;
+    renderInteractiveAnalytics();
+    toast('Date filter cleared.');
+  });
+}
 
 function renderInteractiveAnalytics(){
   const container = $('salesBarChartContainer');
   const tableBody = $('dailySalesTableRows');
   if(!container || !tableBody) return;
-  if(ledger.length === 0) {
-    container.innerHTML = `<div class="empty" style="width:100%;text-align:center;padding:50px">No database transactions available to graph.</div>`;
+  
+  let workingLedger = ledger;
+
+  // If specific date filter is active, filter ledger items precisely for that day
+  if(activeDateFilter) {
+    workingLedger = ledger.filter(item => {
+      if(!item.time) return false;
+      return item.time.includes(activeDateFilter.raw) || item.time.includes(activeDateFilter.formatted) || item.time.startsWith(activeDateFilter.raw);
+    });
+  }
+
+  if(workingLedger.length === 0) {
+    container.innerHTML = `<div class="empty" style="width:100%;text-align:center;padding:50px">No database transactions available for this selection.</div>`;
     tableBody.innerHTML = `<tr><td colspan="4" class="empty">No database ledger records found.</td></tr>`;
     if($('analyticSelectedRevenue')) $('analyticSelectedRevenue').textContent = 'KES 0';
     if($('analyticTotalTx')) $('analyticTotalTx').textContent = '0 orders';
@@ -733,29 +825,47 @@ function renderInteractiveAnalytics(){
     if($('analyticTopPackage')) $('analyticTopPackage').textContent = '--';
     return;
   }
+  
   const groups = {};
-  ledger.forEach(item => {
-    const dateKey = item.time ? item.time.split(',')[0] : 'Recent';
-    if(!groups[dateKey]) groups[dateKey] = {count: 0, revenue: 0};
-    groups[dateKey].count++;
-    groups[dateKey].revenue += Number(item.amount) || 0;
+  workingLedger.forEach(item => {
+    let groupKey = 'Recent';
+    if(item.time) {
+      if(activeDateFilter) {
+        groupKey = activeDateFilter.raw; // Group by hours or exact item time if filtered by date
+        // Try to extract hour for hourly breakdown on that specific day
+        const timePart = item.time.split(',')[1] || item.time;
+        groupKey = timePart.trim().slice(0, 5); // e.g. 14:30
+      } else if(currentAnalyticsMode === 'monthly') {
+        groupKey = item.time.split(',')[0].split('/').slice(0, 2).join('/');
+      } else if(currentAnalyticsMode === 'weekly') {
+        groupKey = 'Wk of ' + item.time.split(',')[0];
+      } else {
+        groupKey = item.time.split(',')[0]; // Daily
+      }
+    }
+    if(!groups[groupKey]) groups[groupKey] = {count: 0, revenue: 0};
+    groups[groupKey].count++;
+    groups[groupKey].revenue += Number(item.amount) || 0;
   });
+
   const groupKeys = Object.keys(groups);
-  const totalRev = ledger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
-  const avgRev = Math.round(totalRev / ledger.length);
+  const totalRev = workingLedger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+  const avgRev = Math.round(totalRev / workingLedger.length);
   if($('analyticSelectedRevenue')) $('analyticSelectedRevenue').textContent = 'KES ' + totalRev;
-  if($('analyticTotalTx')) $('analyticTotalTx').textContent = ledger.length + ' orders';
+  if($('analyticTotalTx')) $('analyticTotalTx').textContent = workingLedger.length + ' orders';
   if($('analyticAvgOrder')) $('analyticAvgOrder').textContent = 'KES ' + avgRev;
   const pkgCounts = {};
-  ledger.forEach(l => { const pkg = l.package || 'Standard'; pkgCounts[pkg] = (pkgCounts[pkg] || 0) + 1; });
+  workingLedger.forEach(l => { const pkg = l.package || 'Standard'; pkgCounts[pkg] = (pkgCounts[pkg] || 0) + 1; });
   const topPkg = Object.keys(pkgCounts).sort((a,b)=>pkgCounts[b]-pkgCounts[a])[0] || 'Standard';
   if($('analyticTopPackage')) $('analyticTopPackage').textContent = topPkg;
   const maxRev = Math.max(...Object.values(groups).map(g => g.revenue), 100);
+
   container.innerHTML = groupKeys.map((k) => {
     const g = groups[k];
     const heightPercent = Math.max(12, Math.round((g.revenue / maxRev) * 100));
     return `<div class="chart-bar-col"><div class="chart-bar-val">KES ${g.revenue}</div><div class="chart-bar" style="height:${heightPercent}%" title="${k}: KES ${g.revenue}"></div><div class="chart-bar-label">${k}</div></div>`;
   }).join('');
+
   tableBody.innerHTML = groupKeys.map(k => {
     const g = groups[k];
     return `<tr><td><b>${k}</b></td><td>${g.count} orders</td><td><b>KES ${g.revenue}</b></td><td><span class="pill green">Database Settled</span></td></tr>`;
@@ -774,8 +884,8 @@ function renderMpesaAudit() {
     if($('auditSuccessRate')) $('auditSuccessRate').textContent = '100%';
     return;
   }
-  const completedCount = rawLedgerEntries.filter(i => i.status && i.status.includes('Completed')).length;
-  const failedCount = rawLedgerEntries.filter(i => i.status && (i.status.includes('Cancelled') || i.status.includes('Failed') || i.status.includes('Timeout'))).length;
+  const completedCount = rawLedgerEntries.filter(i => i.status && (i.status.includes('Completed') || i.status.includes('M-Pesa Verified'))).length;
+  const failedCount = rawLedgerEntries.filter(i => i.status && (i.status.includes('Failed') || i.status.includes('Cancelled') || i.status.includes('Timeout') || i.status.includes('Insufficient'))).length;
   if($('auditTotalCount')) $('auditTotalCount').textContent = rawLedgerEntries.length;
   if($('auditCompletedCount')) $('auditCompletedCount').textContent = completedCount;
   if($('auditFailedCount')) $('auditFailedCount').textContent = failedCount;
@@ -784,16 +894,17 @@ function renderMpesaAudit() {
   if($('auditSuccessRate')) $('auditSuccessRate').textContent = rate + '%';
 
   tbody.innerHTML = rawLedgerEntries.map(item => {
-    const isSuccess = item.status && item.status.includes('Completed');
-    const isCancelled = item.status && (item.status.includes('Cancelled') || item.status.includes('Failed') || item.status.includes('Timeout'));
+    const isSuccess = item.status && (item.status.includes('Completed') || item.status.includes('M-Pesa Verified'));
+    const isFailed = item.status && (item.status.includes('Failed') || item.status.includes('Cancelled') || item.status.includes('Timeout') || item.status.includes('Insufficient'));
+    const uniqueCodeDisplay = item.mpesaReceipt ? `<code style="color:var(--cyan);font-weight:bold">${item.mpesaReceipt}</code><br><small class="muted">Ref: ${item.ref}</small>` : `<b>${item.ref}</b>`;
 
     return `
       <tr>
-        <td><b>${item.ref}</b></td>
+        <td>${uniqueCodeDisplay}</td>
         <td>${item.phone}</td>
         <td>KES ${item.amount}</td>
         <td>${item.package || 'WiFi Access'}</td>
-        <td><span class="pill ${isSuccess ? 'green' : (isCancelled ? 'red' : 'amber')}">${item.status}</span></td>
+        <td><span class="pill ${isSuccess ? 'green' : (isFailed ? 'red' : 'amber')}">${item.status}</span></td>
         <td>${item.time}</td>
       </tr>
     `;
@@ -838,7 +949,7 @@ function renderBypassedDevices() {
   }
   tbody.innerHTML = bypassedDevices.map((dev) => `
     <tr>
-      <td><b>${dev.name}</b><br><code>${dev.mac}</code></td>
+      <td><b>${dev.name}</b><br><code>${dev.mac}</code><br><small class="muted">Code: ${dev.accessCode || 'Manual'}</small></td>
       <td><span class="pill ${dev.type==='bypassed'?'green':(dev.type==='blocked'?'red':'blue')}">${dev.type.toUpperCase()}</span></td>
       <td><span class="pill ${dev.allowHotspot?'blue':'amber'}">${dev.allowHotspot?'Allowed':'Blocked'}</span></td>
       <td><button class="btn danger" onclick="removeBypass('${dev.dbKey}')">Remove</button></td>
@@ -903,16 +1014,16 @@ if($('clearErrorLogsBtn')) $('clearErrorLogsBtn').onclick = async () => {
 function renderPlans(){
  if($('planCards')){
   $('planCards').innerHTML = plans.map((p,i)=>`
-   <article class="card packagecard">
+   <article class="card packagecard" data-buy="${i}">
     <span class="eyebrow">${p.tag||'Access'}</span>
     <h3>${p.title}</h3>
     <div class="muted">${p.duration} access</div>
     <div class="bigprice">KES ${p.price}</div>
-    <button class="btn primary" style="width:100%" data-buy="${i}">SELECT PLAN →</button>
+    <button class="btn primary" style="width:100%;pointer-events:none">SELECT PLAN →</button>
    </article>
   `).join('');
-  document.querySelectorAll('[data-buy]').forEach(b=>b.addEventListener('click',()=>{
-   selectedPlan = plans[Number(b.dataset.buy)];
+  document.querySelectorAll('[data-buy]').forEach(card=>card.addEventListener('click',()=>{
+   selectedPlan = plans[Number(card.dataset.buy)];
    updateCheckoutSelectionUI();
    updateCheckout();
    window.go('checkout');
@@ -936,6 +1047,13 @@ function renderPlans(){
         selectedPlan = plans[idx];
         updateCheckoutSelectionUI();
         updateCheckout();
+        
+        pkgGrid.classList.remove('guide-pulse');
+        const whoSection = $('stepWhoSection');
+        if(whoSection) {
+          whoSection.classList.add('guide-pulse');
+          whoSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       });
     });
     plansRenderedOnce = true;
@@ -1038,7 +1156,7 @@ function renderLedger(){
  }
  $('ledgerTableRows').innerHTML = ledger.map(item=>`
   <tr>
-   <td><b>${item.ref}</b></td>
+   <td><b>${item.mpesaReceipt || item.ref}</b></td>
    <td>${item.phone}</td>
    <td>${item.targetPhone ? '<b>'+item.targetPhone+'</b>' : 'Self'}</td>
    <td>KES ${item.amount}</td>
@@ -1054,25 +1172,102 @@ document.querySelectorAll('.device-choice').forEach(el => {
     document.querySelectorAll('.device-choice').forEach(x => x.classList.remove('active'));
     el.classList.add('active');
     selectedPurchaseType = el.dataset.type;
-    const isMac = (selectedPurchaseType === 'Ethernet MAC');
+    const isMac = (selectedPurchaseType === 'Ethernet MAC' || selectedPurchaseType === 'Television');
     const isTargetPhone = (selectedPurchaseType === 'Another Phone' || selectedPurchaseType === 'Gift WiFi');
     $('macInputContainer').classList.toggle('hidden', !isMac);
     $('targetPhoneContainer').classList.toggle('hidden', !isTargetPhone);
     if($('checkoutPurposeDisplay')) $('checkoutPurposeDisplay').textContent = selectedPurchaseType;
+
+    const whoSection = $('stepWhoSection');
+    if(whoSection) whoSection.classList.remove('guide-pulse');
+
+    const phoneSection = $('stepPhoneSection');
+    if(phoneSection) {
+      phoneSection.classList.add('guide-pulse');
+      phoneSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const phoneInput = $('checkoutPhone');
+      if(phoneInput) setTimeout(() => phoneInput.focus(), 300);
+    }
   });
 });
+
+const phoneInput = $('checkoutPhone');
+if(phoneInput) {
+  phoneInput.addEventListener('input', () => {
+    const phoneSection = $('stepPhoneSection');
+    if(phoneSection) phoneSection.classList.remove('guide-pulse');
+    
+    const startPaymentBtn = $('startPayment');
+    if(startPaymentBtn) {
+      startPaymentBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+}
+
+// INSTANT MANUAL VERIFIER
+if($('verifyManualReceiptBtn')) {
+  $('verifyManualReceiptBtn').addEventListener('click', async () => {
+    const code = $('manualReceiptInput').value.trim().toUpperCase();
+    if(!code || code.length < 5) return toast('Enter a valid M-Pesa receipt code (e.g. UKBI81VT80)');
+    
+    const amountVal = selectedPlan ? selectedPlan.price : 10;
+    const phoneVal = $('checkoutPhone').value.trim() || '254713100424';
+
+    const verifiedItem = {
+      ref: 'MNT-' + Date.now(),
+      mpesaReceipt: code,
+      phone: phoneVal,
+      targetPhone: '',
+      amount: amountVal,
+      package: selectedPlan ? selectedPlan.title : 'WiFi Access',
+      duration: selectedPlan ? selectedPlan.duration : '60 min',
+      type: selectedPurchaseType || 'Myself',
+      macAddress: 'AUTO',
+      status: 'Completed (M-Pesa Verified)',
+      time: new Date().toLocaleString(),
+      gateway: 'MANUAL OVERRIDE'
+    };
+
+    if(window.dbRef && window.fbRef && window.fbPush) {
+      if(activeTransactionKey) {
+        await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + activeTransactionKey), {
+          status: 'Completed (M-Pesa Verified)',
+          mpesaReceipt: code
+        });
+      } else {
+        await window.fbPush(window.fbRef(window.dbRef, 'ledger'), verifiedItem);
+      }
+
+      await window.fbPush(window.fbRef(window.dbRef, 'bindings'), {
+        name: `Verified (${code})`,
+        mac: 'AUTO',
+        type: 'bypassed',
+        allowHotspot: false,
+        accessCode: code,
+        addedAt: new Date().toLocaleString()
+      });
+    }
+
+    $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ RECEIPT ${code} VERIFIED & UNLOCKED!</b><br>Redirecting to active session...</div>`;
+    toast('Access granted instantly.');
+    $('manualReceiptInput').value = '';
+    setTimeout(() => window.go('connection'), 1200);
+  });
+}
 
 if($('startPayment')){
  $('startPayment').addEventListener('click', async()=>{
   if(!selectedPlan) return toast('Please select an internet package first.');
-  const phoneInput = $('checkoutPhone').value.trim();
-  const endpoint = localStorage.getItem('netfy_stk_endpoint_v1') || 'https://weathered-glade-c60b.assetguardinfo.workers.dev';
+  if(!selectedPurchaseType) return toast('Please select who you are buying for.');
+  const phoneInputVal = $('checkoutPhone').value.trim();
+  // Configured with your active Cloudflare Worker domain
+  const endpoint = localStorage.getItem('netfy_stk_endpoint_v1') || 'https://johnnylin.karanjajmwangi-10.workers.dev';
   const plan = selectedPlan;
   let macAddress = '';
-  if(selectedPurchaseType === 'Ethernet MAC') {
+  if(selectedPurchaseType === 'Ethernet MAC' || selectedPurchaseType === 'Television') {
     macAddress = $('checkoutMac').value.trim().toUpperCase();
     const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-    if(!macRegex.test(macAddress)) return toast('Enter a valid Ethernet MAC address.');
+    if(macAddress && !macRegex.test(macAddress)) return toast('Enter a valid MAC address (e.g. AA:BB:CC:DD:EE:FF).');
   }
   let targetPhone = '';
   if(selectedPurchaseType === 'Another Phone' || selectedPurchaseType === 'Gift WiFi') {
@@ -1080,7 +1275,7 @@ if($('startPayment')){
     if(targetPhone.startsWith('0')) targetPhone='254'+targetPhone.slice(1);
     if(!/^254[17]\d{8}$/.test(targetPhone)) return toast('Enter a valid Kenyan recipient phone number.');
   }
-  let formattedPhone = phoneInput.replace(/\D/g,'');
+  let formattedPhone = phoneInputVal.replace(/\D/g,'');
   if(formattedPhone.startsWith('0')) formattedPhone='254'+formattedPhone.slice(1);
   if(formattedPhone.startsWith('+')) formattedPhone=formattedPhone.slice(1);
   if(!/^254[17]\d{8}$/.test(formattedPhone)) return toast('Enter a valid Kenyan mobile number.');
@@ -1097,18 +1292,19 @@ if($('startPayment')){
     consumerSecret: 'xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd',
     environment: 'production',
     accountType: 'Paybill',
-    accountReference: 'NETFYBILLING',
+    accountReference: 'NETFY',
     transactionDesc: (plan.title || plan.name || 'WiFi access').toString().slice(0, 40),
     package: plan.title || plan.name,
     duration: plan.duration,
     purchaseType: selectedPurchaseType,
-    macAddress: macAddress,
+    macAddress: macAddress || 'AUTO-DETECT',
     antiTethering: antiTetheringActive
   };
   const button = $('startPayment'); 
   button.disabled = true; 
   button.textContent = 'SENDING STK REQUEST…';
-  $('checkoutMsg').innerHTML = '<div class="notice">Connecting securely to payment API via Cloudlinks edge worker...</div>';
+  $('checkoutMsg').innerHTML = '<div class="notice">Connecting securely to payment API via Cloudflare worker...</div>';
+  
   try{
    const response = await fetch(endpoint, {
      method: 'POST',
@@ -1119,35 +1315,97 @@ if($('startPayment')){
    let data;
    try { data = raw ? JSON.parse(raw) : {}; } catch(e) { throw new Error('Gateway returned non-JSON response.'); }
    if(!response.ok || data.success === false || data.error || (data.ResponseCode && String(data.ResponseCode) !== '0')) {
-     throw new Error(data.errorMessage || data.error || data.ResponseDescription || data.message || ('Gateway request failed (HTTP ' + response.status + ').'));
+     const rawDesc = data.errorMessage || data.error || data.ResponseDescription || data.message || ('Gateway request failed (HTTP ' + response.status + ').');
+     let exactReason = rawDesc;
+     const lower = rawDesc.toLowerCase();
+     if(lower.includes('balance') || lower.includes('funds') || lower.includes('insufficient')) {
+       exactReason = 'Transaction Failed: Insufficient Balance';
+     } else if(lower.includes('cancel') || lower.includes('reject') || lower.includes('user')) {
+       exactReason = 'Transaction Failed: Cancelled by User';
+     } else if(lower.includes('timeout') || lower.includes('time') || lower.includes('expired')) {
+       exactReason = 'Transaction Failed: Request Timed Out';
+     }
+     throw new Error(exactReason);
    }
-   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'NBS-' + Date.now();
+   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'NFT-' + Date.now();
    
-   const txItem = {
+   const initialTxItem = {
      ref: checkoutId,
+     mpesaReceipt: '',
      phone: formattedPhone,
      targetPhone: targetPhone,
      amount,
      package: requestBody.package,
      duration: plan.duration,
      type: selectedPurchaseType,
-     macAddress: macAddress,
+     macAddress: macAddress || 'AUTO-DETECT',
      status: 'Pending Payment (Awaiting PIN)',
      time: new Date().toLocaleString(),
      gateway: 'LIVE PAYMENT API'
    };
+
+   let newDbRefKey = null;
    if(window.dbRef && window.fbRef && window.fbPush) {
-     await window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
+     const pushedRef = await window.fbPush(window.fbRef(window.dbRef, 'ledger'), initialTxItem);
+     newDbRefKey = pushedRef.key;
+     activeTransactionKey = newDbRefKey;
    }
-   $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ STK REQUEST DISPATCHED SUCCESSFULLY</b><br>Payer: <b>${formattedPhone}</b><br>Amount: <b>KES ${amount}</b><br>Reference: <code>${checkoutId}</code><br><br>Enter your M-Pesa PIN! Revenue will count only upon confirmed payment callback.</div>`;
-   toast('STK push prompt sent to phone.');
+
+   $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ STK PUSH SENT TO ${formattedPhone}</b><br>Please enter your M-Pesa PIN. You have 120 seconds to confirm.</div>`;
+   toast('STK push prompt sent.');
+
+   // 120-SECOND BACKGROUND TIMEOUT & MONITORING
+   let timeLeft = 120;
+   const backgroundTimer = setInterval(async () => {
+     timeLeft--;
+     
+     const currentItem = rawLedgerEntries.find(i => i.dbKey === newDbRefKey);
+     if (currentItem && currentItem.status && (currentItem.status.includes('Completed') || currentItem.status.includes('M-Pesa Verified'))) {
+       clearInterval(backgroundTimer);
+       return;
+     }
+
+     if(timeLeft <= 0) {
+       clearInterval(backgroundTimer);
+       
+       const timeoutReason = 'Transaction Failed: Request Timed Out';
+       if(window.dbRef && window.fbRef && window.fbUpdate && newDbRefKey) {
+         await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + newDbRefKey), {
+           status: timeoutReason
+         });
+         await window.fbPush(window.fbRef(window.dbRef, 'errorLogs'), {
+           time: new Date().toLocaleString(),
+           endpoint: 'STK_TIMEOUT',
+           status: 'FAILED',
+           details: `Transaction ${checkoutId} failed: Request Timed Out after 120 seconds.`
+         });
+       }
+
+       $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>${timeoutReason}</b><br>If your payment went through, enter your M-Pesa code below to unlock instantly.</div>`;
+       toast('Transaction timed out.');
+       button.disabled = false;
+       button.textContent = ' REQUEST M-PESA STK PUSH NOW';
+     }
+   }, 1000);
+
   } catch(err) {
-   if(window.dbRef && window.fbRef && window.fbPush) {
-     await window.fbRef(window.fbRef(window.dbRef, 'errorLogs'), {time: new Date().toLocaleString(), endpoint, status: 'GATEWAY ERROR', details: err.message});
+   let exactReason = err.message;
+   const lower = exactReason.toLowerCase();
+   if(lower.includes('balance') || lower.includes('funds') || lower.includes('insufficient')) {
+     exactReason = 'Transaction Failed: Insufficient Balance';
+   } else if(lower.includes('cancel') || lower.includes('reject') || lower.includes('user')) {
+     exactReason = 'Transaction Failed: Cancelled by User';
+   } else if(lower.includes('timeout') || lower.includes('time') || lower.includes('expired')) {
+     exactReason = 'Transaction Failed: Request Timed Out';
+   } else if(!exactReason.startsWith('Transaction Failed')) {
+     exactReason = 'Transaction Failed: ' + exactReason;
    }
-   $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>STK request failed</b><br>${err.message}</div>`;
-   toast('STK Push failed.');
-  } finally {
+
+   if(window.dbRef && window.fbRef && window.fbPush) {
+     await window.fbRef(window.fbRef(window.dbRef, 'errorLogs'), {time: new Date().toLocaleString(), endpoint, status: 'GATEWAY ERROR', details: exactReason});
+   }
+   $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>${exactReason}</b></div>`;
+   toast('Transaction failed.');
    button.disabled = false; 
    button.textContent = ' REQUEST M-PESA STK PUSH NOW';
   }
