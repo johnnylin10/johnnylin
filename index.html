@@ -121,7 +121,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push, get, update, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, push, get, update, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
@@ -142,6 +142,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
   window.fbGet = get;
   window.fbChild = child;
   window.fbUpdate = update;
+  window.fbOnValue = onValue;
 </script>
 </head>
 
@@ -396,14 +397,18 @@ function selectPackage(index) {
     safeScroll(getElement("deviceSelection"), "start");
 }
 
-window.addEventListener('storage', (e) => {
-    if(e.key === 'netfy_shared_plans_v1' || e.key === 'linwifi_shared_plans_v1') {
-        try {
-            plans = JSON.parse(e.newValue || '[]');
-            if(plans.length > 0) renderPackages();
-        } catch(err) {}
+// REALTIME DATABASE SYNC FOR PACKAGES
+setTimeout(() => {
+    if(window.dbRef && window.fbRef && window.fbOnValue) {
+        window.fbOnValue(window.fbRef(window.dbRef, 'packages'), (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                plans = Object.values(data);
+                renderPackages();
+            }
+        });
     }
-});
+}, 300);
 
 function choose(el,type) {
     document.querySelectorAll(".choice").forEach(x=>x.classList.remove("active"));
@@ -609,7 +614,6 @@ async function verifyAndActivateUniqueCode() {
 
         snapshot.forEach((childSnap) => {
             const val = childSnap.val();
-            // Match either Firebase push key, transaction ref, or custom voucher code
             const recordRef = String(val.ref || '').toUpperCase();
             const recordCode = String(val.code || '').toUpperCase();
             if(childSnap.key.toUpperCase() === code || recordRef.includes(code) || recordCode === code) {
@@ -622,19 +626,16 @@ async function verifyAndActivateUniqueCode() {
             throw new Error("Invalid code. This code does not exist in the system.");
         }
 
-        // Check if already used / bound to another device
         if(matchedRecord.used === true || matchedRecord.deviceBound) {
             throw new Error("Security Alert: This code has already been redeemed and locked to another device. It cannot be used on two devices.");
         }
 
-        // Generate a unique browser device fingerprint/token to bind this session
         let deviceToken = localStorage.getItem('netfy_device_token_v1');
         if(!deviceToken) {
             deviceToken = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now();
             localStorage.setItem('netfy_device_token_v1', deviceToken);
         }
 
-        // Instant lock update in Firebase
         const recordRefPath = window.fbRef(window.dbRef, 'ledger/' + foundKey);
         await window.fbUpdate(recordRefPath, {
             used: true,
