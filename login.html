@@ -69,7 +69,6 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 .link { text-align: center; margin-top: 15px; font-size: 14px; color: #4bdcf0; cursor: pointer; font-weight: 500; }
 .link:hover { text-decoration: underline; }
 
-/* Modern Toast Notification */
 #toast {
   position: fixed;
   top: 25px;
@@ -88,7 +87,6 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 @keyframes slideDown { from { top: -40px; opacity: 0; } to { top: 25px; opacity: 1; } }
 
-/* Modal Styling */
 .modal {
   position: fixed;
   top: 0; left: 0;
@@ -153,7 +151,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   </div>
 </div>
 
-<!-- Firebase SDK configured for Lin Billing-system -->
+<!-- Firebase Modular SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -173,11 +171,19 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   const auth = getAuth(app);
   const db = getDatabase(app);
 
+  // Helper for timing out hanging network calls
+  const withTimeout = (promise, ms = 7000) => {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
+    ]);
+  };
+
   window.verifyLoginInDatabase = async function(identifier, pass) {
     try {
       let emailToUse = identifier;
       if (!identifier.includes('@')) {
-        const snapshot = await get(child(ref(db), 'users'));
+        const snapshot = await withTimeout(get(child(ref(db), 'users')));
         if (snapshot.exists()) {
           snapshot.forEach((childSnap) => {
             const uData = childSnap.val();
@@ -188,36 +194,51 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
         }
       }
 
-      const userCredential = await signInWithEmailAndPassword(auth, emailToUse, pass);
+      const userCredential = await withTimeout(signInWithEmailAndPassword(auth, emailToUse, pass));
       return { success: true, username: userCredential.user.email };
     } catch (err) {
-      return { success: false, message: "Login failed: " + err.message };
+      if (err.message === "Timeout") {
+        return { success: false, message: "Connection timeout. Check network." };
+      }
+      return { success: false, message: "Invalid username or password." };
     }
   };
 
   window.registerUserInDatabase = async function(username, email, pass) {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      const userCredential = await withTimeout(createUserWithEmailAndPassword(auth, email, pass));
       const uid = userCredential.user.uid;
 
-      await set(ref(db, 'users/' + uid), {
+      await withTimeout(set(ref(db, 'users/' + uid), {
         username: username,
         email: email,
         createdAt: new Date().toISOString()
-      });
+      }));
 
       return { success: true };
     } catch (err) {
-      return { success: false, message: "Registration failed: " + err.message };
+      if (err.message === "Timeout") {
+        return { success: false, message: "Connection timeout. Check network." };
+      }
+      let msg = "Registration failed. Please try again.";
+      if (err.code === 'auth/email-already-in-use') {
+        msg = "This email is already registered.";
+      } else if (err.code === 'auth/weak-password') {
+        msg = "Password should be at least 6 characters.";
+      }
+      return { success: false, message: msg };
     }
   };
 
   window.sendFirebasePasswordReset = async function(email) {
     try {
-      await sendPasswordResetEmail(auth, email);
+      await withTimeout(sendPasswordResetEmail(auth, email));
       return { success: true };
     } catch (err) {
-      return { success: false, message: err.message };
+      if (err.message === "Timeout") {
+        return { success: false, message: "Connection timeout. Check network." };
+      }
+      return { success: false, message: "Could not find an account with this email." };
     }
   };
 </script>
@@ -255,6 +276,9 @@ async function login() {
   btn.innerText = "Connecting...";
 
   try {
+    if (typeof window.verifyLoginInDatabase !== 'function') {
+      throw new Error("Initialization pending...");
+    }
     const result = await window.verifyLoginInDatabase(identifier, pass);
     if (!result.success) {
       showToast(result.message, "#ff6d83");
@@ -266,13 +290,10 @@ async function login() {
     if (window.AppInventor) {
         window.AppInventor.setWebViewString("LOGIN:" + result.username + ":" + pass);
     } else {
-        showToast("Login verified! Welcome back.", "#29d6a1");
-        setTimeout(() => {
-            window.location.href = "billing.html";
-        }, 1000);
+        window.location.href = "Billing-system.html";
     }
   } catch(e) {
-    showToast("Verification failed: " + e.message, "#ff6d83");
+    showToast("Connection issue. Please try again.", "#ff6d83");
     btn.disabled = false;
     btn.innerText = "Login";
   }
@@ -298,6 +319,9 @@ async function register() {
   btn.innerText = "Connecting...";
 
   try {
+    if (typeof window.registerUserInDatabase !== 'function') {
+      throw new Error("Initialization pending...");
+    }
     const result = await window.registerUserInDatabase(user, email, pass);
     if (!result.success) {
       showToast(result.message, "#ff6d83");
@@ -309,15 +333,12 @@ async function register() {
     if (window.AppInventor) {
         window.AppInventor.setWebViewString("REGISTER:" + user + ":" + email + ":" + pass);
     } else {
-        showToast("Account successfully registered!", "#29d6a1");
-        setTimeout(() => {
-            showLogin();
-            btn.disabled = false;
-            btn.innerText = "Register";
-        }, 1200);
+        showLogin();
+        btn.disabled = false;
+        btn.innerText = "Register";
     }
   } catch(e) {
-    showToast("Registration failed: " + e.message, "#ff6d83");
+    showToast("Connection issue. Please try again.", "#ff6d83");
     btn.disabled = false;
     btn.innerText = "Register";
   }
@@ -336,20 +357,22 @@ async function resetPassword() {
   btn.innerText = "Sending...";
 
   try {
+    if (typeof window.sendFirebasePasswordReset !== 'function') {
+      throw new Error("Initialization pending...");
+    }
     const result = await window.sendFirebasePasswordReset(email);
     if (!result.success) {
-      showToast("Error: " + result.message, "#ff6d83");
+      showToast(result.message, "#ff6d83");
       btn.disabled = false;
       btn.innerText = "Send Link";
       return;
     }
 
-    showToast("Password reset link sent to " + email, "#29d6a1");
     closeForgotModal();
     btn.disabled = false;
     btn.innerText = "Send Link";
   } catch(e) {
-    showToast("Failed to send reset link: " + e.message, "#ff6d83");
+    showToast("Connection issue. Please try again.", "#ff6d83");
     btn.disabled = false;
     btn.innerText = "Send Link";
   }
