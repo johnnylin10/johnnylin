@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lin Billing System Auth</title>
+<title>Netfy Billing System Auth</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
@@ -58,7 +58,8 @@ body {
   transform: rotateY(180deg);
 }
 
-h2 { font-size: 26px; font-weight: 700; margin-bottom: 20px; color: #4bdcf0; margin-top: 0; }
+.brand-badge { font-size: 11px; font-weight: 800; color: #4bdcf0; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+h2 { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #4bdcf0; margin-top: 0; text-align: center; }
 input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #29445b; background: #061320; color: #f0f7ff; font-size: 15px; outline: none; transition: 0.3s; }
 input:focus { border-color: #4bdcf0; box-shadow: 0 0 5px rgba(75, 220, 240, 0.2); }
 
@@ -120,7 +121,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   <div class="card" id="card">
 
     <div class="face login">
-        <h2>Login</h2>
+        <div class="brand-badge">NETFY GATEWAY</div>
         <input id="l_user" placeholder="Username or Email">
         <input id="l_pass" type="password" placeholder="Password">
         <button id="loginBtn" onclick="login()">Login</button>
@@ -129,6 +130,7 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
     </div>
 
     <div class="face register">
+        <div class="brand-badge">NETFY GATEWAY</div>
         <h2>Create Account</h2>
         <input id="r_user" placeholder="Username">
         <input id="r_email" type="email" placeholder="Email">
@@ -289,8 +291,7 @@ async function login() {
     if (window.AppInventor) {
         window.AppInventor.setWebViewString("LOGIN:" + result.username + ":" + pass);
     } else {
-        // Directs successfully to Billing-system.html
-        window.location.href = "Billing-system.html";
+        window.location.href = "index.html";
     }
   } catch(e) {
     showToast("Connection issue. Please try again.", "#ff6d83");
