@@ -171,7 +171,6 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // Helper for timing out hanging network calls
   const withTimeout = (promise, ms = 7000) => {
     return Promise.race([
       promise,
@@ -290,6 +289,7 @@ async function login() {
     if (window.AppInventor) {
         window.AppInventor.setWebViewString("LOGIN:" + result.username + ":" + pass);
     } else {
+        // Directs successfully to Billing-system.html
         window.location.href = "Billing-system.html";
     }
   } catch(e) {
