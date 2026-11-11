@@ -771,21 +771,9 @@ function renderMpesaAudit() {
   const rate = rawLedgerEntries.length > 0 ? Math.round((completedCount / rawLedgerEntries.length) * 100) : 100;
   if($('auditSuccessRate')) $('auditSuccessRate').textContent = rate + '%';
 
-  const now = Date.now();
   tbody.innerHTML = rawLedgerEntries.map(item => {
     const isSuccess = item.status && item.status.includes('Completed');
     const isCancelled = item.status && (item.status.includes('Cancelled') || item.status.includes('Failed') || item.status.includes('Timeout'));
-    const isPending = item.status && item.status.includes('Pending');
-    
-    let timerBadge = '';
-    if (isPending) {
-      const itemTime = new Date(item.time).getTime();
-      const elapsed = Math.floor((now - itemTime) / 1000);
-      const remaining = Math.max(0, 60 - elapsed);
-      if (remaining > 0) {
-        timerBadge = ` <span class="pill amber" style="font-family:'JetBrains Mono',monospace">⏱ ${remaining}s</span>`;
-      }
-    }
 
     return `
       <tr>
@@ -793,7 +781,7 @@ function renderMpesaAudit() {
         <td>${item.phone}</td>
         <td>KES ${item.amount}</td>
         <td>${item.package || 'WiFi Access'}</td>
-        <td><span class="pill ${isSuccess ? 'green' : (isCancelled ? 'red' : 'amber')}">${item.status}</span>${timerBadge}</td>
+        <td><span class="pill ${isSuccess ? 'green' : (isCancelled ? 'red' : 'amber')}">${item.status}</span></td>
         <td>${item.time}</td>
       </tr>
     `;
