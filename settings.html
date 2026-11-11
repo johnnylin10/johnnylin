@@ -117,31 +117,6 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 .popup-box h3{font-size:16px;color:#172438;margin-bottom:8px}
 .popup-box p{font-size:12px;color:#69788b;line-height:1.6}
 .popup-box button{margin-top:16px}
-
-@media(max-width:380px){
-.container{padding:9px}
-.card{padding:11px;margin-bottom:9px}
-.plans-card{padding:11px}
-.packages{gap:7px}
-.package{min-height:110px;padding:8px}
-.package.active{padding:7.5px}
-.package-price{font-size:17px}
-.package-duration{font-size:12px}
-.choice{padding:8px 3px}
-.choice strong{font-size:9px}
-.choice small{font-size:7px}
-.brand{font-size:19px}
-.header-badge{font-size:8px;padding:6px 7px}
-.payment-bar button{min-width:125px;padding:12px 10px;font-size:11px}
-}
-@media(max-width:300px){
-.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.payment-bar-inner{gap:7px}
-.payment-bar button{min-width:110px}
-}
-@media(prefers-reduced-motion:reduce){
-*{scroll-behavior:auto!important;animation:none!important;transition:none!important}
-}
 </style>
 
 <script type="module">
@@ -151,9 +126,9 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
   const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
-    databaseURL: "https://assetguard-c8c8c-default-rtdb.firebaseio.com",
-    projectId: "assetguard-c8c8c",
-    storageBucket: "assetguard-c8c8c.firebasestorage.app",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+    projectId: "lin-billing-system",
+    storageBucket: "lin-billing-system.appspot.com",
     messagingSenderId: "317499012795",
     appId: "1:317499012795:web:8ff2f143549a948f85db9e"
   };
@@ -558,7 +533,7 @@ async function payNow() {
 
         const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('LBS-' + Date.now());
 
-        // SAFE NON-BLOCKING FIREBASE PUSH
+        // INSTANT FIREBASE DATABASE UPDATE
         if(window.dbRef && window.fbRef && window.fbPush) {
             const txItem = {
                 ref: checkoutId,
@@ -573,7 +548,7 @@ async function payNow() {
             try {
                 await window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
             } catch(dbErr) {
-                console.warn('Firebase RTDB write skipped:', dbErr.message);
+                console.warn('Firebase RTDB write warning:', dbErr.message);
             }
         }
 
