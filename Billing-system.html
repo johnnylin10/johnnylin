@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
-<title>Lin Billing System & Universal Gateway | Nakuru</title>
+<title>Netfy Billing System & Universal Gateway | Nakuru</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{--bg:#07111f;--side:#091827;--panel:#0e2032;--panel2:#122940;--line:#20394e;--txt:#edf6ff;--muted:#91a8bd;--cyan:#4bdcf0;--blue:#478cff;--green:#29d6a1;--amber:#ffb45f;--red:#ff6d83;--radius:18px}
@@ -58,7 +58,7 @@
 <body>
 <div class="app">
 <aside class="sidebar" id="sidebar">
- <div class="brand"><div class="logo">⌁</div><div><b>LIN<span>BILLING</span></b><small>UNIVERSAL GATEWAY</small></div></div>
+ <div class="brand"><div class="logo">⌁</div><div><b>NETFY<span>BILLING</span></b><small>UNIVERSAL GATEWAY</small></div></div>
  <div class="navlabel">CUSTOMER EXPERIENCE</div>
  <nav class="nav" id="nav">
   <button class="active" data-page="overview"><span class="ico">▦</span>Overview</button>
@@ -86,14 +86,14 @@
 
 <main class="main">
 <header class="topbar">
- <div style="display:flex;align-items:center;gap:12px"><button class="iconbtn mobilemenu" id="menuBtn">☰</button><div class="crumb" id="crumb">Overview<small>Lin Billing System (Tel: 0713100424)</small></div></div>
- <div class="top-actions"><div class="avatar">LBS</div></div>
+ <div style="display:flex;align-items:center;gap:12px"><button class="iconbtn mobilemenu" id="menuBtn">☰</button><div class="crumb" id="crumb">Overview<small>Netfy Billing System (Tel: 0713100424)</small></div></div>
+ <div class="top-actions"><div class="avatar">NBS</div></div>
 </header>
 
 <div class="content">
 <!-- OVERVIEW -->
 <section class="page active" id="page-overview">
- <div class="pagehead"><div><div class="eyebrow">LIN BILLING SYSTEM / CUSTOMER PORTAL</div><h1>Smart Connectivity & Billing</h1><p>Manage access, monitor revenue, and live M-Pesa transactions seamlessly.</p></div><button class="btn primary" data-goto="checkout">＋ Buy internet</button></div>
+ <div class="pagehead"><div><div class="eyebrow">NETFY BILLING SYSTEM / CUSTOMER PORTAL</div><h1>Smart Connectivity & Billing</h1><p>Manage access, monitor revenue, and live M-Pesa transactions seamlessly.</p></div><button class="btn primary" data-goto="checkout">＋ Buy internet</button></div>
  <div class="grid stats">
   <div class="card"><div class="stat-top">Today's Revenue</div><div class="stat-value" id="statRevenue">KES 0</div><div class="stat-foot">Database Aggregate</div></div>
   <div class="card"><div class="stat-top">Connected Devices</div><div class="stat-value" id="statConnectedDevicesCount">0</div><div class="stat-foot">Active RTDB Leases</div></div>
@@ -259,7 +259,7 @@
    </div>
    <div class="listrow"><span class="muted">Selected Package</span><b id="checkoutSelectedPkgName">None selected</b></div>
    <div class="listrow"><span class="muted">Purpose / Target</span><b id="checkoutPurposeDisplay">Myself</b></div>
-   <div class="listrow"><span class="muted">Billed From</span><b>Lin Billing System</b></div>
+   <div class="listrow"><span class="muted">Billed From</span><b>Netfy Billing System</b></div>
    <div class="listrow"><span class="muted">Support Line</span><b>0713100424</b></div>
   </div>
  </div>
@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(logoutBtn) {
     logoutBtn.addEventListener('click', () => {
       sessionStorage.clear();
-      localStorage.removeItem('lin_logged_in');
+      localStorage.removeItem('netfy_logged_in');
       window.location.href = 'login.html';
     });
   }
@@ -1066,7 +1066,7 @@ if($('startPayment')){
  $('startPayment').addEventListener('click', async()=>{
   if(!selectedPlan) return toast('Please select an internet package first.');
   const phoneInput = $('checkoutPhone').value.trim();
-  const endpoint = localStorage.getItem('linwifi_stk_endpoint_v1') || 'https://weathered-glade-c60b.assetguardinfo.workers.dev';
+  const endpoint = localStorage.getItem('netfy_stk_endpoint_v1') || 'https://weathered-glade-c60b.assetguardinfo.workers.dev';
   const plan = selectedPlan;
   let macAddress = '';
   if(selectedPurchaseType === 'Ethernet MAC') {
@@ -1097,7 +1097,7 @@ if($('startPayment')){
     consumerSecret: 'xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd',
     environment: 'production',
     accountType: 'Paybill',
-    accountReference: 'LINBILLING',
+    accountReference: 'NETFYBILLING',
     transactionDesc: (plan.title || plan.name || 'WiFi access').toString().slice(0, 40),
     package: plan.title || plan.name,
     duration: plan.duration,
@@ -1121,7 +1121,7 @@ if($('startPayment')){
    if(!response.ok || data.success === false || data.error || (data.ResponseCode && String(data.ResponseCode) !== '0')) {
      throw new Error(data.errorMessage || data.error || data.ResponseDescription || data.message || ('Gateway request failed (HTTP ' + response.status + ').'));
    }
-   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'LBS-' + Date.now();
+   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'NBS-' + Date.now();
    
    const txItem = {
      ref: checkoutId,

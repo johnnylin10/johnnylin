@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071522">
 <meta name="format-detection" content="telephone=no">
-<title>Lin WiFi Universal Billing & Gateway</title>
+<title>Netfy WiFi Universal Billing & Gateway</title>
 
 <style>
 :root {
@@ -147,7 +147,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 <header>
     <div class="header-inner">
         <div>
-            <div class="brand">LIN <span>WIFI</span></div>
+            <div class="brand">NETFY <span>WIFI</span></div>
             <p>UNIVERSAL HOTSPOT BILLING & CONNECTIVITY</p>
         </div>
         <div class="header-badges">
@@ -259,7 +259,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
         </p>
 
         <label for="voucherCodeInput">Enter Unique Access Code</label>
-        <input id="voucherCodeInput" type="text" placeholder="e.g. LIN-ABC12345" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
+        <input id="voucherCodeInput" type="text" placeholder="e.g. NET-ABC12345" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
         <div class="input-hint">Once redeemed, the code locks to that device and cannot be reused elsewhere.</div>
 
         <button type="button" class="pay" style="margin-top:14px" onclick="redeemVoucherCode()">ACTIVATE DEVICE WITH CODE</button>
@@ -281,7 +281,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 </div>
 
 <footer>
-    <strong>LIN UNIVERSAL WIFI</strong><br>
+    <strong>NETFY UNIVERSAL WIFI</strong><br>
     Smart Connectivity • Secure Payments • Reliable Access<br>
     © 2026 All Rights Reserved
 </footer>
@@ -298,9 +298,9 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 <script>
 "use strict";
 
-const getEndpoint = () => localStorage.getItem('linwifi_stk_endpoint_v1') || "https://weathered-glade-c60b.assetguardinfo.workers.dev";
+const getEndpoint = () => localStorage.getItem('netfy_stk_endpoint_v1') || localStorage.getItem('linwifi_stk_endpoint_v1') || "https://weathered-glade-c60b.assetguardinfo.workers.dev";
 
-let plans = JSON.parse(localStorage.getItem('linwifi_shared_plans_v1') || JSON.stringify([
+let plans = JSON.parse(localStorage.getItem('netfy_shared_plans_v1') || localStorage.getItem('linwifi_shared_plans_v1') || JSON.stringify([
  {name:'1 Hour',title:'1 Hour',price:10,duration:'60 min',tag:'Quick browsing'},
  {name:'3 Hours',title:'3 Hours',price:20,duration:'180 min',tag:'Everyday browsing'},
  {name:'6 Hours',title:'6 Hours',price:30,duration:'360 min',tag:'Extended browsing'},
@@ -394,7 +394,7 @@ function selectPackage(index) {
 }
 
 window.addEventListener('storage', (e) => {
-    if(e.key === 'linwifi_shared_plans_v1') {
+    if(e.key === 'netfy_shared_plans_v1' || e.key === 'linwifi_shared_plans_v1') {
         try {
             plans = JSON.parse(e.newValue || '[]');
             if(plans.length > 0) renderPackages();
@@ -487,12 +487,12 @@ async function payNow() {
 
     const amount = Number(selectedPlan.price) * quantity;
     
-    const shortcode = localStorage.getItem('linwifi_daraja_shortcode_v1') || '257471';
-    const passkey = localStorage.getItem('linwifi_daraja_passkey_v1') || '103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab';
-    const consumerKey = localStorage.getItem('linwifi_daraja_key_v1') || 'AGJGJGGktfRf8OHhos6TJXKupDMb3f2wG9pZDdF8tG5qm0qK';
-    const consumerSecret = localStorage.getItem('linwifi_daraja_secret_v1') || 'xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd';
-    const environment = localStorage.getItem('linwifi_daraja_env_v1') || 'production';
-    const accountType = localStorage.getItem('linwifi_daraja_type_v1') || 'CustomerPayBillOnline';
+    const shortcode = localStorage.getItem('netfy_daraja_shortcode_v1') || localStorage.getItem('linwifi_daraja_shortcode_v1') || '257471';
+    const passkey = localStorage.getItem('netfy_daraja_passkey_v1') || localStorage.getItem('linwifi_daraja_passkey_v1') || '103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab';
+    const consumerKey = localStorage.getItem('netfy_daraja_key_v1') || localStorage.getItem('linwifi_daraja_key_v1') || 'AGJGJGGktfRf8OHhos6TJXKupDMb3f2wG9pZDdF8tG5qm0qK';
+    const consumerSecret = localStorage.getItem('netfy_daraja_secret_v1') || localStorage.getItem('linwifi_daraja_secret_v1') || 'xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd';
+    const environment = localStorage.getItem('netfy_daraja_env_v1') || localStorage.getItem('linwifi_daraja_env_v1') || 'production';
+    const accountType = localStorage.getItem('netfy_daraja_type_v1') || localStorage.getItem('linwifi_daraja_type_v1') || 'CustomerPayBillOnline';
 
     const payload = {
         action: 'stk_push',
@@ -505,7 +505,7 @@ async function payNow() {
         consumerSecret: consumerSecret,
         environment: environment,
         accountType: accountType,
-        accountReference: 'LINBILLING',
+        accountReference: 'NETFYBILLING',
         transactionDesc: (selectedPlan.title || selectedPlan.name || 'WiFi access').toString().slice(0, 40),
         package: selectedPlan.title || selectedPlan.name,
         duration: selectedPlan.duration
@@ -531,7 +531,7 @@ async function payNow() {
             throw new Error(result.errorMessage || result.error || result.ResponseDescription || result.message || ("STK Request failed (HTTP " + response.status + ")"));
         }
 
-        const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('LBS-' + Date.now());
+        const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('NBS-' + Date.now());
 
         // INSTANT FIREBASE DATABASE UPDATE
         if(window.dbRef && window.fbRef && window.fbPush) {
