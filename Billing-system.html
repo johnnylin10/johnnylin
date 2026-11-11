@@ -589,7 +589,8 @@ setTimeout(() => {
   if (window.dbRef && window.fbRef && window.fbOnValue) {
     window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
       const data = snapshot.val();
-      ledger = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
+      // Only count verified completed transactions for the ledger & revenue
+      ledger = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).filter(item => item.status && item.status.includes('Completed')).reverse() : [];
       updateOverviewStats();
       renderMpesaAudit();
       renderInteractiveAnalytics();
@@ -746,7 +747,7 @@ function renderMpesaAudit() {
   const tbody = $('mpesaAuditTableRows');
   if(!tbody) return;
   if(allAttempts.length === 0){
-    tbody.innerHTML = `<tr><td colspan="6" class="empty">No M-Pesa audit records found in database.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">No audit records found in database.</td></tr>`;
     return;
   }
   tbody.innerHTML = allAttempts.map(item => `
@@ -994,7 +995,7 @@ function updateOverviewStats(){
 function renderLedger(){
  if(!$('ledgerTableRows')) return;
  if(ledger.length === 0){
-  $('ledgerTableRows').innerHTML = `<tr><td colspan="7" class="empty">No transactions found in database.</td></tr>`;
+  $('ledgerTableRows').innerHTML = `<tr><td colspan="7" class="empty">No confirmed transactions found in database.</td></tr>`;
   return;
  }
  $('ledgerTableRows').innerHTML = ledger.map(item=>`
@@ -1083,6 +1084,8 @@ if($('startPayment')){
      throw new Error(data.errorMessage || data.error || data.ResponseDescription || data.message || ('Gateway request failed (HTTP ' + response.status + ').'));
    }
    const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'LBS-' + Date.now();
+   
+   // LOG AS PENDING INSTEAD OF FAKE SUCCESS UNTIL CALLBACK CONFIRMS PAYMENT
    const txItem = {
      ref: checkoutId,
      phone: formattedPhone,
@@ -1092,14 +1095,14 @@ if($('startPayment')){
      duration: plan.duration,
      type: selectedPurchaseType,
      macAddress: macAddress,
-     status: 'Completed (Success)',
+     status: 'Pending Payment (Awaiting PIN)',
      time: new Date().toLocaleString(),
      gateway: 'LIVE PAYMENT API'
    };
    if(window.dbRef && window.fbRef && window.fbPush) {
      await window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
    }
-   $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ STK REQUEST DISPATCHED SUCCESSFULLY</b><br>Payer: <b>${formattedPhone}</b><br>Amount: <b>KES ${amount}</b><br>Reference: <code>${checkoutId}</code><br><br>Enter your M-Pesa PIN!</div>`;
+   $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ STK REQUEST DISPATCHED SUCCESSFULLY</b><br>Payer: <b>${formattedPhone}</b><br>Amount: <b>KES ${amount}</b><br>Reference: <code>${checkoutId}</code><br><br>Enter your M-Pesa PIN! Revenue will count only upon confirmed payment callback.</div>`;
    toast('STK push prompt sent to phone.');
   } catch(err) {
    if(window.dbRef && window.fbRef && window.fbPush) {
