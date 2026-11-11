@@ -78,6 +78,8 @@
   <button data-page="admin"><span class="ico">▥</span>Admin Overview</button>
   <button data-page="errors"><span class="ico">⚠</span>Error Logs</button>
   <button data-page="settings"><span class="ico">⚙</span>Portal Settings</button>
+  <div class="navlabel" style="margin-top:10px">SESSION</div>
+  <button id="logoutBtn" style="color:var(--red)"><span class="ico">⎋</span>Log Out</button>
  </nav>
  <div class="side-bottom"><div class="network"><strong><i class="online-dot"></i>Firebase DB Live</strong><small id="dbStatusLabel">Connected to Realtime DB</small></div></div>
 </aside>
@@ -482,9 +484,9 @@
   const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
-    databaseURL: "https://assetguard-c8c8c-default-rtdb.firebaseio.com",
-    projectId: "assetguard-c8c8c",
-    storageBucket: "assetguard-c8c8c.firebasestorage.app",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+    projectId: "lin-billing-system",
+    storageBucket: "lin-billing-system.appspot.com",
     messagingSenderId: "317499012795",
     appId: "1:317499012795:web:8ff2f143549a948f85db9e"
   };
@@ -519,7 +521,7 @@ let errorLogs = [];
 let bypassedDevices = [];
 let allConnectedDevices = [];
 let threatLogs = [];
-let selectedPlan = null; // Starts unselected as requested
+let selectedPlan = null;
 let selectedPurchaseType = 'Myself';
 let antiTetheringActive = true;
 let currentAnalyticsMode = 'daily';
@@ -548,6 +550,16 @@ document.addEventListener('DOMContentLoaded', () => {
     menuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       sidebar.classList.toggle('open');
+    });
+  }
+
+  // Logout handler
+  const logoutBtn = $('logoutBtn');
+  if(logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.clear();
+      localStorage.removeItem('lin_logged_in');
+      window.location.href = 'login.html';
     });
   }
 
@@ -850,7 +862,6 @@ if($('clearErrorLogsBtn')) $('clearErrorLogsBtn').onclick = async () => {
 };
 
 function renderPlans(){
- // Render customer package cards
  if($('planCards')){
   $('planCards').innerHTML = plans.map((p,i)=>`
    <article class="card packagecard">
@@ -869,7 +880,6 @@ function renderPlans(){
   }));
  }
 
- // Render checkout package grid safely once
  const pkgGrid = $('checkoutPkgGrid');
  if(pkgGrid) {
   if(!plansRenderedOnce) {
@@ -894,7 +904,6 @@ function renderPlans(){
   updateCheckoutSelectionUI();
  }
 
- // Render Admin Package Table ONCE or upon updates to prevent blinking
  const adminTable = $('adminPackageTableRows');
  if(adminTable) {
   if(!adminRenderedOnce) {
