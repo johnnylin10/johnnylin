@@ -121,7 +121,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, push, get, update, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
@@ -139,6 +139,9 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
   window.dbRef = db;
   window.fbPush = push;
   window.fbRef = ref;
+  window.fbGet = get;
+  window.fbChild = child;
+  window.fbUpdate = update;
 </script>
 </head>
 
@@ -168,7 +171,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <div class="portal-tabs">
     <button type="button" class="portal-tab active" id="tabBuy" onclick="switchPortalMode('buy')">Buy with M-Pesa</button>
-    <button type="button" class="portal-tab" id="tabRedeem" onclick="switchPortalMode('redeem')">Enter Voucher Code</button>
+    <button type="button" class="portal-tab" id="tabRedeem" onclick="switchPortalMode('redeem')">M-Pesa Unique Code</button>
 </div>
 
 <div id="buyModeSection">
@@ -253,16 +256,16 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <div id="redeemModeSection" class="hidden">
     <div class="card">
-        <h2>Direct Voucher Redemption</h2>
+        <h2>Instant M-Pesa Unique Code Verification</h2>
         <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-            Have a physical scratch card or unique access code for a TV, laptop, or guest device? Type it below to activate instantly.
+            Enter your M-Pesa transaction reference code or generated single-use device code. The system instantly verifies it and locks the session to this device to prevent multi-device sharing.
         </p>
 
-        <label for="voucherCodeInput">Enter Unique Access Code</label>
-        <input id="voucherCodeInput" type="text" placeholder="e.g. NET-ABC12345" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
-        <div class="input-hint">Once redeemed, the code locks to that device and cannot be reused elsewhere.</div>
+        <label for="voucherCodeInput">Enter M-Pesa / Access Code</label>
+        <input id="voucherCodeInput" type="text" placeholder="e.g. QJK92XYZ78" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
+        <div class="input-hint">Codes are strictly single-use and cannot be shared across multiple devices.</div>
 
-        <button type="button" class="pay" style="margin-top:14px" onclick="redeemVoucherCode()">ACTIVATE DEVICE WITH CODE</button>
+        <button type="button" class="pay" style="margin-top:14px" onclick="verifyAndActivateUniqueCode()">VERIFY & ACTIVATE INSTANTLY</button>
 
         <div id="voucherMessage" class="message" style="margin-top:12px"></div>
     </div>
@@ -533,7 +536,6 @@ async function payNow() {
 
         const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('NBS-' + Date.now());
 
-        // INSTANT FIREBASE DATABASE UPDATE
         if(window.dbRef && window.fbRef && window.fbPush) {
             const txItem = {
                 ref: checkoutId,
@@ -543,7 +545,9 @@ async function payNow() {
                 duration: selectedPlan.duration,
                 status: 'Pending Payment (Awaiting PIN)',
                 time: new Date().toLocaleString(),
-                gateway: 'DARAJA LIVE API'
+                gateway: 'DARAJA LIVE API',
+                used: false,
+                deviceBound: null
             };
             try {
                 await window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
@@ -567,7 +571,8 @@ async function payNow() {
     }
 }
 
-async function redeemVoucherCode() {
+// INSTANT M-PESA UNIQUE CODE VERIFICATION & ANTI-SHARING LOCK
+async function verifyAndActivateUniqueCode() {
     const codeBox = getElement("voucherCodeInput");
     const msgBox = getElement("voucherMessage");
     const code = String(codeBox.value || "").trim().toUpperCase();
@@ -576,15 +581,76 @@ async function redeemVoucherCode() {
     msgBox.className = "message";
 
     if(!code) {
-        msgBox.textContent = "Please enter a valid unique access code.";
+        msgBox.textContent = "Please enter a valid M-Pesa code or access code.";
         msgBox.className = "message error";
         codeBox.focus();
         return;
     }
 
-    msgBox.textContent = "✓ Voucher validated successfully! Hotspot session active.";
-    msgBox.className = "message success";
-    codeBox.value = "";
+    if(!window.dbRef || !window.fbRef) {
+        msgBox.textContent = "Database connection offline. Please check network.";
+        msgBox.className = "message error";
+        return;
+    }
+
+    msgBox.textContent = "Verifying code instantly...";
+    msgBox.className = "message info";
+
+    try {
+        const ledgerRef = window.fbRef(window.dbRef, 'ledger');
+        const snapshot = await window.fbGet(ledgerRef);
+
+        if(!snapshot.exists()) {
+            throw new Error("No transactions or codes found in database.");
+        }
+
+        let foundKey = null;
+        let matchedRecord = null;
+
+        snapshot.forEach((childSnap) => {
+            const val = childSnap.val();
+            // Match either Firebase push key, transaction ref, or custom voucher code
+            const recordRef = String(val.ref || '').toUpperCase();
+            const recordCode = String(val.code || '').toUpperCase();
+            if(childSnap.key.toUpperCase() === code || recordRef.includes(code) || recordCode === code) {
+                foundKey = childSnap.key;
+                matchedRecord = val;
+            }
+        });
+
+        if(!matchedRecord) {
+            throw new Error("Invalid code. This code does not exist in the system.");
+        }
+
+        // Check if already used / bound to another device
+        if(matchedRecord.used === true || matchedRecord.deviceBound) {
+            throw new Error("Security Alert: This code has already been redeemed and locked to another device. It cannot be used on two devices.");
+        }
+
+        // Generate a unique browser device fingerprint/token to bind this session
+        let deviceToken = localStorage.getItem('netfy_device_token_v1');
+        if(!deviceToken) {
+            deviceToken = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now();
+            localStorage.setItem('netfy_device_token_v1', deviceToken);
+        }
+
+        // Instant lock update in Firebase
+        const recordRefPath = window.fbRef(window.dbRef, 'ledger/' + foundKey);
+        await window.fbUpdate(recordRefPath, {
+            used: true,
+            deviceBound: deviceToken,
+            activatedAt: new Date().toLocaleString()
+        });
+
+        msgBox.textContent = "✓ Code verified successfully! Session locked to this device. Internet access active.";
+        msgBox.className = "message success";
+        codeBox.value = "";
+        setStatus("Connected");
+
+    } catch(err) {
+        msgBox.textContent = "Verification Failed: " + err.message;
+        msgBox.className = "message error";
+    }
 }
 
 renderPackages();
