@@ -565,10 +565,9 @@ function stopTransactionListener() {
 }
 
 /* =========================================================
-   USER-ISOLATED TRANSACTION LISTENER
-   Filters specifically by phone number & session timestamp
+   DIRECT CHECKOUT ID LISTENER
    ========================================================= */
-function listenToUserTransaction(targetPhone, requestStartTime) {
+function listenToTransactionById(checkoutId) {
     if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
         console.warn("Firebase listener is not ready.");
         return;
@@ -576,31 +575,17 @@ function listenToUserTransaction(targetPhone, requestStartTime) {
 
     stopTransactionListener();
 
-    const transactionsRef = window.fbRef(window.dbRef, "transactions");
+    const txRef = window.fbRef(window.dbRef, "transactions/" + checkoutId);
 
     activeTransactionUnsubscribe = window.fbOnValue(
-        transactionsRef,
+        txRef,
         snapshot => {
-            if (!snapshot.exists()) return;
+            if (!snapshot.exists()) {
+                getElement("dbStatusText").textContent = "Pending PIN";
+                return;
+            }
 
-            let matchedTx = null;
-            let latestTime = 0;
-
-            snapshot.forEach(childSnapshot => {
-                const val = childSnapshot.val() || {};
-                const txPhone = String(val.phone || val.phoneNumber || "").trim();
-                const txTime = new Date(val.createdAt || val.updatedAt || val.time || 0).getTime();
-
-                // Match only this user's phone number and sessions created after payment was clicked
-                if (txPhone.includes(targetPhone.slice(-9)) && txTime >= requestStartTime) {
-                    if (txTime >= latestTime) {
-                        latestTime = txTime;
-                        matchedTx = val;
-                    }
-                }
-            });
-
-            if (!matchedTx) return;
+            const matchedTx = snapshot.val() || {};
 
             const dbStatus = String(matchedTx.status || "").trim();
             const resultDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || "").trim();
@@ -689,8 +674,6 @@ async function payNow() {
 
     showMessage("Sending M-Pesa prompt to " + phone + ". Enter your PIN on your phone...", "info");
 
-    const requestStartTime = Date.now();
-
     try {
         const response = await fetch(STK_ENDPOINT, {
             method: "POST",
@@ -714,8 +697,16 @@ async function payNow() {
             throw new Error(result.message || result.errorMessage || result.error || "M-Pesa request was rejected.");
         }
 
-        // Start listening exclusively to this user's transaction session in Firebase
-        listenToUserTransaction(phone, requestStartTime);
+        const checkoutId =
+            result.CheckoutRequestID ||
+            result.checkoutRequestID ||
+            result.checkoutRequestId;
+
+        if (!checkoutId) {
+            throw new Error("Worker response missing CheckoutRequestID.");
+        }
+
+        listenToTransactionById(checkoutId);
 
         setStatus("Awaiting PIN");
         setPaymentButton(false, "PAY WITH M-PESA");
