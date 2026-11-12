@@ -119,9 +119,10 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 .popup-box button{margin-top:16px}
 </style>
 
-<!-- FIREBASE SDK & AUTHENTICATION HANDLER -->
+<!-- FIREBASE SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
     getDatabase,
     ref,
@@ -131,10 +132,6 @@ import {
     child,
     onValue
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import {
-    getAuth,
-    signInAnonymously
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
@@ -147,17 +144,18 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
+// Sign in anonymously to satisfy database security rules if needed
 signInAnonymously(auth).then(() => {
-    console.log("Firebase signed in anonymously.");
-}).catch(err => {
-    console.warn("Anonymous sign-in skipped:", err);
+    console.log("Firebase authenticated anonymously.");
+}).catch((error) => {
+    console.warn("Anonymous auth note:", error);
 });
 
+/* Expose Firebase functions to main scope */
 window.dbRef = db;
-window.fbAuth = auth;
 window.fbPush = push;
 window.fbRef = ref;
 window.fbGet = get;
@@ -267,10 +265,10 @@ console.log("NETFY Firebase initialized.");
         <div id="message" class="message" role="status" aria-live="polite"></div>
 
         <div id="accessCodePanel" class="access-code-panel hidden">
-            <h3 id="accessPanelTitle">Awaiting M-Pesa Confirmation</h3>
+            <h3>Awaiting M-Pesa Confirmation</h3>
             <p id="accessPanelSub">Payment request sent. Internet access will unlock automatically once payment is received.</p>
             <div class="code-instructions" id="codeInstructionsBox">
-                <strong>Pending Payment:</strong><br>
+                <strong>Status:</strong> <span id="dbStatusText">Pending PIN</span><br>
                 Please enter your M-Pesa PIN on your phone when prompted. Internet access remains locked until payment clearance is confirmed.
             </div>
         </div>
@@ -330,8 +328,7 @@ console.log("NETFY Firebase initialized.");
 <script>
 "use strict";
 
-const STK_ENDPOINT =
-    "https://johnnylin.karanjajmwangi-10.workers.dev/api/stk-push";
+const STK_ENDPOINT = "https://johnnylin.karanjajmwangi-10.workers.dev/api/stk-push";
 
 let plans = [];
 
@@ -360,8 +357,8 @@ if (!Array.isArray(plans) || !plans.length) {
 let purchaseType = "Myself";
 let selectedPlan = null;
 let activeCheckoutRequestId = null;
-let activeLedgerKey = null;
-let activeLedgerUnsubscribe = null;
+let activeTransactionKey = null;
+let activeTransactionUnsubscribe = null;
 let paymentInProgress = false;
 
 function getElement(id) {
@@ -411,12 +408,8 @@ function switchPortalMode(mode) {
 
 function safeScroll(element, position = "start") {
     if (!element) return;
-
     try {
-        element.scrollIntoView({
-            behavior: "auto",
-            block: position
-        });
+        element.scrollIntoView({ behavior: "auto", block: position });
     } catch (error) {}
 }
 
@@ -443,24 +436,20 @@ function renderPackages() {
         return `
             <div class="package ${isSelected ? "active" : ""}"
                  onclick="selectPackage(${i})">
-
                 <div class="package-top">
                     <div class="package-icon">⚡</div>
                     <div class="package-check">✓</div>
                 </div>
-
                 <div class="package-info">
                     <div class="package-duration">${escapeHTML(planName)}</div>
                     <div class="package-description">${escapeHTML(p.tag || p.duration || "")}</div>
                 </div>
-
                 <div class="package-bottom">
                     <div class="package-price">
                         <span class="package-currency">KSh</span>${Number(p.price).toLocaleString("en-KE")}
                     </div>
                     <span class="package-unit">${escapeHTML(String(p.duration || "").toUpperCase())}</span>
                 </div>
-
                 <div class="package-action">
                     ${isSelected ? "✓ SELECTED" : "SELECT PLAN"}
                 </div>
@@ -480,41 +469,24 @@ function selectPackage(index) {
 
     getElement("packageDisplay").textContent = name;
     getElement("selectedPackageName").textContent = name;
-    getElement("selectedPackagePrice").textContent =
-        "KSh " + price.toLocaleString("en-KE");
-
+    getElement("selectedPackagePrice").textContent = "KSh " + price.toLocaleString("en-KE");
     getElement("payButton").disabled = false;
 
     updateTotal();
     hideMessage();
-
     safeScroll(getElement("deviceSelection"), "start");
 }
 
 window.addEventListener("storage", event => {
-    if (
-        event.key === "netfy_shared_plans_v1" ||
-        event.key === "linwifi_shared_plans_v1"
-    ) {
+    if (event.key === "netfy_shared_plans_v1" || event.key === "linwifi_shared_plans_v1") {
         try {
             const newPlans = JSON.parse(event.newValue || "[]");
-
             if (Array.isArray(newPlans) && newPlans.length) {
-                const previousName = selectedPlan
-                    ? (selectedPlan.name || selectedPlan.title)
-                    : null;
-
+                const previousName = selectedPlan ? (selectedPlan.name || selectedPlan.title) : null;
                 plans = newPlans;
-
-                selectedPlan = previousName
-                    ? plans.find(p =>
-                        (p.name || p.title) === previousName
-                    ) || null
-                    : null;
-
+                selectedPlan = previousName ? plans.find(p => (p.name || p.title) === previousName) || null : null;
                 renderPackages();
                 updateTotal();
-
                 getElement("payButton").disabled = !selectedPlan;
             }
         } catch (error) {
@@ -527,29 +499,20 @@ function choose(element, type) {
     document.querySelectorAll(".choice").forEach(choice => {
         choice.classList.remove("active");
     });
-
     element.classList.add("active");
     purchaseType = type;
-
     getElement("typeDisplay").textContent = type;
-
-    const isMultiple = type === "Multiple";
-
-    getElement("quantityField").classList.toggle("hidden", !isMultiple);
-
+    getElement("quantityField").classList.toggle("hidden", type !== "Multiple");
     updateTotal();
     hideMessage();
 }
 
 function getQuantity() {
     if (purchaseType !== "Multiple") return 1;
-
     const quantity = Number(getElement("quantity").value);
-
     if (!Number.isInteger(quantity) || quantity < 2 || quantity > 20) {
         throw new Error("Choose between 2 and 20 devices for multiple codes.");
     }
-
     return quantity;
 }
 
@@ -560,21 +523,13 @@ function updateTotal() {
         getElement("barTotal").textContent = "KSh 0";
         return;
     }
-
     try {
         const quantity = getQuantity();
         const total = Number(selectedPlan.price) * quantity;
-
-        if (!Number.isFinite(total) || total < 1) {
-            throw new Error("Invalid package price.");
-        }
-
         const formatted = "KSh " + total.toLocaleString("en-KE");
-
         getElement("deviceDisplay").textContent = String(quantity);
         getElement("totalDisplay").textContent = formatted;
         getElement("barTotal").textContent = formatted;
-
     } catch (error) {
         getElement("deviceDisplay").textContent = "Invalid";
         getElement("totalDisplay").textContent = "Check quantity";
@@ -586,32 +541,17 @@ getElement("quantity").addEventListener("input", updateTotal);
 
 function normalizePhone(value) {
     let phone = String(value || "").replace(/[\s\-()]/g, "");
-
-    if (phone.startsWith("+254")) {
-        phone = phone.substring(1);
-    }
-
-    if (phone.startsWith("254")) {
-        return /^254[17]\d{8}$/.test(phone) ? phone : null;
-    }
-
-    if (/^0[17]\d{8}$/.test(phone)) {
-        return "254" + phone.substring(1);
-    }
-
-    if (/^[17]\d{8}$/.test(phone)) {
-        return "254" + phone;
-    }
-
+    if (phone.startsWith("+254")) phone = phone.substring(1);
+    if (phone.startsWith("254")) return /^254[17]\d{8}$/.test(phone) ? phone : null;
+    if (/^0[17]\d{8}$/.test(phone)) return "254" + phone.substring(1);
+    if (/^[17]\d{8}$/.test(phone)) return "254" + phone;
     return null;
 }
 
 function setPaymentButton(loading, label) {
     const button = getElement("payButton");
     if (!button) return;
-
     button.disabled = !!loading || (!selectedPlan && !loading);
-
     button.innerHTML = loading
         ? '<span class="loader"></span> ' + (label || "PROCESSING...")
         : (label || "PAY WITH M-PESA");
@@ -621,116 +561,84 @@ function setStatus(text) {
     getElement("connectionStatus").textContent = text;
 }
 
-function stopLedgerListener() {
-    if (typeof activeLedgerUnsubscribe === "function") {
-        activeLedgerUnsubscribe();
+function stopTransactionListener() {
+    if (typeof activeTransactionUnsubscribe === "function") {
+        activeTransactionUnsubscribe();
     }
-
-    activeLedgerUnsubscribe = null;
+    activeTransactionUnsubscribe = null;
 }
 
-function listenToActiveTransaction(checkoutId, ledgerKey) {
-    if (
-        !window.dbRef ||
-        !window.fbRef ||
-        !window.fbOnValue
-    ) {
+/* Listen to Firebase transactions/ path to capture exact database status/resultDesc */
+function listenToActiveTransaction(checkoutId) {
+    if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
         console.warn("Firebase listener is not ready.");
         return;
     }
 
-    stopLedgerListener();
+    stopTransactionListener();
 
-    let transactionRef;
+    const transactionsRef = window.fbRef(window.dbRef, "transactions");
 
-    if (ledgerKey) {
-        transactionRef = window.fbRef(
-            window.dbRef,
-            "ledger/" + ledgerKey
-        );
-    } else {
-        transactionRef = window.fbRef(
-            window.dbRef,
-            "ledger"
-        );
-    }
-
-    activeLedgerUnsubscribe = window.fbOnValue(
-        transactionRef,
+    activeTransactionUnsubscribe = window.fbOnValue(
+        transactionsRef,
         snapshot => {
             if (!snapshot.exists()) return;
 
-            let transaction = null;
+            let matchedTx = null;
 
-            if (ledgerKey) {
-                transaction = snapshot.val();
-            } else {
-                snapshot.forEach(childSnapshot => {
-                    const value = childSnapshot.val() || {};
+            snapshot.forEach(childSnapshot => {
+                const value = childSnapshot.val() || {};
+                const reqId = String(value.checkoutRequestId || value.CheckoutRequestID || value.ref || "");
+                if (reqId === String(checkoutId)) {
+                    matchedTx = value;
+                }
+            });
 
-                    if (String(value.ref || "") === String(checkoutId)) {
-                        transaction = value;
-                    }
-                });
-            }
+            if (!matchedTx) return;
 
-            if (!transaction) return;
+            // Retrieve database status and result description
+            const dbStatus = String(matchedTx.status || "").trim();
+            const resultDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || "").trim();
+            
+            // Display exact message from database in the UI status box
+            const displayMessage = resultDesc || dbStatus || "Pending PIN";
+            getElement("dbStatusText").textContent = displayMessage;
 
-            if (String(transaction.ref || "") !== String(checkoutId)) {
-                return;
-            }
-
-            const rawStatus = String(transaction.status || "").trim();
-            const statusLower = rawStatus.toLowerCase();
+            const lowerStatus = dbStatus.toLowerCase();
+            const lowerDesc = resultDesc.toLowerCase();
 
             const successful =
-                statusLower === "success" ||
-                statusLower === "successful" ||
-                statusLower === "paid" ||
-                statusLower.includes("completed") ||
-                statusLower.includes("verified");
+                lowerStatus === "success" ||
+                lowerStatus === "successful" ||
+                lowerStatus === "paid" ||
+                lowerStatus.includes("completed") ||
+                lowerStatus.includes("verified") ||
+                lowerDesc.includes("success");
 
             const failed =
-                statusLower.includes("failed") ||
-                statusLower.includes("cancelled") ||
-                statusLower.includes("canceled") ||
-                statusLower.includes("insufficient") ||
-                statusLower.includes("rejected");
+                lowerStatus.includes("failed") ||
+                lowerStatus.includes("cancelled") ||
+                lowerStatus.includes("canceled") ||
+                lowerStatus.includes("insufficient") ||
+                lowerStatus.includes("rejected") ||
+                lowerDesc.includes("cancelled") ||
+                lowerDesc.includes("canceled") ||
+                lowerDesc.includes("failed");
 
             if (successful) {
                 setStatus("Payment confirmed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-
-                getElement("accessPanelTitle").textContent = rawStatus;
-                getElement("accessPanelSub").textContent = "Payment has been successfully received. Internet access is now active.";
-                getElement("codeInstructionsBox").innerHTML = "<strong>Status:</strong> " + escapeHTML(rawStatus);
-
-                showMessage(
-                    "✓ " + rawStatus + "! Your M-Pesa payment has been received.",
-                    "success"
-                );
-
-                stopLedgerListener();
-
+                showMessage("✓ Payment confirmed successfully! M-Pesa payment received.", "success");
+                getElement("accessCodePanel").classList.add("hidden");
+                stopTransactionListener();
             } else if (failed) {
                 setStatus("Payment failed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-
-                getElement("accessPanelTitle").textContent = rawStatus;
-                getElement("accessPanelSub").textContent = "Payment request was cancelled or failed.";
-                getElement("codeInstructionsBox").innerHTML = "<strong>Status:</strong> " + escapeHTML(rawStatus);
-
-                showMessage(
-                    rawStatus,
-                    "error"
-                );
-
-                stopLedgerListener();
-
+                showMessage("Payment failed: " + displayMessage, "error");
+                getElement("accessCodePanel").classList.add("hidden");
+                stopTransactionListener();
             } else {
-                setStatus(rawStatus || "Awaiting PIN");
-                getElement("accessPanelTitle").textContent = rawStatus || "Awaiting M-Pesa Confirmation";
-                getElement("codeInstructionsBox").innerHTML = "<strong>Status:</strong> " + escapeHTML(rawStatus || "Pending PIN");
+                setStatus("Awaiting PIN");
             }
         },
         error => {
@@ -742,28 +650,21 @@ function listenToActiveTransaction(checkoutId, ledgerKey) {
 
 async function payNow() {
     if (paymentInProgress) return;
-
     hideMessage();
 
     if (!selectedPlan) {
-        showMessage(
-            "Please select an internet plan above before paying.",
-            "error"
-        );
-
+        showMessage("Please select an internet plan above before paying.", "error");
         safeScroll(getElement("internetPackages"), "start");
         return;
     }
 
     const phone = normalizePhone(getElement("phone").value);
-
     if (!phone) {
         showPhoneErrorPopup();
         return;
     }
 
     let quantity;
-
     try {
         quantity = getQuantity();
     } catch (error) {
@@ -771,38 +672,24 @@ async function payNow() {
         return;
     }
 
-    const amount = Math.round(
-        Number(selectedPlan.price) * quantity
-    );
-
+    const amount = Math.round(Number(selectedPlan.price) * quantity);
     if (!Number.isFinite(amount) || amount < 1) {
         showMessage("Invalid payment amount.", "error");
         return;
     }
 
     paymentInProgress = true;
-
     setPaymentButton(true, "SENDING STK PUSH...");
     setStatus("Processing");
-
     getElement("accessCodePanel").classList.add("hidden");
 
-    showMessage(
-        "Sending M-Pesa prompt to " + phone +
-        ". Enter your PIN on your phone...",
-        "info"
-    );
+    showMessage("Sending M-Pesa prompt to " + phone + ". Enter your PIN on your phone...", "info");
 
     try {
         const response = await fetch(STK_ENDPOINT, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                phone: phone,
-                amount: amount
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: phone, amount: amount })
         });
 
         const result = await response.json();
@@ -817,97 +704,35 @@ async function payNow() {
             );
         }
 
-        if (
-            result.success === false ||
-            result.error
-        ) {
-            throw new Error(
-                result.message ||
-                result.errorMessage ||
-                result.error ||
-                "M-Pesa request was rejected."
-            );
+        if (result.success === false || result.error) {
+            throw new Error(result.message || result.errorMessage || result.error || "M-Pesa request was rejected.");
         }
 
         const checkoutId =
             result.CheckoutRequestID ||
             result.checkoutRequestID ||
+            result.checkoutRequestId ||
             ("STK-" + Date.now());
 
         activeCheckoutRequestId = checkoutId;
 
-        if (
-            window.dbRef &&
-            window.fbRef &&
-            window.fbPush
-        ) {
-            try {
-                const ledgerRecord = {
-                    ref: checkoutId,
-                    phone: phone,
-                    amount: amount,
-                    status: "Pending PIN",
-                    time: new Date().toLocaleString(),
-                    gateway: "CLOUDFLARE WORKER",
-                    package: selectedPlan.title || selectedPlan.name,
-                    duration: selectedPlan.duration || "",
-                    quantity: quantity,
-                    purchaseType: purchaseType,
-                    used: false,
-                    deviceBound: null
-                };
-
-                const savedRecord = await window.fbPush(
-                    window.fbRef(window.dbRef, "ledger"),
-                    ledgerRecord
-                );
-
-                activeLedgerKey = savedRecord.key;
-
-                listenToActiveTransaction(
-                    checkoutId,
-                    activeLedgerKey
-                );
-
-            } catch (firebaseError) {
-                console.warn(
-                    "Ledger sync bypassed due to permission/network restriction:",
-                    firebaseError
-                );
-            }
-        }
+        // Start listening to Firebase transactions/ path for this checkout ID
+        listenToActiveTransaction(checkoutId);
 
         setStatus("Awaiting PIN");
         setPaymentButton(false, "PAY WITH M-PESA");
 
-        showMessage(
-            "✓ STK Push request sent successfully. Please check your phone and enter your M-Pesa PIN to complete payment.",
-            "info"
-        );
-
-        getElement("accessPanelTitle").textContent = "Awaiting M-Pesa Confirmation";
-        getElement("accessPanelSub").textContent =
-            "Payment request sent. Internet access remains locked until payment is confirmed.";
-        getElement("codeInstructionsBox").innerHTML = "<strong>Status:</strong> Pending PIN";
-
+        showMessage("✓ STK Push request sent successfully. Please check your phone and enter your M-Pesa PIN.", "info");
+        getElement("accessPanelSub").textContent = "Payment request sent. Internet access remains locked until payment is confirmed.";
+        getElement("dbStatusText").textContent = "Pending PIN";
         getElement("accessCodePanel").classList.remove("hidden");
-
-        safeScroll(
-            getElement("accessCodePanel"),
-            "center"
-        );
+        safeScroll(getElement("accessCodePanel"), "center");
 
     } catch (error) {
         console.error("NETFY STK PUSH ERROR:", error);
-
         setStatus("Payment error");
         setPaymentButton(false, "PAY WITH M-PESA");
-
-        showMessage(
-            "STK Push failed: " + error.message,
-            "error"
-        );
-
+        showMessage("STK Push failed: " + error.message, "error");
     } finally {
         paymentInProgress = false;
     }
@@ -917,51 +742,27 @@ window.payNow = payNow;
 
 async function verifyAndActivateUniqueCode() {
     const codeBox = getElement("voucherCodeInput");
-    const code = String(codeBox.value || "")
-        .trim()
-        .toUpperCase();
+    const code = String(codeBox.value || "").trim().toUpperCase();
 
     if (!code) {
-        showVoucherMessage(
-            "Please enter a valid M-Pesa code or access code.",
-            "error"
-        );
-
+        showVoucherMessage("Please enter a valid M-Pesa code or access code.", "error");
         codeBox.focus();
         return;
     }
 
-    if (
-        !window.dbRef ||
-        !window.fbRef ||
-        !window.fbGet ||
-        !window.fbUpdate
-    ) {
-        showVoucherMessage(
-            "Database connection offline. Please check your network.",
-            "error"
-        );
-
+    if (!window.dbRef || !window.fbRef || !window.fbGet || !window.fbUpdate) {
+        showVoucherMessage("Database connection offline. Please check your network.", "error");
         return;
     }
 
-    showVoucherMessage(
-        "Verifying code...",
-        "info"
-    );
+    showVoucherMessage("Verifying code...", "info");
 
     try {
-        const ledgerRef = window.fbRef(
-            window.dbRef,
-            "ledger"
-        );
-
-        const snapshot = await window.fbGet(ledgerRef);
+        const transactionsRef = window.fbRef(window.dbRef, "transactions");
+        const snapshot = await window.fbGet(transactionsRef);
 
         if (!snapshot.exists()) {
-            throw new Error(
-                "No transactions or codes found in database."
-            );
+            throw new Error("No transactions or codes found in database.");
         }
 
         let foundKey = null;
@@ -969,10 +770,9 @@ async function verifyAndActivateUniqueCode() {
 
         snapshot.forEach(childSnapshot => {
             const value = childSnapshot.val() || {};
-
-            const recordRef = String(value.ref || "").toUpperCase();
+            const recordRef = String(value.checkoutRequestId || value.CheckoutRequestID || value.ref || "").toUpperCase();
             const recordCode = String(value.code || "").toUpperCase();
-            const recordReceipt = String(value.mpesaReceipt || "").toUpperCase();
+            const recordReceipt = String(value.mpesaReceipt || value.ReceiptNumber || "").toUpperCase();
 
             if (
                 childSnapshot.key.toUpperCase() === code ||
@@ -986,15 +786,10 @@ async function verifyAndActivateUniqueCode() {
         });
 
         if (!matchedRecord) {
-            throw new Error(
-                "Invalid code. This code does not exist in the system."
-            );
+            throw new Error("Invalid code. This code does not exist in the system.");
         }
 
-        const paymentStatus = String(
-            matchedRecord.status || ""
-        ).toLowerCase();
-
+        const paymentStatus = String(matchedRecord.status || "").toLowerCase();
         const paymentConfirmed =
             paymentStatus === "success" ||
             paymentStatus === "successful" ||
@@ -1003,61 +798,32 @@ async function verifyAndActivateUniqueCode() {
             paymentStatus.includes("verified");
 
         if (!paymentConfirmed) {
-            throw new Error(
-                "Payment has not yet been confirmed. Please wait for M-Pesa confirmation."
-            );
+            throw new Error("Payment has not yet been confirmed. Please wait for M-Pesa confirmation.");
         }
 
-        if (
-            matchedRecord.used === true ||
-            matchedRecord.deviceBound
-        ) {
-            throw new Error(
-                "Security alert: This code has already been redeemed."
-            );
+        if (matchedRecord.used === true || matchedRecord.deviceBound) {
+            throw new Error("Security alert: This code has already been redeemed.");
         }
 
-        let deviceToken = localStorage.getItem(
-            "netfy_device_token_v1"
-        );
-
+        let deviceToken = localStorage.getItem("netfy_device_token_v1");
         if (!deviceToken) {
-            deviceToken =
-                "DEV-" +
-                Math.random().toString(36).substring(2, 10).toUpperCase() +
-                "-" +
-                Date.now();
-
-            localStorage.setItem(
-                "netfy_device_token_v1",
-                deviceToken
-            );
+            deviceToken = "DEV-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Date.now();
+            localStorage.setItem("netfy_device_token_v1", deviceToken);
         }
 
-        const recordRefPath = window.fbRef(
-            window.dbRef,
-            "ledger/" + foundKey
-        );
-
+        const recordRefPath = window.fbRef(window.dbRef, "transactions/" + foundKey);
         await window.fbUpdate(recordRefPath, {
             used: true,
             deviceBound: deviceToken,
             activatedAt: new Date().toLocaleString()
         });
 
-        showVoucherMessage(
-            "✓ Code verified successfully! Session locked to this device. Internet access active.",
-            "success"
-        );
-
+        showVoucherMessage("✓ Code verified successfully! Session locked to this device. Internet access active.", "success");
         codeBox.value = "";
         setStatus("Connected");
 
     } catch (error) {
-        showVoucherMessage(
-            "Verification Failed: " + error.message,
-            "error"
-        );
+        showVoucherMessage("Verification Failed: " + error.message, "error");
     }
 }
 
@@ -1065,7 +831,6 @@ window.verifyAndActivateUniqueCode = verifyAndActivateUniqueCode;
 
 renderPackages();
 updateTotal();
-
 getElement("payButton").disabled = true;
 setStatus("Ready");
 
