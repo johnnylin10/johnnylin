@@ -92,9 +92,9 @@
     const firebaseConfig = {
       apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
       authDomain: "lin-billing-system.firebaseapp.com",
-      databaseURL: "https://assetguard-c8c8c-default-rtdb.firebaseio.com",
-      projectId: "assetguard-c8c8c",
-      storageBucket: "assetguard-c8c8c.firebasestorage.app",
+      databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+      projectId: "lin-billing-system",
+      storageBucket: "lin-billing-system.firebasestorage.app",
       messagingSenderId: "317499012795",
       appId: "1:317499012795:web:8ff2f143549a948f85db9e"
     };
@@ -111,14 +111,14 @@
     f.onsubmit = async (e) => {
       e.preventDefault();
       btn.disabled = true;
-      s.textContent = "Sending STK push...";
+      s.textContent = "Sending...";
 
-      // Clean and normalize phone number (e.g., 0713100424 -> 254713100424)
+      // Clean and format phone number (e.g. 07... or +254... to 2547...)
       let phoneVal = p.value.trim().replace(/[\s\-()+]/g, "");
       if (phoneVal.startsWith("0")) {
         phoneVal = "254" + phoneVal.substring(1);
       }
-      
+
       const amountVal = Number(a.value);
 
       try {
@@ -136,7 +136,7 @@
         if (r.ok) {
           const checkoutId = d.CheckoutRequestID || d.checkoutRequestID || ('STK-' + Date.now());
           
-          // Record STK push directly into Firebase Realtime Database
+          // Record STK push directly into your preferred Firebase Realtime Database ledger
           await push(ref(db, 'ledger'), {
             ref: checkoutId,
             phone: phoneVal,
@@ -147,7 +147,7 @@
           });
         }
 
-        s.textContent = d.message || (r.ok ? 'Request sent. Check your phone.' : 'Request failed.');
+        s.textContent = d.message || (r.ok ? 'Request sent. Check your phone.' : (d.error || 'Request failed.'));
       } catch (err) {
         s.textContent = 'Could not reach the Worker.';
       } finally {
