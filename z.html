@@ -147,14 +147,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// Sign in anonymously to satisfy database security rules if needed
 signInAnonymously(auth).then(() => {
     console.log("Firebase authenticated anonymously.");
 }).catch((error) => {
     console.warn("Anonymous auth note:", error);
 });
 
-/* Expose Firebase functions to main scope */
 window.dbRef = db;
 window.fbPush = push;
 window.fbRef = ref;
@@ -357,7 +355,6 @@ if (!Array.isArray(plans) || !plans.length) {
 let purchaseType = "Myself";
 let selectedPlan = null;
 let activeCheckoutRequestId = null;
-let activeTransactionKey = null;
 let activeTransactionUnsubscribe = null;
 let paymentInProgress = false;
 
@@ -568,7 +565,7 @@ function stopTransactionListener() {
     activeTransactionUnsubscribe = null;
 }
 
-/* Listen to Firebase transactions/ path to capture exact database status/resultDesc */
+/* Listen directly to the exact transaction child node written by the Cloudflare worker */
 function listenToActiveTransaction(checkoutId) {
     if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
         console.warn("Firebase listener is not ready.");
@@ -577,30 +574,19 @@ function listenToActiveTransaction(checkoutId) {
 
     stopTransactionListener();
 
-    const transactionsRef = window.fbRef(window.dbRef, "transactions");
+    // Directly listen to transactions/{checkoutId}
+    const txRef = window.fbRef(window.dbRef, "transactions/" + checkoutId);
 
     activeTransactionUnsubscribe = window.fbOnValue(
-        transactionsRef,
+        txRef,
         snapshot => {
             if (!snapshot.exists()) return;
 
-            let matchedTx = null;
+            const matchedTx = snapshot.val() || {};
 
-            snapshot.forEach(childSnapshot => {
-                const value = childSnapshot.val() || {};
-                const reqId = String(value.checkoutRequestId || value.CheckoutRequestID || value.ref || "");
-                if (reqId === String(checkoutId)) {
-                    matchedTx = value;
-                }
-            });
-
-            if (!matchedTx) return;
-
-            // Retrieve database status and result description
             const dbStatus = String(matchedTx.status || "").trim();
             const resultDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || "").trim();
             
-            // Display exact message from database in the UI status box
             const displayMessage = resultDesc || dbStatus || "Pending PIN";
             getElement("dbStatusText").textContent = displayMessage;
 
@@ -634,7 +620,7 @@ function listenToActiveTransaction(checkoutId) {
             } else if (failed) {
                 setStatus("Payment failed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-                showMessage("Payment failed: " + displayMessage, "error");
+                showMessage(displayMessage, "error");
                 getElement("accessCodePanel").classList.add("hidden");
                 stopTransactionListener();
             } else {
@@ -716,7 +702,7 @@ async function payNow() {
 
         activeCheckoutRequestId = checkoutId;
 
-        // Start listening to Firebase transactions/ path for this checkout ID
+        // Listen directly to the exact worker node path
         listenToActiveTransaction(checkoutId);
 
         setStatus("Awaiting PIN");
