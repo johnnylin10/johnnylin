@@ -565,12 +565,11 @@ function stopTransactionListener() {
 }
 
 /* =========================================================
-   CLEAN M-PESA & DATABASE FEEDBACK MAPPER (FIXED FOR PENDING)
+   CLEAN M-PESA & DATABASE FEEDBACK MAPPER (UPDATED FOR INITIATOR)
    ========================================================= */
 function formatTransactionFeedback(rawDesc, dbStatus) {
     const text = String(rawDesc || dbStatus || "").toLowerCase();
 
-    // Do NOT trigger error mappings on initial pending states before user enters PIN
     if (!text || text.includes("pending") || text.includes("sent") || text.includes("processing") || text.includes("awaiting")) {
         return "Pending PIN";
     }
@@ -584,7 +583,7 @@ function formatTransactionFeedback(rawDesc, dbStatus) {
     if (text.includes("insufficient") || text.includes("balance")) {
         return "Insufficient funds";
     }
-    if (text.includes("pin") || text.includes("wrong") || text.includes("password") || text.includes("credential")) {
+    if (text.includes("pin") || text.includes("wrong") || text.includes("password") || text.includes("credential") || text.includes("initiator")) {
         return "You entered wrong pin";
     }
     if (text.includes("timeout") || text.includes("expired") || text.includes("time out")) {
@@ -595,7 +594,7 @@ function formatTransactionFeedback(rawDesc, dbStatus) {
 }
 
 /* =========================================================
-   DIRECT CHECKOUT ID LISTENER (FIXED FOR STRICT ERRORS)
+   DIRECT CHECKOUT ID LISTENER
    ========================================================= */
 function listenToTransactionById(checkoutId) {
     if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
@@ -634,7 +633,6 @@ function listenToTransactionById(checkoutId) {
                 lowerStatus.includes("verified") ||
                 lowerDesc.includes("success");
 
-            // Strictly check for actual completion/failure errors, ignoring initial empty/pending fields
             const hasErrorOccurred =
                 lowerStatus === "failed" ||
                 lowerStatus.includes("fail") ||
@@ -644,6 +642,7 @@ function listenToTransactionById(checkoutId) {
                 lowerDesc.includes("invalid") ||
                 lowerDesc.includes("pin") ||
                 lowerDesc.includes("insufficient") ||
+                lowerDesc.includes("initiator") ||
                 Number(matchedTx.resultCode) > 0;
 
             if (successful) {
