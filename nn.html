@@ -136,7 +136,7 @@ import {
 const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
-    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com", // <-- Fixed to your correct database URL
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
     projectId: "assetguard-c8c8c",
     storageBucket: "assetguard-c8c8c.firebasestorage.app",
     messagingSenderId: "317499012795",
@@ -237,7 +237,7 @@ console.log("NETFY Firebase initialized.");
         </div>
 
         <label for="phone">M-Pesa phone number</label>
-        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0712345678" value="0713100424" maxlength="13">
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="" value="" maxlength="13">
         <div class="input-hint">Enter your Safaricom phone number to receive the M-Pesa prompt.</div>
 
         <div id="quantityField" class="hidden">
@@ -565,7 +565,32 @@ function stopTransactionListener() {
 }
 
 /* =========================================================
-   DIRECT CHECKOUT ID LISTENER (FIXED FOR ERRORS & RESULT DESC)
+   CLEAN M-PESA & DATABASE FEEDBACK MAPPER
+   ========================================================= */
+function formatTransactionFeedback(rawDesc, dbStatus) {
+    const text = String(rawDesc || dbStatus || "").toLowerCase();
+
+    if (text.includes("success") || text.includes("completed")) {
+        return "Transaction successful";
+    }
+    if (text.includes("cancel") || text.includes("user abort")) {
+        return "Transaction successfully cancelled";
+    }
+    if (text.includes("insufficient") || text.includes("balance")) {
+        return "Insufficient funds";
+    }
+    if (text.includes("pin") || text.includes("wrong") || text.includes("password") || text.includes("credential")) {
+        return "You entered wrong pin";
+    }
+    if (text.includes("timeout") || text.includes("expired") || text.includes("time out")) {
+        return "Request timed out. Please try again";
+    }
+
+    return rawDesc || dbStatus || "Transaction failed";
+}
+
+/* =========================================================
+   DIRECT CHECKOUT ID LISTENER
    ========================================================= */
 function listenToTransactionById(checkoutId) {
     if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
@@ -588,13 +613,13 @@ function listenToTransactionById(checkoutId) {
             const matchedTx = snapshot.val() || {};
 
             const dbStatus = String(matchedTx.status || "").trim();
-            const resultDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || "").trim();
+            const rawDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || matchedTx.errorMessage || "").trim();
             
-            const displayMessage = resultDesc || dbStatus || "Pending PIN";
+            const displayMessage = formatTransactionFeedback(rawDesc, dbStatus);
             getElement("dbStatusText").textContent = displayMessage;
 
             const lowerStatus = dbStatus.toLowerCase();
-            const lowerDesc = resultDesc.toLowerCase();
+            const lowerDesc = rawDesc.toLowerCase();
 
             const successful =
                 lowerStatus === "success" ||
@@ -616,13 +641,12 @@ function listenToTransactionById(checkoutId) {
             if (successful) {
                 setStatus("Payment confirmed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-                showMessage("✓ Payment confirmed successfully! M-Pesa payment received.", "success");
+                showMessage("✓ Transaction successful!", "success");
                 getElement("accessCodePanel").classList.add("hidden");
                 stopTransactionListener();
             } else if (failed) {
                 setStatus("Payment failed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-                // Displays the exact database resultDesc (e.g. "Request Cancelled by user.") in the error box
                 showMessage(displayMessage, "error");
                 getElement("accessCodePanel").classList.add("hidden");
                 stopTransactionListener();
