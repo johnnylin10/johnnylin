@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071522">
 <meta name="format-detection" content="telephone=no">
-<title>Netfy WiFi Universal Billing & Gateway</title>
+<title>Lin WiFi Universal Billing & Gateway</title>
 
 <style>
 :root {
@@ -117,18 +117,43 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 .popup-box h3{font-size:16px;color:#172438;margin-bottom:8px}
 .popup-box p{font-size:12px;color:#69788b;line-height:1.6}
 .popup-box button{margin-top:16px}
+
+@media(max-width:380px){
+.container{padding:9px}
+.card{padding:11px;margin-bottom:9px}
+.plans-card{padding:11px}
+.packages{gap:7px}
+.package{min-height:110px;padding:8px}
+.package.active{padding:7.5px}
+.package-price{font-size:17px}
+.package-duration{font-size:12px}
+.choice{padding:8px 3px}
+.choice strong{font-size:9px}
+.choice small{font-size:7px}
+.brand{font-size:19px}
+.header-badge{font-size:8px;padding:6px 7px}
+.payment-bar button{min-width:125px;padding:12px 10px;font-size:11px}
+}
+@media(max-width:300px){
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.payment-bar-inner{gap:7px}
+.payment-bar button{min-width:110px}
+}
+@media(prefers-reduced-motion:reduce){
+*{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+}
 </style>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push, get, update, child, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
-    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
-    projectId: "lin-billing-system",
-    storageBucket: "lin-billing-system.appspot.com",
+    databaseURL: "https://assetguard-c8c8c-default-rtdb.firebaseio.com",
+    projectId: "assetguard-c8c8c",
+    storageBucket: "assetguard-c8c8c.firebasestorage.app",
     messagingSenderId: "317499012795",
     appId: "1:317499012795:web:8ff2f143549a948f85db9e"
   };
@@ -139,10 +164,6 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
   window.dbRef = db;
   window.fbPush = push;
   window.fbRef = ref;
-  window.fbGet = get;
-  window.fbChild = child;
-  window.fbUpdate = update;
-  window.fbOnValue = onValue;
 </script>
 </head>
 
@@ -151,7 +172,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 <header>
     <div class="header-inner">
         <div>
-            <div class="brand">NETFY <span>WIFI</span></div>
+            <div class="brand">LIN <span>WIFI</span></div>
             <p>UNIVERSAL HOTSPOT BILLING & CONNECTIVITY</p>
         </div>
         <div class="header-badges">
@@ -172,7 +193,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <div class="portal-tabs">
     <button type="button" class="portal-tab active" id="tabBuy" onclick="switchPortalMode('buy')">Buy with M-Pesa</button>
-    <button type="button" class="portal-tab" id="tabRedeem" onclick="switchPortalMode('redeem')">M-Pesa Unique Code</button>
+    <button type="button" class="portal-tab" id="tabRedeem" onclick="switchPortalMode('redeem')">Enter Voucher Code</button>
 </div>
 
 <div id="buyModeSection">
@@ -257,16 +278,16 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 
 <div id="redeemModeSection" class="hidden">
     <div class="card">
-        <h2>Instant M-Pesa Unique Code Verification</h2>
+        <h2>Direct Voucher Redemption</h2>
         <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-            Enter your M-Pesa transaction reference code or generated single-use device code. The system instantly verifies it and locks the session to this device to prevent multi-device sharing.
+            Have a physical scratch card or unique access code for a TV, laptop, or guest device? Type it below to activate instantly.
         </p>
 
-        <label for="voucherCodeInput">Enter M-Pesa / Access Code</label>
-        <input id="voucherCodeInput" type="text" placeholder="e.g. QJK92XYZ78" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
-        <div class="input-hint">Codes are strictly single-use and cannot be shared across multiple devices.</div>
+        <label for="voucherCodeInput">Enter Unique Access Code</label>
+        <input id="voucherCodeInput" type="text" placeholder="e.g. LIN-ABC12345" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
+        <div class="input-hint">Once redeemed, the code locks to that device and cannot be reused elsewhere.</div>
 
-        <button type="button" class="pay" style="margin-top:14px" onclick="verifyAndActivateUniqueCode()">VERIFY & ACTIVATE INSTANTLY</button>
+        <button type="button" class="pay" style="margin-top:14px" onclick="redeemVoucherCode()">ACTIVATE DEVICE WITH CODE</button>
 
         <div id="voucherMessage" class="message" style="margin-top:12px"></div>
     </div>
@@ -285,7 +306,7 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 </div>
 
 <footer>
-    <strong>NETFY UNIVERSAL WIFI</strong><br>
+    <strong>LIN UNIVERSAL WIFI</strong><br>
     Smart Connectivity • Secure Payments • Reliable Access<br>
     © 2026 All Rights Reserved
 </footer>
@@ -302,10 +323,9 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 <script>
 "use strict";
 
-// POINTING DIRECTLY TO YOUR VERCEL STK PUSH ENDPOINT
-const getEndpoint = () => "https://johnnylin.vercel.app/api/stk-push";
+const getEndpoint = () => localStorage.getItem('linwifi_stk_endpoint_v1') || "https://weathered-glade-c60b.assetguardinfo.workers.dev";
 
-let plans = JSON.parse(localStorage.getItem('netfy_shared_plans_v1') || localStorage.getItem('linwifi_shared_plans_v1') || JSON.stringify([
+let plans = JSON.parse(localStorage.getItem('linwifi_shared_plans_v1') || JSON.stringify([
  {name:'1 Hour',title:'1 Hour',price:10,duration:'60 min',tag:'Quick browsing'},
  {name:'3 Hours',title:'3 Hours',price:20,duration:'180 min',tag:'Everyday browsing'},
  {name:'6 Hours',title:'6 Hours',price:30,duration:'360 min',tag:'Extended browsing'},
@@ -314,7 +334,6 @@ let plans = JSON.parse(localStorage.getItem('netfy_shared_plans_v1') || localSto
 
 let purchaseType = "Myself";
 let selectedPlan = null; 
-let activeCheckoutRequestId = null;
 
 function getElement(id) { return document.getElementById(id); }
 
@@ -400,7 +419,7 @@ function selectPackage(index) {
 }
 
 window.addEventListener('storage', (e) => {
-    if(e.key === 'netfy_shared_plans_v1' || e.key === 'linwifi_shared_plans_v1') {
+    if(e.key === 'linwifi_shared_plans_v1') {
         try {
             plans = JSON.parse(e.newValue || '[]');
             if(plans.length > 0) renderPackages();
@@ -473,35 +492,6 @@ function setStatus(text) {
     if(statusEl) statusEl.textContent = text;
 }
 
-// REALTIME LISTENER TO INSTANTLY CATCH SUCCESS OR WRONG PIN FROM FIREBASE
-function listenToActiveTransaction(checkoutId) {
-    if(!window.dbRef || !window.fbRef || !window.fbOnValue) return;
-    
-    const ledgerRef = window.fbRef(window.dbRef, 'ledger');
-    window.fbOnValue(ledgerRef, (snapshot) => {
-        if(!snapshot.exists()) return;
-        
-        snapshot.forEach((childSnap) => {
-            const val = childSnap.val();
-            if(val.ref === checkoutId) {
-                const status = String(val.status || '');
-                
-                if(status.includes('Completed') || status.includes('Verified')) {
-                    setStatus("Connected");
-                    setPaymentButton(false, "PAY WITH M-PESA");
-                    showMessage("✓ Payment confirmed successfully! Internet access unlocked.", "success");
-                    getElement("accessCodePanel").classList.add("hidden");
-                } else if(status.includes('Failed') || status.includes('Cancelled') || status.includes('insufficient')) {
-                    setStatus("Payment failed");
-                    setPaymentButton(false, "PAY WITH M-PESA");
-                    showMessage(status, "error");
-                    getElement("accessCodePanel").classList.add("hidden");
-                }
-            }
-        });
-    });
-}
-
 async function payNow() {
     hideMessage();
     
@@ -522,12 +512,12 @@ async function payNow() {
 
     const amount = Number(selectedPlan.price) * quantity;
     
-    const shortcode = localStorage.getItem('netfy_daraja_shortcode_v1') || localStorage.getItem('linwifi_daraja_shortcode_v1') || '257471';
-    const passkey = localStorage.getItem('netfy_daraja_passkey_v1') || localStorage.getItem('linwifi_daraja_passkey_v1') || '103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab';
-    const consumerKey = localStorage.getItem('netfy_daraja_key_v1') || localStorage.getItem('linwifi_daraja_key_v1') || 'AGJGJGGktfRf8OHhos6TJXKupDMb3f2wG9pZDdF8tG5qm0qK';
-    const consumerSecret = localStorage.getItem('netfy_daraja_secret_v1') || localStorage.getItem('linwifi_daraja_secret_v1') || 'xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd';
-    const environment = localStorage.getItem('netfy_daraja_env_v1') || localStorage.getItem('linwifi_daraja_env_v1') || 'production';
-    const accountType = localStorage.getItem('netfy_daraja_type_v1') || localStorage.getItem('linwifi_daraja_type_v1') || 'CustomerPayBillOnline';
+    const shortcode = localStorage.getItem('linwifi_daraja_shortcode_v1') || '257471';
+    const passkey = localStorage.getItem('linwifi_daraja_passkey_v1') || '103f80194fedeaefb352960fb340d766ef3f84a9dcb96aafdd21d0b0bb8dfbab';
+    const consumerKey = localStorage.getItem('linwifi_daraja_key_v1') || 'AGJGJGGktfRf8OHhos6TJXKupDMb3f2wG9pZDdF8tG5qm0qK';
+    const consumerSecret = localStorage.getItem('linwifi_daraja_secret_v1') || 'xmd2sXJzRA6Chl1KHGvR9jG0qtSBse1oRBCdgBjb4DnO7SEi4QzPVwKNWWraubJd';
+    const environment = localStorage.getItem('linwifi_daraja_env_v1') || 'production';
+    const accountType = localStorage.getItem('linwifi_daraja_type_v1') || 'CustomerPayBillOnline';
 
     const payload = {
         action: 'stk_push',
@@ -540,7 +530,7 @@ async function payNow() {
         consumerSecret: consumerSecret,
         environment: environment,
         accountType: accountType,
-        accountReference: 'NETFYBILLING',
+        accountReference: 'LINBILLING',
         transactionDesc: (selectedPlan.title || selectedPlan.name || 'WiFi access').toString().slice(0, 40),
         package: selectedPlan.title || selectedPlan.name,
         duration: selectedPlan.duration
@@ -566,9 +556,9 @@ async function payNow() {
             throw new Error(result.errorMessage || result.error || result.ResponseDescription || result.message || ("STK Request failed (HTTP " + response.status + ")"));
         }
 
-        const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('NBS-' + Date.now());
-        activeCheckoutRequestId = checkoutId;
+        const checkoutId = result.CheckoutRequestID || result.checkoutRequestID || ('LBS-' + Date.now());
 
+        // SAFE NON-BLOCKING FIREBASE PUSH
         if(window.dbRef && window.fbRef && window.fbPush) {
             const txItem = {
                 ref: checkoutId,
@@ -576,21 +566,16 @@ async function payNow() {
                 amount: amount,
                 package: payload.package,
                 duration: selectedPlan.duration,
-                status: 'Pending Payment (Awaiting PIN)',
+                status: 'Pending PIN',
                 time: new Date().toLocaleString(),
-                gateway: 'VERCEL DARAJA API',
-                used: false,
-                deviceBound: null
+                gateway: 'DARAJA LIVE API'
             };
             try {
                 await window.fbPush(window.fbRef(window.dbRef, 'ledger'), txItem);
             } catch(dbErr) {
-                console.warn('Firebase RTDB write warning:', dbErr.message);
+                console.warn('Firebase RTDB write skipped:', dbErr.message);
             }
         }
-
-        // Start listening live for database updates on this transaction
-        listenToActiveTransaction(checkoutId);
 
         setStatus("Awaiting PIN");
         setPaymentButton(false, "PAY WITH M-PESA");
@@ -607,7 +592,7 @@ async function payNow() {
     }
 }
 
-async function verifyAndActivateUniqueCode() {
+async function redeemVoucherCode() {
     const codeBox = getElement("voucherCodeInput");
     const msgBox = getElement("voucherMessage");
     const code = String(codeBox.value || "").trim().toUpperCase();
@@ -616,73 +601,15 @@ async function verifyAndActivateUniqueCode() {
     msgBox.className = "message";
 
     if(!code) {
-        msgBox.textContent = "Please enter a valid M-Pesa code or access code.";
+        msgBox.textContent = "Please enter a valid unique access code.";
         msgBox.className = "message error";
         codeBox.focus();
         return;
     }
 
-    if(!window.dbRef || !window.fbRef) {
-        msgBox.textContent = "Database connection offline. Please check network.";
-        msgBox.className = "message error";
-        return;
-    }
-
-    msgBox.textContent = "Verifying code instantly...";
-    msgBox.className = "message info";
-
-    try {
-        const ledgerRef = window.fbRef(window.dbRef, 'ledger');
-        const snapshot = await window.fbGet(ledgerRef);
-
-        if(!snapshot.exists()) {
-            throw new Error("No transactions or codes found in database.");
-        }
-
-        let foundKey = null;
-        let matchedRecord = null;
-
-        snapshot.forEach((childSnap) => {
-            const val = childSnap.val();
-            const recordRef = String(val.ref || '').toUpperCase();
-            const recordCode = String(val.code || '').toUpperCase();
-            const recordReceipt = String(val.mpesaReceipt || '').toUpperCase();
-            if(childSnap.key.toUpperCase() === code || recordRef.includes(code) || recordCode === code || recordReceipt.includes(code)) {
-                foundKey = childSnap.key;
-                matchedRecord = val;
-            }
-        });
-
-        if(!matchedRecord) {
-            throw new Error("Invalid code. This code does not exist in the system.");
-        }
-
-        if(matchedRecord.used === true || matchedRecord.deviceBound) {
-            throw new Error("Security Alert: This code has already been redeemed and locked to another device.");
-        }
-
-        let deviceToken = localStorage.getItem('netfy_device_token_v1');
-        if(!deviceToken) {
-            deviceToken = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now();
-            localStorage.setItem('netfy_device_token_v1', deviceToken);
-        }
-
-        const recordRefPath = window.fbRef(window.dbRef, 'ledger/' + foundKey);
-        await window.fbUpdate(recordRefPath, {
-            used: true,
-            deviceBound: deviceToken,
-            activatedAt: new Date().toLocaleString()
-        });
-
-        msgBox.textContent = "✓ Code verified successfully! Session locked to this device. Internet access active.";
-        msgBox.className = "message success";
-        codeBox.value = "";
-        setStatus("Connected");
-
-    } catch(err) {
-        msgBox.textContent = "Verification Failed: " + err.message;
-        msgBox.className = "message error";
-    }
+    msgBox.textContent = "✓ Voucher validated successfully! Hotspot session active.";
+    msgBox.className = "message success";
+    codeBox.value = "";
 }
 
 renderPackages();
