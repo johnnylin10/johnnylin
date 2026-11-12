@@ -110,6 +110,10 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 .access-code-panel p{font-size:10px;line-height:1.6;color:#856404}
 .code-instructions{margin-top:12px;padding:10px;border-radius:8px;background:#fff;font-size:10px;line-height:1.7;color:#53430c}
 
+.voucher-display-box{background:#f0faf5;border:1.5px dashed #00b889;padding:12px;border-radius:10px;text-align:center;margin-top:10px}
+.voucher-display-box small{font-size:9px;color:#008b65;font-weight:bold;text-transform:uppercase;display:block}
+.voucher-code-text{font-size:22px;font-weight:900;color:#008b65;letter-spacing:2px;margin:5px 0}
+
 .popup-overlay{position:fixed;inset:0;background:rgba(3,15,28,.65);z-index:1000;display:none;align-items:center;justify-content:center;padding:22px}
 .popup-overlay.show{display:flex}
 .popup-box{width:100%;max-width:340px;background:white;border-radius:17px;padding:22px 18px;text-align:center;box-shadow:0 18px 55px rgba(0,0,0,.25)}
@@ -136,7 +140,7 @@ import {
 const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
-    databaseURL: "https://assetguard-c8c8c-default-rtdb.firebaseio.com",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
     projectId: "assetguard-c8c8c",
     storageBucket: "assetguard-c8c8c.firebasestorage.app",
     messagingSenderId: "317499012795",
@@ -237,7 +241,7 @@ console.log("NETFY Firebase initialized.");
         </div>
 
         <label for="phone">M-Pesa phone number</label>
-        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0712345678" value="" maxlength="13">
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="" value="" maxlength="13">
         <div class="input-hint">Enter your Safaricom phone number to receive the M-Pesa prompt.</div>
 
         <div id="quantityField" class="hidden">
@@ -269,6 +273,12 @@ console.log("NETFY Firebase initialized.");
                 <strong>Status:</strong> <span id="dbStatusText">Pending PIN</span><br>
                 Please enter your M-Pesa PIN on your phone when prompted. Internet access remains locked until payment clearance is confirmed.
             </div>
+            
+            <div id="successVoucherBox" class="voucher-display-box hidden">
+                <small>Your Unique Access Code / Password</small>
+                <div class="voucher-code-text" id="pulledVoucherCode">---</div>
+                <div style="font-size:9px;color:#008b65;margin-top:2px">Locked to this device. Save or use immediately!</div>
+            </div>
         </div>
 
         <p class="note">
@@ -287,7 +297,7 @@ console.log("NETFY Firebase initialized.");
         </p>
 
         <label for="voucherCodeInput">Enter M-Pesa / Access Code</label>
-        <input id="voucherCodeInput" type="text" placeholder="e.g. QJK92XYZ78" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
+        <input id="voucherCodeInput" type="text" placeholder="e.g. UKCI81YXOM" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
         <div class="input-hint">Codes are strictly single-use and cannot be shared across multiple devices.</div>
 
         <button type="button" class="pay" style="margin-top:14px" onclick="verifyAndActivateUniqueCode()">VERIFY & ACTIVATE INSTANTLY</button>
@@ -565,7 +575,36 @@ function stopTransactionListener() {
 }
 
 /* =========================================================
-   DIRECT CHECKOUT ID LISTENER
+   CLEAN M-PESA & DATABASE FEEDBACK MAPPER
+   ========================================================= */
+function formatTransactionFeedback(rawDesc, dbStatus) {
+    const text = String(rawDesc || dbStatus || "").toLowerCase();
+
+    if (!text || text.includes("pending") || text.includes("sent") || text.includes("processing") || text.includes("awaiting")) {
+        return "Pending PIN";
+    }
+
+    if (text.includes("success") || text.includes("completed")) {
+        return "Transaction successful";
+    }
+    if (text.includes("cancel") || text.includes("user abort")) {
+        return "Transaction successfully cancelled";
+    }
+    if (text.includes("insufficient") || text.includes("balance")) {
+        return "Insufficient funds";
+    }
+    if (text.includes("pin") || text.includes("wrong") || text.includes("password") || text.includes("credential") || text.includes("initiator")) {
+        return "You entered wrong pin";
+    }
+    if (text.includes("timeout") || text.includes("expired") || text.includes("time out")) {
+        return "Request timed out. Please try again";
+    }
+
+    return rawDesc || dbStatus || "Transaction failed";
+}
+
+/* =========================================================
+   DIRECT CHECKOUT ID LISTENER (WITH UNIQUE CODE PULLING)
    ========================================================= */
 function listenToTransactionById(checkoutId) {
     if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
@@ -588,13 +627,13 @@ function listenToTransactionById(checkoutId) {
             const matchedTx = snapshot.val() || {};
 
             const dbStatus = String(matchedTx.status || "").trim();
-            const resultDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || "").trim();
+            const rawDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || matchedTx.errorMessage || "").trim();
             
-            const displayMessage = resultDesc || dbStatus || "Pending PIN";
+            const displayMessage = formatTransactionFeedback(rawDesc, dbStatus);
             getElement("dbStatusText").textContent = displayMessage;
 
             const lowerStatus = dbStatus.toLowerCase();
-            const lowerDesc = resultDesc.toLowerCase();
+            const lowerDesc = rawDesc.toLowerCase();
 
             const successful =
                 lowerStatus === "success" ||
@@ -604,23 +643,56 @@ function listenToTransactionById(checkoutId) {
                 lowerStatus.includes("verified") ||
                 lowerDesc.includes("success");
 
-            const failed =
-                lowerStatus.includes("failed") ||
-                lowerStatus.includes("cancelled") ||
-                lowerStatus.includes("canceled") ||
-                lowerStatus.includes("insufficient") ||
-                lowerStatus.includes("rejected") ||
-                lowerDesc.includes("cancelled") ||
-                lowerDesc.includes("canceled") ||
-                lowerDesc.includes("failed");
+            const hasErrorOccurred =
+                lowerStatus === "failed" ||
+                lowerStatus.includes("fail") ||
+                lowerStatus.includes("cancel") ||
+                lowerDesc.includes("cancel") ||
+                lowerDesc.includes("failed") ||
+                lowerDesc.includes("invalid") ||
+                lowerDesc.includes("pin") ||
+                lowerDesc.includes("insufficient") ||
+                lowerDesc.includes("initiator") ||
+                Number(matchedTx.resultCode) > 0;
 
             if (successful) {
                 setStatus("Payment confirmed");
                 setPaymentButton(false, "PAY WITH M-PESA");
                 showMessage("✓ Payment confirmed successfully! M-Pesa payment received.", "success");
-                getElement("accessCodePanel").classList.add("hidden");
+
+                // Pull or generate the unique voucher code / password from record
+                let uniqueCode = 
+                    matchedTx.code || 
+                    matchedTx.mpesaReceipt || 
+                    matchedTx.ReceiptNumber || 
+                    matchedTx.checkoutRequestId || 
+                    checkoutId;
+
+                // Make sure it looks clean and uppercase like UKCI81YXOM
+                uniqueCode = String(uniqueCode).trim().toUpperCase();
+
+                // Bind session to this device MAC/token immediately upon success
+                let deviceToken = localStorage.getItem("netfy_device_token_v1");
+                if (!deviceToken) {
+                    deviceToken = "DEV-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Date.now();
+                    localStorage.setItem("netfy_device_token_v1", deviceToken);
+                }
+
+                // Update database record as used/device-bound
+                if (!matchedTx.deviceBound) {
+                    window.fbUpdate(txRef, {
+                        used: true,
+                        deviceBound: deviceToken,
+                        activatedAt: new Date().toLocaleString()
+                    });
+                }
+
+                // Display the pulled unique code box to the user
+                getElement("pulledVoucherCode").textContent = uniqueCode;
+                getElement("successVoucherBox").classList.remove("hidden");
+                
                 stopTransactionListener();
-            } else if (failed) {
+            } else if (hasErrorOccurred) {
                 setStatus("Payment failed");
                 setPaymentButton(false, "PAY WITH M-PESA");
                 showMessage(displayMessage, "error");
@@ -671,6 +743,7 @@ async function payNow() {
     setPaymentButton(true, "SENDING STK PUSH...");
     setStatus("Processing");
     getElement("accessCodePanel").classList.add("hidden");
+    getElement("successVoucherBox").classList.add("hidden");
 
     showMessage("Sending M-Pesa prompt to " + phone + ". Enter your PIN on your phone...", "info");
 
@@ -684,17 +757,13 @@ async function payNow() {
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(
-                result.message ||
-                result.errorMessage ||
-                result.error ||
-                result.ResponseDescription ||
-                "Payment request failed. HTTP " + response.status
-            );
+            const rawErrorMsg = result.message || result.errorMessage || result.error || result.ResponseDescription || "HTTP " + response.status;
+            throw new Error(formatTransactionFeedback(rawErrorMsg, "failed"));
         }
 
         if (result.success === false || result.error) {
-            throw new Error(result.message || result.errorMessage || result.error || "M-Pesa request was rejected.");
+            const rawErrorMsg = result.message || result.errorMessage || result.error || "M-Pesa request was rejected.";
+            throw new Error(formatTransactionFeedback(rawErrorMsg, "failed"));
         }
 
         const checkoutId =
@@ -721,7 +790,7 @@ async function payNow() {
         console.error("NETFY STK PUSH ERROR:", error);
         setStatus("Payment error");
         setPaymentButton(false, "PAY WITH M-PESA");
-        showMessage("STK Push failed: " + error.message, "error");
+        showMessage(error.message, "error");
     } finally {
         paymentInProgress = false;
     }
@@ -778,6 +847,16 @@ async function verifyAndActivateUniqueCode() {
             throw new Error("Invalid code. This code does not exist in the system.");
         }
 
+        let deviceToken = localStorage.getItem("netfy_device_token_v1");
+        if (!deviceToken) {
+            deviceToken = "DEV-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Date.now();
+            localStorage.setItem("netfy_device_token_v1", deviceToken);
+        }
+
+        if (matchedRecord.used === true && matchedRecord.deviceBound && matchedRecord.deviceBound !== deviceToken) {
+            throw new Error("Security alert: This code is already bound and active on another device.");
+        }
+
         const paymentStatus = String(matchedRecord.status || "").toLowerCase();
         const paymentConfirmed =
             paymentStatus === "success" ||
@@ -788,16 +867,6 @@ async function verifyAndActivateUniqueCode() {
 
         if (!paymentConfirmed) {
             throw new Error("Payment has not yet been confirmed. Please wait for M-Pesa confirmation.");
-        }
-
-        if (matchedRecord.used === true || matchedRecord.deviceBound) {
-            throw new Error("Security alert: This code has already been redeemed.");
-        }
-
-        let deviceToken = localStorage.getItem("netfy_device_token_v1");
-        if (!deviceToken) {
-            deviceToken = "DEV-" + Math.random().toString(36).substring(2, 10).toUpperCase() + "-" + Date.now();
-            localStorage.setItem("netfy_device_token_v1", deviceToken);
         }
 
         const recordRefPath = window.fbRef(window.dbRef, "transactions/" + foundKey);
