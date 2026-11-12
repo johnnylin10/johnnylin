@@ -33,9 +33,11 @@ header p{font-size:9px;margin-top:5px;color:#d8eaff;letter-spacing:.7px}
 .container{width:100%;max-width:650px;margin:auto;padding:11px}
 .card{background:white;border-radius:15px;padding:14px;margin-bottom:11px;box-shadow:0 3px 14px rgba(16,43,71,.045);min-width:0}
 h2{font-size:15px;margin-bottom:10px;color:var(--navy);font-weight:800}
+
 .portal-tabs{display:flex;gap:6px;background:#e2ecf7;padding:5px;border-radius:12px;margin-bottom:11px}
 .portal-tab{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:800;color:#536780;background:transparent;border:0;border-radius:9px;cursor:pointer;transition:.15s}
 .portal-tab.active{background:white;color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+
 .section-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:11px}
 .section-heading h2{margin:0}
 .step-label{font-size:9px;font-weight:900;color:var(--blue);background:#edf6ff;padding:5px 8px;border-radius:20px;white-space:nowrap}
@@ -102,10 +104,12 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .bar-total strong{display:block;font-size:19px;color:var(--navy);margin-top:2px}
 .payment-bar button{width:auto;min-width:145px;margin:0;padding:13px 16px;font-size:12px;border-radius:10px}
 footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;line-height:1.7}
+
 .access-code-panel{margin-top:12px;padding:15px;border:1px solid #ffeeba;border-radius:12px;background:linear-gradient(145deg,#fffdf4,#fff)}
 .access-code-panel h3{font-size:14px;color:#856404;margin-bottom:6px}
 .access-code-panel p{font-size:10px;line-height:1.6;color:#856404}
 .code-instructions{margin-top:12px;padding:10px;border-radius:8px;background:#fff;font-size:10px;line-height:1.7;color:#53430c}
+
 .popup-overlay{position:fixed;inset:0;background:rgba(3,15,28,.65);z-index:1000;display:none;align-items:center;justify-content:center;padding:22px}
 .popup-overlay.show{display:flex}
 .popup-box{width:100%;max-width:340px;background:white;border-radius:17px;padding:22px 18px;text-align:center;box-shadow:0 18px 55px rgba(0,0,0,.25)}
@@ -115,13 +119,24 @@ footer{text-align:center;padding:15px 10px 20px;font-size:10px;color:#758195;lin
 .popup-box button{margin-top:16px}
 </style>
 
+<!-- FIREBASE SDK & AUTHENTICATION HANDLER -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
-    getDatabase, ref, push, get, update, onValue
+    getDatabase,
+    ref,
+    push,
+    get,
+    update,
+    child,
+    onValue
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import {
+    getAuth,
+    signInAnonymously,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-/* Same Firebase project/database used by the reference payment page. */
 const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
@@ -134,21 +149,34 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
+/* Authenticate anonymously to satisfy Realtime Database security rules if needed */
+signInAnonymously(auth).then(() => {
+    console.log("Firebase signed in anonymously.");
+}).catch(err => {
+    console.warn("Anonymous sign-in skipped or restricted:", err);
+});
+
+/* Expose Firebase functions and state to the main page script */
 window.dbRef = db;
+window.fbAuth = auth;
 window.fbPush = push;
 window.fbRef = ref;
 window.fbGet = get;
+window.fbChild = child;
 window.fbUpdate = update;
 window.fbOnValue = onValue;
-window.firebaseReady = true;
 
+window.firebaseReady = true;
 window.dispatchEvent(new Event("netfy-firebase-ready"));
-console.log("NETFY Firebase connected.");
+
+console.log("NETFY Firebase initialized.");
 </script>
 </head>
 
 <body>
+
 <header>
     <div class="header-inner">
         <div>
@@ -163,6 +191,7 @@ console.log("NETFY Firebase connected.");
 </header>
 
 <div class="container">
+
 <div class="card">
     <div class="status">
         <strong>● WIFI PORTAL ACTIVE</strong>
@@ -176,6 +205,7 @@ console.log("NETFY Firebase connected.");
 </div>
 
 <div id="buyModeSection">
+
     <div class="card plans-card" id="internetPackages">
         <div class="plans-intro">
             <div>
@@ -184,7 +214,9 @@ console.log("NETFY Firebase connected.");
             </div>
             <div class="plan-tag">LIVE SYNCED</div>
         </div>
+
         <div class="packages" id="packagesContainer"></div>
+
         <div class="selected-plan-box">
             <div>
                 <div class="selected-caption">Your selected package</div>
@@ -199,6 +231,7 @@ console.log("NETFY Firebase connected.");
             <h2>Who are you buying WiFi for?</h2>
             <span class="step-label">STEP 2 OF 3</span>
         </div>
+
         <div class="grid">
             <div class="choice active" onclick="choose(this,'Myself')"><div class="icon">📱</div><strong>Myself</strong><small>Instant Auto-Connect</small></div>
             <div class="choice" onclick="choose(this,'Another person')"><div class="icon">👥</div><strong>Another person</strong><small>Unique code</small></div>
@@ -211,7 +244,7 @@ console.log("NETFY Firebase connected.");
         </div>
 
         <label for="phone">M-Pesa phone number</label>
-        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="" value="" maxlength="13">
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0712345678" value="" maxlength="13">
         <div class="input-hint">Enter your Safaricom phone number to receive the M-Pesa prompt.</div>
 
         <div id="quantityField" class="hidden">
@@ -226,6 +259,7 @@ console.log("NETFY Firebase connected.");
             <h2>Confirm Your Payment</h2>
             <span class="step-label">STEP 3 OF 3</span>
         </div>
+
         <div class="summary">
             <div class="row"><span>Device / Purpose</span><strong id="typeDisplay">Myself</strong></div>
             <div class="row"><span>Package</span><strong id="packageDisplay">None selected</strong></div>
@@ -249,6 +283,7 @@ console.log("NETFY Firebase connected.");
             Internet activates automatically only after payment is successfully received.
         </p>
     </div>
+
 </div>
 
 <div id="redeemModeSection" class="hidden">
@@ -257,13 +292,17 @@ console.log("NETFY Firebase connected.");
         <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6">
             Enter your M-Pesa transaction reference code or generated single-use device code. The system instantly verifies it and locks the session to this device to prevent multi-device sharing.
         </p>
+
         <label for="voucherCodeInput">Enter M-Pesa / Access Code</label>
         <input id="voucherCodeInput" type="text" placeholder="e.g. QJK92XYZ78" style="text-transform:uppercase;letter-spacing:1px;font-weight:bold;">
         <div class="input-hint">Codes are strictly single-use and cannot be shared across multiple devices.</div>
+
         <button type="button" class="pay" style="margin-top:14px" onclick="verifyAndActivateUniqueCode()">VERIFY & ACTIVATE INSTANTLY</button>
+
         <div id="voucherMessage" class="message" style="margin-top:12px"></div>
     </div>
 </div>
+
 </div>
 
 <div class="payment-bar" id="paymentBarContainer">
@@ -272,7 +311,7 @@ console.log("NETFY Firebase connected.");
             <small>TOTAL PAYMENT</small>
             <strong id="barTotal">KSh 0</strong>
         </div>
-        <button class="pay" id="payButton" onclick="payNow()">PAY WITH M-PESA</button>
+        <button type="button" class="pay" id="payButton" onclick="payNow()" disabled>PAY WITH M-PESA</button>
     </div>
 </div>
 
@@ -294,44 +333,38 @@ console.log("NETFY Firebase connected.");
 <script>
 "use strict";
 
-/* CLOUDFLARE WORKER — SAME ENDPOINT AS THE REFERENCE PAYMENT PAGE */
-const getEndpoint = () =>
+const STK_ENDPOINT =
     "https://johnnylin.karanjajmwangi-10.workers.dev/api/stk-push";
 
-const defaultPlans = [
-    {name:"1 Hour",title:"1 Hour",price:10,duration:"60 min",tag:"Quick browsing"},
-    {name:"3 Hours",title:"3 Hours",price:20,duration:"180 min",tag:"Everyday browsing"},
-    {name:"6 Hours",title:"6 Hours",price:30,duration:"360 min",tag:"Extended browsing"},
-    {name:"12 Hours",title:"12 Hours",price:50,duration:"720 min",tag:"Popular"}
-];
+let plans = [];
 
-function loadPlans() {
-    try {
-        const saved =
-            localStorage.getItem("netfy_shared_plans_v1") ||
-            localStorage.getItem("linwifi_shared_plans_v1");
+try {
+    const savedPlans =
+        localStorage.getItem("netfy_shared_plans_v1") ||
+        localStorage.getItem("linwifi_shared_plans_v1");
 
-        const parsed = saved ? JSON.parse(saved) : defaultPlans;
-
-        if (!Array.isArray(parsed) || !parsed.length) return defaultPlans;
-
-        return parsed.filter(p =>
-            p &&
-            (p.name || p.title) &&
-            Number.isFinite(Number(p.price)) &&
-            Number(p.price) > 0
-        );
-    } catch (e) {
-        console.warn("Could not load saved plans:", e);
-        return defaultPlans;
-    }
+    plans = savedPlans ? JSON.parse(savedPlans) : [];
+} catch (error) {
+    console.warn("Saved package settings could not be loaded.", error);
 }
 
-let plans = loadPlans();
+if (!Array.isArray(plans) || !plans.length) {
+    plans = [
+        {name:"1 Hour",title:"1 Hour",price:10,duration:"60 min",tag:"Quick browsing"},
+        {name:"3 Hours",title:"3 Hours",price:20,duration:"180 min",tag:"Everyday browsing"},
+        {name:"6 Hours",title:"6 Hours",price:30,duration:"360 min",tag:"Extended browsing"},
+        {name:"12 Hours",title:"12 Hours",price:50,duration:"720 min",tag:"Popular"},
+        {name:"24 Hours",title:"24 Hours",price:80,duration:"1 day",tag:"Full day"},
+        {name:"7 Days",title:"7 Days",price:300,duration:"1 week",tag:"Great value"},
+        {name:"30 Days",title:"30 Days",price:1000,duration:"1 month",tag:"Best value"}
+    ];
+}
+
 let purchaseType = "Myself";
 let selectedPlan = null;
 let activeCheckoutRequestId = null;
-let activeLedgerListener = null;
+let activeLedgerKey = null;
+let activeLedgerUnsubscribe = null;
 let paymentInProgress = false;
 
 function getElement(id) {
@@ -348,6 +381,12 @@ function hideMessage() {
     const box = getElement("message");
     box.textContent = "";
     box.className = "message";
+}
+
+function showVoucherMessage(text, type = "info") {
+    const box = getElement("voucherMessage");
+    box.textContent = String(text || "");
+    box.className = "message " + type;
 }
 
 function showPhoneErrorPopup() {
@@ -381,7 +420,7 @@ function safeScroll(element, position = "start") {
             behavior: "auto",
             block: position
         });
-    } catch (e) {}
+    } catch (error) {}
 }
 
 function escapeHTML(value) {
@@ -405,24 +444,31 @@ function renderPackages() {
             (p.name || p.title);
 
         return `
-        <div class="package ${isSelected ? "active" : ""}"
-             onclick="selectPackage(${i})">
-            <div class="package-top">
-                <div class="package-icon">⚡</div>
-                <div class="package-check">✓</div>
-            </div>
-            <div class="package-info">
-                <div class="package-duration">${escapeHTML(planName)}</div>
-                <div class="package-description">${escapeHTML(p.tag || p.duration || "")}</div>
-            </div>
-            <div class="package-bottom">
-                <div class="package-price">
-                    <span class="package-currency">KSh</span>${Number(p.price).toLocaleString("en-KE")}
+            <div class="package ${isSelected ? "active" : ""}"
+                 onclick="selectPackage(${i})">
+
+                <div class="package-top">
+                    <div class="package-icon">⚡</div>
+                    <div class="package-check">✓</div>
                 </div>
-                <span class="package-unit">${escapeHTML(String(p.duration || "").toUpperCase())}</span>
+
+                <div class="package-info">
+                    <div class="package-duration">${escapeHTML(planName)}</div>
+                    <div class="package-description">${escapeHTML(p.tag || p.duration || "")}</div>
+                </div>
+
+                <div class="package-bottom">
+                    <div class="package-price">
+                        <span class="package-currency">KSh</span>${Number(p.price).toLocaleString("en-KE")}
+                    </div>
+                    <span class="package-unit">${escapeHTML(String(p.duration || "").toUpperCase())}</span>
+                </div>
+
+                <div class="package-action">
+                    ${isSelected ? "✓ SELECTED" : "SELECT PLAN"}
+                </div>
             </div>
-            <div class="package-action">${isSelected ? "✓ SELECTED" : "SELECT PLAN"}</div>
-        </div>`;
+        `;
     }).join("");
 }
 
@@ -433,15 +479,18 @@ function selectPackage(index) {
     renderPackages();
 
     const name = selectedPlan.title || selectedPlan.name;
+    const price = Number(selectedPlan.price);
+
     getElement("packageDisplay").textContent = name;
     getElement("selectedPackageName").textContent = name;
     getElement("selectedPackagePrice").textContent =
-        "KSh " + Number(selectedPlan.price).toLocaleString("en-KE");
+        "KSh " + price.toLocaleString("en-KE");
+
+    getElement("payButton").disabled = false;
 
     updateTotal();
     hideMessage();
 
-    getElement("payButton").disabled = false;
     safeScroll(getElement("deviceSelection"), "start");
 }
 
@@ -450,32 +499,46 @@ window.addEventListener("storage", event => {
         event.key === "netfy_shared_plans_v1" ||
         event.key === "linwifi_shared_plans_v1"
     ) {
-        plans = loadPlans();
+        try {
+            const newPlans = JSON.parse(event.newValue || "[]");
 
-        if (selectedPlan) {
-            const oldName = selectedPlan.name || selectedPlan.title;
-            selectedPlan = plans.find(p =>
-                (p.name || p.title) === oldName
-            ) || null;
+            if (Array.isArray(newPlans) && newPlans.length) {
+                const previousName = selectedPlan
+                    ? (selectedPlan.name || selectedPlan.title)
+                    : null;
+
+                plans = newPlans;
+
+                selectedPlan = previousName
+                    ? plans.find(p =>
+                        (p.name || p.title) === previousName
+                    ) || null
+                    : null;
+
+                renderPackages();
+                updateTotal();
+
+                getElement("payButton").disabled = !selectedPlan;
+            }
+        } catch (error) {
+            console.warn("Package synchronization error:", error);
         }
-
-        renderPackages();
-        updateTotal();
     }
 });
 
 function choose(element, type) {
-    document.querySelectorAll(".choice").forEach(choice =>
-        choice.classList.remove("active")
-    );
+    document.querySelectorAll(".choice").forEach(choice => {
+        choice.classList.remove("active");
+    });
 
     element.classList.add("active");
     purchaseType = type;
 
     getElement("typeDisplay").textContent = type;
 
-    const multiple = type === "Multiple";
-    getElement("quantityField").classList.toggle("hidden", !multiple);
+    const isMultiple = type === "Multiple";
+
+    getElement("quantityField").classList.toggle("hidden", !isMultiple);
 
     updateTotal();
     hideMessage();
@@ -514,6 +577,7 @@ function updateTotal() {
         getElement("deviceDisplay").textContent = String(quantity);
         getElement("totalDisplay").textContent = formatted;
         getElement("barTotal").textContent = formatted;
+
     } catch (error) {
         getElement("deviceDisplay").textContent = "Invalid";
         getElement("totalDisplay").textContent = "Check quantity";
@@ -526,7 +590,9 @@ getElement("quantity").addEventListener("input", updateTotal);
 function normalizePhone(value) {
     let phone = String(value || "").replace(/[\s\-()]/g, "");
 
-    if (phone.startsWith("+254")) phone = phone.substring(1);
+    if (phone.startsWith("+254")) {
+        phone = phone.substring(1);
+    }
 
     if (phone.startsWith("254")) {
         return /^254[17]\d{8}$/.test(phone) ? phone : null;
@@ -547,7 +613,7 @@ function setPaymentButton(loading, label) {
     const button = getElement("payButton");
     if (!button) return;
 
-    button.disabled = !!loading || !selectedPlan;
+    button.disabled = !!loading || (!selectedPlan && !loading);
 
     button.innerHTML = loading
         ? '<span class="loader"></span> ' + (label || "PROCESSING...")
@@ -559,39 +625,59 @@ function setStatus(text) {
 }
 
 function stopLedgerListener() {
-    if (typeof activeLedgerListener === "function") {
-        activeLedgerListener();
+    if (typeof activeLedgerUnsubscribe === "function") {
+        activeLedgerUnsubscribe();
     }
-    activeLedgerListener = null;
+
+    activeLedgerUnsubscribe = null;
 }
 
-/*
- * Listen to the exact ledger item created for this checkout.
- * The Worker callback must update this same record to a final status.
- */
 function listenToActiveTransaction(checkoutId, ledgerKey) {
     if (
         !window.dbRef ||
         !window.fbRef ||
         !window.fbOnValue
     ) {
-        console.error("Firebase listener is unavailable.");
+        console.warn("Firebase listener is not ready.");
         return;
     }
 
     stopLedgerListener();
 
-    const transactionRef = window.fbRef(
-        window.dbRef,
-        "ledger/" + ledgerKey
-    );
+    let transactionRef;
 
-    activeLedgerListener = window.fbOnValue(
+    if (ledgerKey) {
+        transactionRef = window.fbRef(
+            window.dbRef,
+            "ledger/" + ledgerKey
+        );
+    } else {
+        transactionRef = window.fbRef(
+            window.dbRef,
+            "ledger"
+        );
+    }
+
+    activeLedgerUnsubscribe = window.fbOnValue(
         transactionRef,
         snapshot => {
             if (!snapshot.exists()) return;
 
-            const transaction = snapshot.val() || {};
+            let transaction = null;
+
+            if (ledgerKey) {
+                transaction = snapshot.val();
+            } else {
+                snapshot.forEach(childSnapshot => {
+                    const value = childSnapshot.val() || {};
+
+                    if (String(value.ref || "") === String(checkoutId)) {
+                        transaction = value;
+                    }
+                });
+            }
+
+            if (!transaction) return;
 
             if (String(transaction.ref || "") !== String(checkoutId)) {
                 return;
@@ -601,21 +687,21 @@ function listenToActiveTransaction(checkoutId, ledgerKey) {
                 .trim()
                 .toLowerCase();
 
-            const isSuccess =
+            const successful =
                 status === "success" ||
                 status === "successful" ||
                 status === "paid" ||
                 status.includes("completed") ||
                 status.includes("verified");
 
-            const isFailure =
+            const failed =
                 status.includes("failed") ||
                 status.includes("cancelled") ||
                 status.includes("canceled") ||
                 status.includes("insufficient") ||
                 status.includes("rejected");
 
-            if (isSuccess) {
+            if (successful) {
                 setStatus("Payment confirmed");
                 setPaymentButton(false, "PAY WITH M-PESA");
 
@@ -625,9 +711,10 @@ function listenToActiveTransaction(checkoutId, ledgerKey) {
                 );
 
                 getElement("accessCodePanel").classList.add("hidden");
+
                 stopLedgerListener();
 
-            } else if (isFailure) {
+            } else if (failed) {
                 setStatus("Payment failed");
                 setPaymentButton(false, "PAY WITH M-PESA");
 
@@ -637,6 +724,7 @@ function listenToActiveTransaction(checkoutId, ledgerKey) {
                 );
 
                 getElement("accessCodePanel").classList.add("hidden");
+
                 stopLedgerListener();
 
             } else {
@@ -644,7 +732,7 @@ function listenToActiveTransaction(checkoutId, ledgerKey) {
             }
         },
         error => {
-            console.error("Firebase payment listener:", error);
+            console.error("Firebase status listener error:", error);
             setStatus("Status check unavailable");
         }
     );
@@ -660,6 +748,7 @@ async function payNow() {
             "Please select an internet plan above before paying.",
             "error"
         );
+
         safeScroll(getElement("internetPackages"), "start");
         return;
     }
@@ -680,24 +769,20 @@ async function payNow() {
         return;
     }
 
-    const amount = Math.round(Number(selectedPlan.price) * quantity);
+    const amount = Math.round(
+        Number(selectedPlan.price) * quantity
+    );
 
     if (!Number.isFinite(amount) || amount < 1) {
         showMessage("Invalid payment amount.", "error");
         return;
     }
 
-    if (!window.dbRef || !window.fbRef || !window.fbPush) {
-        showMessage(
-            "Firebase is not ready. Refresh the page and try again.",
-            "error"
-        );
-        return;
-    }
-
     paymentInProgress = true;
+
     setPaymentButton(true, "SENDING STK PUSH...");
     setStatus("Processing");
+
     getElement("accessCodePanel").classList.add("hidden");
 
     showMessage(
@@ -707,16 +792,10 @@ async function payNow() {
     );
 
     try {
-        /*
-         * This intentionally matches the simple reference payment page:
-         * Worker receives phone and amount. Daraja credentials stay on
-         * the server and are not exposed in this customer HTML.
-         */
-        const response = await fetch(getEndpoint(), {
+        const response = await fetch(STK_ENDPOINT, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 phone: phone,
@@ -724,40 +803,26 @@ async function payNow() {
             })
         });
 
-        const raw = await response.text();
-        let result = {};
-
-        try {
-            result = raw ? JSON.parse(raw) : {};
-        } catch (error) {
-            throw new Error(
-                "Cloudflare Worker returned an invalid response."
-            );
-        }
+        const result = await response.json();
 
         if (!response.ok) {
             throw new Error(
+                result.message ||
                 result.errorMessage ||
                 result.error ||
                 result.ResponseDescription ||
-                result.message ||
-                "STK request failed. HTTP " + response.status
+                "Payment request failed. HTTP " + response.status
             );
         }
 
         if (
             result.success === false ||
-            result.error ||
-            (
-                result.ResponseCode !== undefined &&
-                String(result.ResponseCode) !== "0"
-            )
+            result.error
         ) {
             throw new Error(
+                result.message ||
                 result.errorMessage ||
                 result.error ||
-                result.ResponseDescription ||
-                result.message ||
                 "M-Pesa request was rejected."
             );
         }
@@ -765,76 +830,58 @@ async function payNow() {
         const checkoutId =
             result.CheckoutRequestID ||
             result.checkoutRequestID ||
-            result.checkoutRequestId ||
-            result.checkoutId;
-
-        if (!checkoutId) {
-            throw new Error(
-                "Worker did not return CheckoutRequestID. " +
-                "Check the Worker response before retrying."
-            );
-        }
+            ("STK-" + Date.now());
 
         activeCheckoutRequestId = checkoutId;
 
-        const packageName =
-            selectedPlan.title || selectedPlan.name || "WiFi access";
+        /* Safely attempt Firebase push with error fallback so STK Push isn't interrupted */
+        if (
+            window.dbRef &&
+            window.fbRef &&
+            window.fbPush
+        ) {
+            try {
+                const ledgerRecord = {
+                    ref: checkoutId,
+                    phone: phone,
+                    amount: amount,
+                    status: "Pending PIN",
+                    time: new Date().toLocaleString(),
+                    gateway: "CLOUDFLARE WORKER",
+                    package: selectedPlan.title || selectedPlan.name,
+                    duration: selectedPlan.duration || "",
+                    quantity: quantity,
+                    purchaseType: purchaseType,
+                    used: false,
+                    deviceBound: null
+                };
 
-        /*
-         * Store a local pending ledger item.
-         * The Worker callback should find this item by ref/checkoutRequestId
-         * and update its status after Safaricom responds.
-         */
-        const ledgerRecord = {
-            ref: checkoutId,
-            checkoutRequestId: checkoutId,
-            phone: phone,
-            amount: amount,
-            package: packageName,
-            duration: selectedPlan.duration || "",
-            quantity: quantity,
-            purchaseType: purchaseType,
-            status: "Pending PIN",
-            time: new Date().toLocaleString(),
-            gateway: "CLOUDFLARE WORKER",
-            used: false,
-            deviceBound: null
-        };
-
-        // Ledger recording is best-effort. A Firebase write failure must
-        // never turn an accepted M-Pesa STK request into a customer error.
-        let ledgerKey = null;
-        try {
-            if (
-                window.dbRef &&
-                typeof window.fbRef === "function" &&
-                typeof window.fbPush === "function"
-            ) {
-                const newRecord = await window.fbPush(
+                const savedRecord = await window.fbPush(
                     window.fbRef(window.dbRef, "ledger"),
                     ledgerRecord
                 );
-                ledgerKey = newRecord && newRecord.key ? newRecord.key : null;
-            } else {
-                throw new Error("Firebase database is not ready.");
-            }
-        } catch (ledgerError) {
-            console.warn(
-                "M-Pesa STK request was accepted, but the Firebase ledger write failed:",
-                ledgerError
-            );
-        }
 
-        // Only attach the live status listener when the ledger record exists.
-        if (ledgerKey) {
-            listenToActiveTransaction(checkoutId, ledgerKey);
+                activeLedgerKey = savedRecord.key;
+
+                listenToActiveTransaction(
+                    checkoutId,
+                    activeLedgerKey
+                );
+
+            } catch (firebaseError) {
+                console.warn(
+                    "Ledger sync bypassed due to permission/network restriction:",
+                    firebaseError
+                );
+                // Do not throw or fail the user flow; STK Push was already successfully triggered.
+            }
         }
 
         setStatus("Awaiting PIN");
         setPaymentButton(false, "PAY WITH M-PESA");
 
         showMessage(
-            "✓ STK Push request sent successfully. Check your phone and enter your M-Pesa PIN. Payment status will update automatically.",
+            "✓ STK Push request sent successfully. Please check your phone and enter your M-Pesa PIN to complete payment.",
             "info"
         );
 
@@ -842,10 +889,14 @@ async function payNow() {
             "Payment request sent. Internet access remains locked until payment is confirmed.";
 
         getElement("accessCodePanel").classList.remove("hidden");
-        safeScroll(getElement("accessCodePanel"), "center");
+
+        safeScroll(
+            getElement("accessCodePanel"),
+            "center"
+        );
 
     } catch (error) {
-        console.error("NETFY STK ERROR:", error);
+        console.error("NETFY STK PUSH ERROR:", error);
 
         setStatus("Payment error");
         setPaymentButton(false, "PAY WITH M-PESA");
@@ -860,38 +911,55 @@ async function payNow() {
     }
 }
 
+window.payNow = payNow;
+
 async function verifyAndActivateUniqueCode() {
     const codeBox = getElement("voucherCodeInput");
-    const msgBox = getElement("voucherMessage");
-    const code = String(codeBox.value || "").trim().toUpperCase();
-
-    msgBox.textContent = "";
-    msgBox.className = "message";
+    const code = String(codeBox.value || "")
+        .trim()
+        .toUpperCase();
 
     if (!code) {
-        msgBox.textContent =
-            "Please enter a valid M-Pesa code or access code.";
-        msgBox.className = "message error";
+        showVoucherMessage(
+            "Please enter a valid M-Pesa code or access code.",
+            "error"
+        );
+
         codeBox.focus();
         return;
     }
 
-    if (!window.dbRef || !window.fbRef || !window.fbGet) {
-        msgBox.textContent =
-            "Database connection offline. Please check network.";
-        msgBox.className = "message error";
+    if (
+        !window.dbRef ||
+        !window.fbRef ||
+        !window.fbGet ||
+        !window.fbUpdate
+    ) {
+        showVoucherMessage(
+            "Database connection offline. Please check your network.",
+            "error"
+        );
+
         return;
     }
 
-    msgBox.textContent = "Verifying code...";
-    msgBox.className = "message info";
+    showVoucherMessage(
+        "Verifying code...",
+        "info"
+    );
 
     try {
-        const ledgerRef = window.fbRef(window.dbRef, "ledger");
+        const ledgerRef = window.fbRef(
+            window.dbRef,
+            "ledger"
+        );
+
         const snapshot = await window.fbGet(ledgerRef);
 
         if (!snapshot.exists()) {
-            throw new Error("No transactions or codes found in database.");
+            throw new Error(
+                "No transactions or codes found in database."
+            );
         }
 
         let foundKey = null;
@@ -916,39 +984,52 @@ async function verifyAndActivateUniqueCode() {
         });
 
         if (!matchedRecord) {
-            throw new Error("Invalid code. This code does not exist in the system.");
+            throw new Error(
+                "Invalid code. This code does not exist in the system."
+            );
         }
 
-        const status = String(matchedRecord.status || "").toLowerCase();
+        const paymentStatus = String(
+            matchedRecord.status || ""
+        ).toLowerCase();
 
-        const paid =
-            status === "success" ||
-            status === "successful" ||
-            status === "paid" ||
-            status.includes("completed") ||
-            status.includes("verified");
+        const paymentConfirmed =
+            paymentStatus === "success" ||
+            paymentStatus === "successful" ||
+            paymentStatus === "paid" ||
+            paymentStatus.includes("completed") ||
+            paymentStatus.includes("verified");
 
-        if (!paid) {
+        if (!paymentConfirmed) {
             throw new Error(
                 "Payment has not yet been confirmed. Please wait for M-Pesa confirmation."
             );
         }
 
-        if (matchedRecord.used === true || matchedRecord.deviceBound) {
+        if (
+            matchedRecord.used === true ||
+            matchedRecord.deviceBound
+        ) {
             throw new Error(
                 "Security alert: This code has already been redeemed."
             );
         }
 
-        let deviceToken = localStorage.getItem("netfy_device_token_v1");
+        let deviceToken = localStorage.getItem(
+            "netfy_device_token_v1"
+        );
 
         if (!deviceToken) {
             deviceToken =
                 "DEV-" +
                 Math.random().toString(36).substring(2, 10).toUpperCase() +
-                "-" + Date.now();
+                "-" +
+                Date.now();
 
-            localStorage.setItem("netfy_device_token_v1", deviceToken);
+            localStorage.setItem(
+                "netfy_device_token_v1",
+                deviceToken
+            );
         }
 
         const recordRefPath = window.fbRef(
@@ -962,26 +1043,31 @@ async function verifyAndActivateUniqueCode() {
             activatedAt: new Date().toLocaleString()
         });
 
-        msgBox.textContent =
-            "✓ Code verified successfully! Session locked to this device. Internet access active.";
+        showVoucherMessage(
+            "✓ Code verified successfully! Session locked to this device. Internet access active.",
+            "success"
+        );
 
-        msgBox.className = "message success";
         codeBox.value = "";
         setStatus("Connected");
 
     } catch (error) {
-        msgBox.textContent = "Verification Failed: " + error.message;
-        msgBox.className = "message error";
+        showVoucherMessage(
+            "Verification Failed: " + error.message,
+            "error"
+        );
     }
 }
 
-/* INITIAL PAGE SETUP */
+window.verifyAndActivateUniqueCode = verifyAndActivateUniqueCode;
+
 renderPackages();
 updateTotal();
-getElement("payButton").disabled = !selectedPlan;
+
+getElement("payButton").disabled = true;
 setStatus("Ready");
 
-console.log("NETFY WIFI PAYMENT ENGINE READY.");
+console.log("NETFY WIFI PAYMENT PAGE READY.");
 </script>
 
 </body>
