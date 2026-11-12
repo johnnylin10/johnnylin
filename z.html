@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #071522;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+    }
+    .card {
+      background: #0f2338;
+      padding: 24px;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #9eb2c7;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 14px;
+      border: 1px solid #243b55;
+      border-radius: 8px;
+      background: #071522;
+      color: #ffffff;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: #ff7100;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    #s {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #68c3ff;
+      text-align: center;
+      min-height: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Make a payment</h2>
+    <form id="f">
+      <label for="p">Phone Number (e.g. 254712345678)</label>
+      <input id="p" type="tel" placeholder="2547XXXXXXXX" required>
+
+      <label for="a">Amount (KES)</label>
+      <input id="a" type="number" min="1" placeholder="10" required>
+
+      <button type="submit" id="btn">Send STK Push</button>
+    </form>
+    <p id="s"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
+      authDomain: "lin-billing-system.firebaseapp.com",
+      databaseURL: "https://assetguard-c8c8c-default-rtdb.firebaseio.com",
+      projectId: "assetguard-c8c8c",
+      storageBucket: "assetguard-c8c8c.firebasestorage.app",
+      messagingSenderId: "317499012795",
+      appId: "1:317499012795:web:8ff2f143549a948f85db9e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const f = document.getElementById('f');
+    const p = document.getElementById('p');
+    const a = document.getElementById('a');
+    const s = document.getElementById('s');
+    const btn = document.getElementById('btn');
+
+    f.onsubmit = async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      s.textContent = "Sending STK push...";
+
+      // Clean and normalize phone number (e.g., 0713100424 -> 254713100424)
+      let phoneVal = p.value.trim().replace(/[\s\-()+]/g, "");
+      if (phoneVal.startsWith("0")) {
+        phoneVal = "254" + phoneVal.substring(1);
+      }
+      
+      const amountVal = Number(a.value);
+
+      try {
+        let r = await fetch('https://johnnylin.karanjajmwangi-10.workers.dev/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: phoneVal,
+            amount: amountVal
+          })
+        });
+
+        let d = await r.json();
+
+        if (r.ok) {
+          const checkoutId = d.CheckoutRequestID || d.checkoutRequestID || ('STK-' + Date.now());
+          
+          // Record STK push directly into Firebase Realtime Database
+          await push(ref(db, 'ledger'), {
+            ref: checkoutId,
+            phone: phoneVal,
+            amount: amountVal,
+            status: 'Pending PIN',
+            time: new Date().toLocaleString(),
+            gateway: 'CLOUDFLARE WORKER'
+          });
+        }
+
+        s.textContent = d.message || (r.ok ? 'Request sent. Check your phone.' : 'Request failed.');
+      } catch (err) {
+        s.textContent = 'Could not reach the Worker.';
+      } finally {
+        btn.disabled = false;
+      }
+    };
+  </script>
+
+</body>
+</html>
