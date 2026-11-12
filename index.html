@@ -136,7 +136,7 @@ import {
 const firebaseConfig = {
     apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
     authDomain: "lin-billing-system.firebaseapp.com",
-    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com", // <-- Fixed to your correct database URL
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
     projectId: "assetguard-c8c8c",
     storageBucket: "assetguard-c8c8c.firebasestorage.app",
     messagingSenderId: "317499012795",
@@ -564,9 +564,6 @@ function stopTransactionListener() {
     activeTransactionUnsubscribe = null;
 }
 
-/* =========================================================
-   DIRECT CHECKOUT ID LISTENER (FIXED FOR ERRORS & RESULT DESC)
-   ========================================================= */
 function listenToTransactionById(checkoutId) {
     if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
         console.warn("Firebase listener is not ready.");
@@ -616,13 +613,12 @@ function listenToTransactionById(checkoutId) {
             if (successful) {
                 setStatus("Payment confirmed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-                showMessage("✓ Payment confirmed successfully! M-Pesa payment received.", "success");
+                showMessage("✓ Payment confirmed successfully! M-Pesa receipt: " + (matchedTx.mpesaReceiptNumber || checkoutId), "success");
                 getElement("accessCodePanel").classList.add("hidden");
                 stopTransactionListener();
             } else if (failed) {
                 setStatus("Payment failed");
                 setPaymentButton(false, "PAY WITH M-PESA");
-                // Displays the exact database resultDesc (e.g. "Request Cancelled by user.") in the error box
                 showMessage(displayMessage, "error");
                 getElement("accessCodePanel").classList.add("hidden");
                 stopTransactionListener();
@@ -734,7 +730,7 @@ async function verifyAndActivateUniqueCode() {
     const code = String(codeBox.value || "").trim().toUpperCase();
 
     if (!code) {
-        showVoucherMessage("Please enter a valid M-Pesa code or access code.", "error");
+        showVoucherMessage("Please enter a valid M-Pesa receipt or checkout code.", "error");
         codeBox.focus();
         return;
     }
@@ -744,14 +740,14 @@ async function verifyAndActivateUniqueCode() {
         return;
     }
 
-    showVoucherMessage("Verifying code...", "info");
+    showVoucherMessage("Verifying code in database...", "info");
 
     try {
         const transactionsRef = window.fbRef(window.dbRef, "transactions");
         const snapshot = await window.fbGet(transactionsRef);
 
         if (!snapshot.exists()) {
-            throw new Error("No transactions or codes found in database.");
+            throw new Error("No transactions found in database.");
         }
 
         let foundKey = null;
@@ -759,15 +755,16 @@ async function verifyAndActivateUniqueCode() {
 
         snapshot.forEach(childSnapshot => {
             const value = childSnapshot.val() || {};
-            const recordRef = String(value.checkoutRequestId || value.CheckoutRequestID || value.ref || "").toUpperCase();
-            const recordCode = String(value.code || "").toUpperCase();
-            const recordReceipt = String(value.mpesaReceipt || value.ReceiptNumber || "").toUpperCase();
+            const recordKey = String(childSnapshot.key || "").trim().toUpperCase();
+            const checkoutReqId = String(value.checkoutRequestId || value.CheckoutRequestID || "").trim().toUpperCase();
+            const mpesaReceipt = String(value.mpesaReceiptNumber || value.mpesaReceipt || value.ReceiptNumber || "").trim().toUpperCase();
+            const recordCode = String(value.code || "").trim().toUpperCase();
 
             if (
-                childSnapshot.key.toUpperCase() === code ||
-                recordRef === code ||
-                recordCode === code ||
-                recordReceipt === code
+                recordKey === code ||
+                checkoutReqId === code ||
+                mpesaReceipt === code ||
+                recordCode === code
             ) {
                 foundKey = childSnapshot.key;
                 matchedRecord = value;
@@ -775,7 +772,7 @@ async function verifyAndActivateUniqueCode() {
         });
 
         if (!matchedRecord) {
-            throw new Error("Invalid code. This code does not exist in the system.");
+            throw new Error("Invalid code. This transaction code does not exist in the system.");
         }
 
         const paymentStatus = String(matchedRecord.status || "").toLowerCase();
@@ -787,11 +784,11 @@ async function verifyAndActivateUniqueCode() {
             paymentStatus.includes("verified");
 
         if (!paymentConfirmed) {
-            throw new Error("Payment has not yet been confirmed. Please wait for M-Pesa confirmation.");
+            throw new Error("Payment not yet confirmed. Status: " + (matchedRecord.status || "Pending"));
         }
 
         if (matchedRecord.used === true || matchedRecord.deviceBound) {
-            throw new Error("Security alert: This code has already been redeemed.");
+            throw new Error("Security alert: This code has already been redeemed on another device.");
         }
 
         let deviceToken = localStorage.getItem("netfy_device_token_v1");
