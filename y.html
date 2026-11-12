@@ -747,7 +747,7 @@ async function verifyAndActivateUniqueCode() {
         const snapshot = await window.fbGet(transactionsRef);
 
         if (!snapshot.exists()) {
-            throw new Error("No transactions or codes found in database.");
+            throw new Error("No transactions found in database.");
         }
 
         let foundKey = null;
@@ -755,12 +755,11 @@ async function verifyAndActivateUniqueCode() {
 
         snapshot.forEach(childSnapshot => {
             const value = childSnapshot.val() || {};
-            const recordKey = String(childSnapshot.key || "").toUpperCase();
-            const checkoutReqId = String(value.checkoutRequestId || value.CheckoutRequestID || "").toUpperCase();
-            const mpesaReceipt = String(value.mpesaReceiptNumber || value.mpesaReceipt || value.ReceiptNumber || "").toUpperCase();
-            const recordCode = String(value.code || "").toUpperCase();
+            const recordKey = String(childSnapshot.key || "").trim().toUpperCase();
+            const checkoutReqId = String(value.checkoutRequestId || value.CheckoutRequestID || "").trim().toUpperCase();
+            const mpesaReceipt = String(value.mpesaReceiptNumber || value.mpesaReceipt || value.ReceiptNumber || "").trim().toUpperCase();
+            const recordCode = String(value.code || "").trim().toUpperCase();
 
-            // Match against Firebase key, CheckoutRequestID, or extracted M-Pesa Receipt Number
             if (
                 recordKey === code ||
                 checkoutReqId === code ||
@@ -785,7 +784,7 @@ async function verifyAndActivateUniqueCode() {
             paymentStatus.includes("verified");
 
         if (!paymentConfirmed) {
-            throw new Error("Payment not yet confirmed or was cancelled. Current status: " + (matchedRecord.status || "Pending"));
+            throw new Error("Payment not yet confirmed. Status: " + (matchedRecord.status || "Pending"));
         }
 
         if (matchedRecord.used === true || matchedRecord.deviceBound) {
