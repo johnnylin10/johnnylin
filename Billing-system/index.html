@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Netfy Billing System Auth</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at center, #0a1a2a, #040d16);
+  overflow: hidden;
+}
+
+.scene {
+  width: 350px;
+  height: 520px;
+  perspective: 1200px;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #0d2235;
+  color: #edf6ff;
+  border: 1px solid #284c6c;
+  border-radius: 15px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  padding: 30px 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.login {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.register {
+  transform: rotateY(180deg);
+}
+
+.brand-badge { font-size: 11px; font-weight: 800; color: #4bdcf0; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #29445b; background: #061320; color: #f0f7ff; font-size: 15px; outline: none; transition: 0.3s; }
+input:focus { border-color: #4bdcf0; box-shadow: 0 0 5px rgba(75, 220, 240, 0.2); }
+
+button { width: 100%; padding: 14px; margin-top: 15px; background: linear-gradient(100deg,#28d7c4,#4c9aff); color: #041827; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+button:hover { filter: brightness(1.1); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.link { text-align: center; margin-top: 15px; font-size: 14px; color: #4bdcf0; cursor: pointer; font-weight: 500; }
+.link:hover { text-decoration: underline; }
+
+#toast {
+  position: fixed;
+  top: 25px;
+  background: #15364a;
+  border: 1px solid #34718b;
+  color: #fff;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 5000;
+  animation: slideDown 0.3s ease-out;
+  border-left: 4px solid #4bdcf0;
+}
+@keyframes slideDown { from { top: -40px; opacity: 0; } to { top: 25px; opacity: 1; } }
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(3,15,28,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.modal-content {
+  background: #0d2235;
+  border: 1px solid #284c6c;
+  color: #edf6ff;
+  padding: 30px;
+  border-radius: 15px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<div class="scene">
+  <div class="card" id="card">
+
+    <div class="face login">
+        <div class="brand-badge">NETFY GATEWAY</div>
+        <input id="l_user" placeholder="Username or Email">
+        <input id="l_pass" type="password" placeholder="Password">
+        <button id="loginBtn" onclick="login()">Login</button>
+        <div class="link" onclick="showForgotModal()">Forgot Password?</div>
+        <div class="link" onclick="showRegister()">Create Account</div>
+    </div>
+
+    <div class="face register">
+        <div class="brand-badge">NETFY GATEWAY</div>
+        <input id="r_user" placeholder="Username">
+        <input id="r_email" type="email" placeholder="Email">
+        <input id="r_pass" type="password" placeholder="Password">
+        <input id="r_pass2" type="password" placeholder="Confirm Password">
+        <button id="regBtn" onclick="register()">Register</button>
+        <div class="link" onclick="showLogin()">Back to Login</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal" id="forgotModal">
+  <div class="modal-content">
+    <h2 style="font-size:22px; margin-bottom: 8px; color: #4bdcf0;">Reset Password</h2>
+    <p style="font-size: 13px; color: #91a8bd; margin-bottom: 15px;">Enter your registered email to receive a password reset link.</p>
+    <input id="f_email" type="email" placeholder="Your Registered Email">
+    <button id="resetBtn" onclick="resetPassword()">Send Link</button>
+    <div class="link" style="color: #ff6d83; margin-top: 15px;" onclick="closeForgotModal()">Cancel</div>
+  </div>
+</div>
+
+<!-- Firebase Modular SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getDatabase, ref, set, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
+    authDomain: "lin-billing-system.firebaseapp.com",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+    projectId: "lin-billing-system",
+    storageBucket: "lin-billing-system.appspot.com",
+    messagingSenderId: "317499012795",
+    appId: "1:317499012795:web:8ff2f143549a948f85db9e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  const fastTimeout = (promise, ms = 4000) => {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms))
+    ]);
+  };
+
+  window.verifyLoginInDatabase = async function(identifier, pass) {
+    try {
+      let emailToUse = identifier;
+      
+      // If user typed a username instead of an email, use ultra-fast indexed database query
+      if (!identifier.includes('@')) {
+        const userQuery = query(ref(db, 'users'), orderByChild('username'), equalTo(identifier));
+        const snapshot = await fastTimeout(get(userQuery));
+        if (snapshot.exists()) {
+          snapshot.forEach((childSnap) => {
+            emailToUse = childSnap.val().email;
+          });
+        }
+      }
+
+      const userCredential = await fastTimeout(signInWithEmailAndPassword(auth, emailToUse, pass));
+      return { success: true, username: userCredential.user.email };
+    } catch (err) {
+      return { success: false, message: "Invalid username/email or password." };
+    }
+  };
+
+  window.registerUserInDatabase = async function(username, email, pass) {
+    try {
+      const userCredential = await fastTimeout(createUserWithEmailAndPassword(auth, email, pass));
+      const uid = userCredential.user.uid;
+
+      await fastTimeout(set(ref(db, 'users/' + uid), {
+        username: username,
+        email: email,
+        createdAt: new Date().toISOString()
+      }));
+
+      return { success: true };
+    } catch (err) {
+      let msg = "Registration failed.";
+      if (err.code === 'auth/email-already-in-use') msg = "Email already in use.";
+      else if (err.code === 'auth/weak-password') msg = "Password must be at least 6 characters.";
+      return { success: false, message: msg };
+    }
+  };
+
+  window.sendFirebasePasswordReset = async function(email) {
+    try {
+      await fastTimeout(sendPasswordResetEmail(auth, email));
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: "Account not found with this email." };
+    }
+  };
+</script>
+
+<script>
+const card = document.getElementById("card");
+const modal = document.getElementById("forgotModal");
+
+function showToast(text, borderColor = "#4bdcf0") {
+  const toast = document.getElementById("toast");
+  toast.innerText = text;
+  toast.style.borderColor = borderColor;
+  toast.style.display = "block";
+  setTimeout(() => { toast.style.display = "none"; }, 3000);
+}
+
+function showRegister() { card.style.transform = 'rotateY(180deg)'; }
+function showLogin()    { card.style.transform = 'rotateY(0deg)'; }
+function showForgotModal() { modal.style.display = 'flex'; }
+function closeForgotModal() { modal.style.display = 'none'; }
+
+async function handleRedirect(username, pass) {
+  localStorage.setItem('netfy_logged_in', 'true');
+  if (window.AppInventor) {
+    window.AppInventor.setWebViewString("LOGIN:" + username + ":" + pass);
+  } else {
+    window.location.href = "Billing-system.html";
+  }
+}
+
+async function login() {
+  const identifier = document.getElementById('l_user').value.trim();
+  const pass = document.getElementById('l_pass').value.trim();
+  const btn = document.getElementById('loginBtn');
+  
+  if(!identifier || !pass) { 
+    showToast("Fill in all fields", "#ff6d83"); 
+    return; 
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Verifying...";
+
+  try {
+    const result = await window.verifyLoginInDatabase(identifier, pass);
+    if (!result.success) {
+      showToast(result.message, "#ff6d83");
+      btn.disabled = false;
+      btn.innerText = "Login";
+      return;
+    }
+
+    showToast("Access Granted!", "#29d6a1");
+    await handleRedirect(result.username, pass);
+  } catch(e) {
+    showToast("Connection timeout. Try again.", "#ff6d83");
+    btn.disabled = false;
+    btn.innerText = "Login";
+  }
+}
+
+async function register() {
+  const user = document.getElementById('r_user').value.trim();
+  const email = document.getElementById('r_email.value.trim()') || document.getElementById('r_email').value.trim();
+  const pass = document.getElementById('r_pass').value;
+  const pass2 = document.getElementById('r_pass2').value;
+  const btn = document.getElementById('regBtn');
+
+  if(!user || !email || !pass) { 
+    showToast("All fields required", "#ff6d83"); 
+    return; 
+  }
+  if(pass !== pass2) { 
+    showToast("Passwords do not match", "#ff6d83"); 
+    return; 
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Creating...";
+
+  try {
+    const result = await window.registerUserInDatabase(user, email, pass);
+    if (!result.success) {
+      showToast(result.message, "#ff6d83");
+      btn.disabled = false;
+      btn.innerText = "Register";
+      return;
+    }
+
+    showToast("Account Created!", "#29d6a1");
+    await handleRedirect(email, pass);
+  } catch(e) {
+    showToast("Connection timeout. Try again.", "#ff6d83");
+    btn.disabled = false;
+    btn.innerText = "Register";
+  }
+}
+
+async function resetPassword() {
+  const email = document.getElementById('f_email').value.trim();
+  const btn = document.getElementById('resetBtn');
+
+  if(!email) { 
+    showToast("Enter your email", "#ff6d83"); 
+    return; 
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Sending...";
+
+  try {
+    const result = await window.sendFirebasePasswordReset(email);
+    if (!result.success) {
+      showToast(result.message, "#ff6d83");
+      btn.disabled = false;
+      btn.innerText = "Send Link";
+      return;
+    }
+
+    showToast("Reset link sent!", "#29d6a1");
+    closeForgotModal();
+    btn.disabled = false;
+    btn.innerText = "Send Link";
+  } catch(e) {
+    showToast("Timeout. Try again.", "#ff6d83");
+    btn.disabled = false;
+    btn.innerText = "Send Link";
+  }
+}
+</script>
+
+</body>
+</html>
