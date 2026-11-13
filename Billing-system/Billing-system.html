@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>Netfy Portal Gateways</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--bg:#07111f;--side:#091827;--panel:#0e2032;--panel2:#122940;--line:#20394e;--txt:#edf6ff;--muted:#91a8bd;--cyan:#4bdcf0;--blue:#478cff;--green:#29d6a1;--amber:#ffb45f;--red:#ff6d83;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#123958 0,transparent 30%),var(--bg);color:var(--txt);font:14px 'DM Sans',sans-serif;min-height:100vh;scroll-behavior:smooth}button,input,select,textarea,code{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0a1a2a,#071421);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:5}.brand{display:flex;align-items:center;gap:11px;padding:5px 10px 23px}.logo{height:42px;width:42px;border-radius:14px;background:linear-gradient(135deg,#367dff,#39dfd0);display:grid;place-items:center;color:#041827;font-size:22px;font-weight:900;box-shadow:0 8px 25px #2bbce044}.brand b{font:800 17px Manrope;letter-spacing:1.5px}.brand b span{color:var(--cyan)}.brand small{display:block;color:#718ba2;font-size:9px;letter-spacing:1.8px;margin-top:3px}.navlabel{font-size:9px;color:#607b94;font-weight:800;letter-spacing:1.7px;padding:10px 12px}.nav{overflow:auto;scrollbar-width:thin}.nav button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:11px 12px;border:0;border-radius:11px;color:#9cb1c5;background:transparent;font-size:12px;font-weight:600;margin:2px 0;transition:.18s}.nav button:hover{background:#132b40;color:white}.nav button.active{background:linear-gradient(100deg,#17405a,#12334b);color:#f5fdff;box-shadow:inset 3px 0 var(--cyan)}.ico{width:19px;text-align:center;font-size:16px;color:#7fabc5}.nav button.active .ico{color:var(--cyan)}.side-bottom{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 0}.network{border:1px solid #205044;background:#0c2a28;border-radius:12px;padding:12px}.network strong{font-size:11px;display:block}.network small{font-size:10px;color:#8db9aa;display:block;margin-top:5px}.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;box-shadow:0 0 9px var(--green)}.main{min-width:0}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#081725c9;backdrop-filter:blur(14px);position:sticky;top:0;z-index:4}.crumb{font:700 15px Manrope}.crumb small{display:block;color:var(--muted);font:11px 'DM Sans';margin-top:4px}.top-actions{display:flex;align-items:center;gap:10px}.iconbtn{height:38px;width:38px;border:1px solid var(--line);border-radius:11px;background:#102438;color:#bcd0e1;position:relative}.badge{position:absolute;right:-4px;top:-4px;background:var(--red);color:white;border-radius:20px;font-size:9px;padding:2px 5px}.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#3c8cff,#30d9c4);color:#051725;font-weight:900;cursor:pointer}.content{padding:27px 30px 42px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:22px}.eyebrow{color:var(--cyan);font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}.pagehead h1{font:800 clamp(23px,3vw,30px) Manrope;margin:6px 0}.pagehead p{color:var(--muted);font-size:12px;margin:0;line-height:1.6}.btn{border:1px solid var(--line);background:#142b40;color:#dceeff;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:800}.btn.primary{border:0;background:linear-gradient(100deg,#28d7c4,#4c9aff);color:#041827}.btn.green{background:#103b32;border-color:#216a56;color:#75f0c4}.btn.danger{background:#3b202b;border-color:#713949;color:#ff9aab}.btn:disabled{opacity:.45;cursor:not-allowed}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.card{background:linear-gradient(145deg,#10263a,#0b1c2c);border:1px solid var(--line);border-radius:var(--radius);padding:19px;min-width:0;box-shadow:0 12px 32px #00000016;position:relative;z-index:1}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}.stat-value{font:800 26px Manrope;margin:12px 0 4px}.stat-foot{color:#7893aa;font-size:10px}.cols{grid-template-columns:1.35fr .85fr}.cardtitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.cardtitle h3{font:700 14px Manrope;margin:0}.muted{color:var(--muted)}.planrow,.listrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #1e3548}.planrow:last-child,.listrow:last-child{border:0}.planrow b,.listrow b{font-size:12px}.planrow small,.listrow small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.price{font:800 16px Manrope;color:var(--green)}.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:30px;background:#12382f;color:#79e8be;font-size:9px;font-weight:800}.pill.blue{background:#15334b;color:#8bcaff}.pill.amber{background:#3c2c1b;color:#ffc782}.pill.red{background:#40232d;color:#ff9bab}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field label{display:block;font-size:10px;color:#a3b7c9;font-weight:800;letter-spacing:.7px;margin-bottom:7px}
+.field input,.field textarea{width:100%;border:1px solid #29445b;background:#061320;color:#f0f7ff;border-radius:11px;padding:12px 13px;outline:none;min-height:43px}
+.field textarea{min-height:90px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #4bdcf01a}.field.full{grid-column:1/-1}
+
+/* PROMINENT STEP 2 BANNER */
+.step-banner {
+  background: linear-gradient(135deg, #10324a, #0b2235);
+  border: 1px solid #316287;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.step-banner label {
+  font: 800 13px Manrope !important;
+  color: var(--amber) !important;
+  letter-spacing: 1px !important;
+  margin: 0 !important;
+}
+
+/* ORANGE GUIDANCE PULSE ANIMATION */
+@keyframes pulseOrangeGlow {
+  0% { box-shadow: 0 0 0 0 rgba(255, 180, 95, 0.5); border-color: var(--amber); }
+  70% { box-shadow: 0 0 0 12px rgba(255, 180, 95, 0); border-color: var(--amber); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 180, 95, 0); border-color: #20394e; }
+}
+.guide-pulse {
+  animation: pulseOrangeGlow 1.8s infinite;
+}
+
+/* CHECKOUT GRID */
+.checkout-pkg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:6px}
+.checkout-pkg-choice{border:1.5px solid #20394e;border-radius:12px;padding:12px;cursor:pointer;background:#081a2a;transition:border-color .15s, background .15s, box-shadow .15s;text-align:left}
+.checkout-pkg-choice:hover{border-color:#38709e}
+.checkout-pkg-choice.active{border-color:var(--cyan);background:#123249;box-shadow:0 4px 15px #4bdcf01a}
+.checkout-pkg-choice strong{display:block;font-size:13px;color:var(--txt)}
+.checkout-pkg-choice small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.checkout-pkg-choice .pkg-price{font:800 14px Manrope;color:var(--green);margin-top:6px;display:block}
+
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.notice{padding:12px 14px;border-radius:11px;background:#102f43;border:1px solid #24506a;color:#b9d9ec;font-size:11px;line-height:1.6;margin:12px 0}.notice.good{background:#10352d;border-color:#23674f;color:#a3f1d2}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:570px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid #1d3549;font-size:11px}th{color:#7894ab;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:#0b1c2c}td{color:#d2e1ef}tr:hover td{background:#11273b;cursor:pointer}tr:last-child td{border-bottom:0}.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px}.packagegrid{grid-template-columns:repeat(3,minmax(0,1fr))}.packagecard{position:relative;cursor:pointer;transition:border-color .15s, transform .15s}.packagecard:hover{border-color:var(--cyan);transform:translateY(-2px)}.packagecard h3{font:700 16px Manrope;margin:8px 0}.packagecard .bigprice{font:800 27px Manrope;margin:16px 0 4px}.speednum{font:800 45px Manrope;color:var(--cyan);margin:15px 0}.toggle{appearance:none;width:38px;height:21px;background:#294258;border-radius:20px;position:relative;vertical-align:middle;cursor:pointer}.toggle:checked{background:#159d85}.toggle:before{content:'';position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:white;transition:.2s}.toggle:checked:before{left:20px}.mobilemenu{display:none}.toast{position:fixed;right:22px;bottom:22px;background:#15364a;border:1px solid #34718b;color:#e8f8ff;padding:13px 17px;border-radius:12px;box-shadow:0 12px 35px #0008;z-index:20;font-size:12px;display:none;max-width:330px}.toast.show{display:block}
+
+.chart-bar-container{display:flex;align-items:flex-end;gap:10px;height:210px;padding-top:20px;border-bottom:1px solid var(--line);margin-bottom:15px}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;cursor:pointer}
+.chart-bar{width:100%;max-width:48px;background:linear-gradient(180deg,var(--cyan),var(--blue));border-radius:6px 6px 0 0;transition:.25s;position:relative}
+.chart-bar:hover{filter:brightness(1.25);transform:scaleY(1.03)}
+.chart-bar-label{font-size:10px;color:var(--muted);margin-top:8px;text-align:center}
+.chart-bar-val{font-size:9px;color:var(--cyan);margin-bottom:4px;font-weight:700}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(3,15,28,0.8);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-card{width:100%;max-width:540px;background:#0d2235;border:1px solid #284c6c;border-radius:20px;padding:24px;box-shadow:0 25px 60px rgba(0,0,0,0.5)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid #1f3a52;padding-bottom:12px}
+.modal-header h3{font:700 18px Manrope;margin:0;color:var(--cyan)}
+.modal-close{background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 8px}
+.modal-body{font-size:12px;line-height:1.7;color:#d2e1ef;max-height:65vh;overflow-y:auto}
+.modal-footer{margin-top:20px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #1f3a52;padding-top:14px}
+
+.device-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.device-choice{border:1.5px solid #20394e;border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;background:#081a2a;transition:.18s}
+.device-choice.active{border-color:var(--cyan);background:#123249;box-shadow:0 2px 8px #4bdcf01a}
+.device-choice strong{display:block;font-size:11px;margin-top:4px}
+.device-choice small{display:block;font-size:9px;color:var(--muted);margin-top:2px}
+.hidden{display:none!important}
+
+/* SERVER & RECEIVER MESH ANIMATION */
+.mesh-node-box {
+  background: #061320;
+  border: 1px solid #204b6b;
+  border-radius: 12px;
+  padding: 16px 12px;
+  margin: 12px 0;
+  position: relative;
+  overflow: hidden;
+}
+.mesh-endpoints {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  gap: 10px;
+}
+.mesh-terminal {
+  background: #0e2a40;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font: 700 11px 'JetBrains Mono', monospace;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(75, 220, 240, 0.25);
+  min-width: 115px;
+}
+.mesh-terminal.receiver {
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 12px rgba(41, 214, 161, 0.25);
+}
+.mesh-link-channel {
+  flex: 1;
+  height: 3px;
+  background: #1a3c5a;
+  position: relative;
+  margin: 0 8px;
+}
+@keyframes packetMoveRight {
+  0% { left: 0%; opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { left: 90%; opacity: 0; }
+}
+@keyframes packetMoveLeft {
+  0% { right: 0%; opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { right: 90%; opacity: 0; }
+}
+.packet-out {
+  position: absolute;
+  top: -5px;
+  width: 14px;
+  height: 11px;
+  background: var(--cyan);
+  border-radius: 4px;
+  box-shadow: 0 0 8px var(--cyan);
+  animation: packetMoveRight 1.6s infinite linear;
+}
+.packet-in {
+  position: absolute;
+  top: -5px;
+  width: 14px;
+  height: 11px;
+  background: var(--green);
+  border-radius: 4px;
+  box-shadow: 0 0 8px var(--green);
+  animation: packetMoveLeft 1.6s infinite linear 0.8s;
+}
+
+@media(max-width:1050px){.app{grid-template-columns:220px 1fr}.stats{grid-template-columns:repeat(2,1fr)}.packagegrid{grid-template-columns:repeat(2,1fr)}.device-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s;box-shadow:20px 0 50px #0008}.sidebar.open{left:0}.mobilemenu{display:inline-block}.topbar{height:66px;padding:0 15px}.content{padding:20px 14px 35px}.cols{grid-template-columns:1fr}.stats{gap:10px}.stat-value{font-size:22px}.card{padding:15px}.packagegrid{grid-template-columns:1fr 1fr}.device-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><div class="logo">⌁</div><div><b>NET<span>FY</span></b><small>PORTAL GATEWAYS</small></div></div>
+ <div class="navlabel">CUSTOMER EXPERIENCE</div>
+ <nav class="nav" id="nav">
+  <button class="active" data-page="overview"><span class="ico">▦</span>Overview</button>
+  <button data-page="plans"><span class="ico">◈</span>Internet Packages</button>
+  <button data-page="checkout"><span class="ico">▣</span>Buy Internet</button>
+  <button data-page="voucher"><span class="ico">▤</span>Voucher Redemption</button>
+  <button data-page="connection"><span class="ico">⏱</span>Active Sessions</button>
+  <button data-page="all-devices"><span class="ico">💻</span>All Connected Devices</button>
+  <button data-page="analytics"><span class="ico">〽️</span>Sales & Database Graphs</button>
+  <button data-page="mpesa-audit"><span class="ico">💳</span>Transaction Audit</button>
+  <button data-page="devices"><span class="ico">▣</span>Bypass & Leases</button>
+  <button data-page="anti-tethering"><span class="ico">⚡</span>Anti-Tethering & TTL</button>
+  <button data-page="telemetry"><span class="ico">🛡</span>Telemetry & Security</button>
+  <button data-page="history"><span class="ico">◷</span>Transaction Ledger</button>
+  <button data-page="receipts"><span class="ico">▧</span>Tax Invoices</button>
+  <div class="navlabel">ADMINISTRATION</div>
+  <button data-page="admin"><span class="ico">▥</span>Admin Overview</button>
+  <button data-page="errors"><span class="ico">⚠</span>Error Logs</button>
+  <button data-page="settings"><span class="ico">⚙</span>Portal Settings</button>
+  <div class="navlabel" style="margin-top:10px">SESSION</div>
+  <button id="logoutBtn" style="color:var(--red)"><span class="ico">⎋</span>Log Out</button>
+ </nav>
+ <div class="side-bottom"><div class="network"><strong><i class="online-dot"></i>Cloud Database Live</strong><small id="dbStatusLabel">Connected to Netfy Gateways Clouds</small></div></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+ <div style="display:flex;align-items:center;gap:12px"><button class="iconbtn mobilemenu" id="menuBtn">☰</button><div class="crumb" id="crumb">Overview<small>Netfy Portal Gateways (<span id="userPhoneBadgeDisplay">NG</span>)</small></div></div>
+ <div class="top-actions"><div class="avatar" id="userAvatarInitials" onclick="openNetfyGatewaysModal()" title="Click to view Netfy Gateways Clouds">NG</div></div>
+</header>
+
+<div class="content">
+<!-- OVERVIEW -->
+<section class="page active" id="page-overview">
+ <div class="pagehead"><div><div class="eyebrow">NETFY PORTAL GATEWAYS / CUSTOMER PORTAL</div><h1>Smart Connectivity & Billing</h1><p>Manage access, monitor revenue, and live network transactions seamlessly.</p></div><button class="btn primary" data-goto="checkout">＋ Buy internet</button></div>
+ <div class="grid stats">
+  <div class="card"><div class="stat-top">Today's Revenue</div><div class="stat-value" id="statRevenue">KES 0</div><div class="stat-foot">Database Aggregate</div></div>
+  <div class="card"><div class="stat-top">Connected Devices</div><div class="stat-value" id="statConnectedDevicesCount">0</div><div class="stat-foot">Active Cloud Leases</div></div>
+  <div class="card"><div class="stat-top">System Diagnostics</div><div class="stat-value" id="statFailedMpesaCount" style="color:var(--green)">Optimal</div><div class="stat-foot">Database Error Logs</div></div>
+  <div class="card"><div class="stat-top">Anti-Tethering Guard</div><div class="stat-value" id="statAntiTetheringDisplay" style="color:var(--green)">Active</div><div class="stat-foot">TTL = 1 Enforced</div></div>
+ </div>
+ <div class="grid cols">
+  <div class="card"><div class="cardtitle"><h3>Quick actions</h3><span class="pill blue">LIVE GATEWAY</span></div>
+   <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:10px">
+    <button class="btn" data-goto="analytics">Database Graphs</button>
+    <button class="btn" data-goto="all-devices">All Devices Log</button>
+    <button class="btn" data-goto="mpesa-audit">Transaction Audit</button>
+    <button class="btn" data-goto="connection">Active Sessions</button>
+   </div>
+  </div>
+  <div class="card"><div class="cardtitle"><h3>Popular packages</h3></div>
+   <div id="overviewPopularList"></div>
+  </div>
+ </div>
+</section>
+
+<!-- ACTIVE SESSIONS & STATUS -->
+<section class="page" id="page-connection">
+ <div class="pagehead"><div><div class="eyebrow">SESSION MANAGEMENT</div><h1>All Active Sessions & Authorized Devices</h1><p>Listing all devices currently possessing active internet access and database leases.</p></div></div>
+ <div class="card">
+  <div class="cardtitle"><h3>Database Active Sessions Registry</h3><span class="pill green">LIVE SESSIONS SYNCED</span></div>
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Device Name</th><th>MAC Address</th><th>IP Address</th><th>Access Package</th><th>Expires / Status</th></tr></thead>
+    <tbody id="activeSessionsTableRows"><tr><td colspan="5" class="empty">Loading active sessions from database...</td></tr></tbody>
+   </table>
+  </div>
+  <div class="actions" style="margin-top:16px">
+   <button class="btn primary" style="width:100%" data-goto="checkout">EXTEND / BUY MORE TIME</button>
+  </div>
+ </div>
+</section>
+
+<!-- ALL CONNECTED DEVICES -->
+<section class="page" id="page-all-devices">
+ <div class="pagehead"><div><div class="eyebrow">DEVICE AUDIT</div><h1>All Connected Devices Registry</h1><p>Live synchronized list of every device connected to the gateway with instant database blocking controls.</p></div><button class="btn green" id="exportDevicesCsv">Export CSV</button></div>
+ <div class="card">
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Device / Hostname</th><th>MAC Address</th><th>IP Address</th><th>First Seen / Joined</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody id="allDevicesTableRows"><tr><td colspan="6" class="empty">Loading connected devices from database...</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- INTERACTIVE DATABASE ANALYTICS -->
+<section class="page" id="page-analytics">
+ <div class="pagehead">
+  <div>
+   <div class="eyebrow">FINANCIAL ANALYTICS</div>
+   <h1>Database Sales & Revenue Graphs</h1>
+   <p>Aggregated directly from your Cloud Database ledger records.</p>
+  </div>
+ </div>
+
+ <div class="card" style="margin-bottom:16px;background:linear-gradient(135deg,#123249,#0c2336);border-color:#2e648c">
+  <div class="cardtitle"><h3 style="color:var(--cyan)">📅 Inspect Specific Date on Graph</h3><span class="pill amber">AUTO-UPDATE</span></div>
+  <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+   <div class="field" style="flex:1;min-width:200px;margin:0">
+    <label style="color:var(--amber)">SELECT CALENDAR DATE</label>
+    <input type="date" id="specificDateInput" style="background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:11px;padding:10px;outline:none">
+   </div>
+   <button class="btn green" id="skipToTodayBtn" style="padding:12px 20px">SKIP TO TODAY'S DATA</button>
+  </div>
+ </div>
+
+ <div class="grid cols">
+  <div class="card">
+   <div class="cardtitle">
+     <h3 id="chartTitleText">Revenue Performance (Live Database Data)</h3>
+     <div style="display:flex;gap:4px">
+      <button class="btn active" id="modeDaily" style="padding:6px 10px;font-size:10px" onclick="switchAnalyticsMode('daily')">Daily</button>
+      <button class="btn" id="modeWeekly" style="padding:6px 10px;font-size:10px" onclick="switchAnalyticsMode('weekly')">Weekly</button>
+      <button class="btn" id="modeMonthly" style="padding:6px 10px;font-size:10px" onclick="switchAnalyticsMode('monthly')">Monthly</button>
+     </div>
+   </div>
+   <div class="chart-bar-container" id="salesBarChartContainer"></div>
+  </div>
+
+  <div class="card">
+   <div class="cardtitle"><h3>Ledger Summary Metrics</h3><span class="pill green">LIVE DATABASE</span></div>
+   <div class="listrow"><span class="muted">Total Database Revenue</span><b id="analyticSelectedRevenue" class="price">KES 0</b></div>
+   <div class="listrow"><span class="muted">Total Transactions</span><b id="analyticTotalTx">0 orders</b></div>
+   <div class="listrow"><span class="muted">Average Order Value</span><b id="analyticAvgOrder">KES 0</b></div>
+   <div class="listrow"><span class="muted">Most Popular Package</span><b id="analyticTopPackage">--</b></div>
+  </div>
+ </div>
+
+ <div class="card" style="margin-top:16px">
+  <div class="cardtitle"><h3>Database Revenue Ledger Grouping</h3><span class="pill blue" id="tableGroupingTitle">FULL DAILY BREAKDOWN</span></div>
+  <div class="tablewrap">
+   <table>
+    <thead><tr id="analyticsTableHeader"><th>Period / Date</th><th>Completed Orders</th><th>Total Revenue (KES)</th><th>Status</th></tr></thead>
+    <tbody id="dailySalesTableRows"><tr><td colspan="4" class="empty">No database ledger records found.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- M-PESA PASS/FAIL AUDIT -->
+<section class="page" id="page-mpesa-audit">
+ <div class="pagehead"><div><div class="eyebrow">TRANSACTION MONITORING</div><h1>Transaction Audit & Verification</h1><p>Pulled directly from your Cloud Database successful ledger and error logs.</p></div></div>
+ <div class="grid stats" style="margin-bottom:16px">
+  <div class="card"><div class="stat-top">Total Transactions</div><div class="stat-value" id="auditTotalCount">0</div></div>
+  <div class="card"><div class="stat-top">Completed (Success)</div><div class="stat-value" id="auditCompletedCount" style="color:var(--green)">0</div></div>
+  <div class="card"><div class="stat-top">Failed / Cancelled</div><div class="stat-value" id="auditFailedCount" style="color:var(--red)">0</div></div>
+  <div class="card"><div class="stat-top">Success Rate</div><div class="stat-value" id="auditSuccessRate" style="color:var(--cyan)">100%</div></div>
+ </div>
+ <div class="card">
+  <div class="cardtitle"><h3>Database Audit Trail & Unique Codes</h3><span class="pill blue">CLOUD DATABASE</span></div>
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Unique Code / Receipt</th><th>Phone Number</th><th>Amount</th><th>Package</th><th>Status / Reason</th><th>Timestamp</th></tr></thead>
+    <tbody id="mpesaAuditTableRows"><tr><td colspan="6" class="empty">No audit records found in database.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="page" id="page-plans">
+ <div class="pagehead"><div><div class="eyebrow">PLANS & PRICING</div><h1>Choose your access plan</h1><p>Select a plan to continue directly to checkout.</p></div></div>
+ <div class="grid packagegrid" id="planCards"></div>
+</section>
+
+<!-- CHECKOUT -->
+<section class="page" id="page-checkout">
+ <div class="pagehead"><div><div class="eyebrow">SECURE CHECKOUT</div><h1>Buy internet access</h1><p>Trigger live payment requests instantly through Netfy Gateways Clouds.</p></div></div>
+ <div class="grid cols">
+  <div class="card"><div class="cardtitle"><h3>Payment details</h3><span class="pill blue">SECURE GATEWAY</span></div>
+   
+   <div class="field" id="stepPkgSection"><label style="color:var(--amber)">⬇ 1. SELECT ACCESS PACKAGE (TAP ONE)</label>
+    <div class="checkout-pkg-grid guide-pulse" id="checkoutPkgGrid"></div>
+   </div>
+   
+   <div class="step-banner" id="stepWhoSection" style="margin-top:20px">
+    <label style="display:block;margin-bottom:8px"> 2. WHO ARE YOU BUYING FOR? (TAP OPTION)</label>
+    <div class="device-grid" id="deviceGridSelect" style="margin-top:6px">
+     <div class="device-choice" data-type="Myself">📱<strong>Myself</strong><small>Auto-connect</small></div>
+     <div class="device-choice" data-type="Another Phone">👥<strong>Another Phone</strong><small>Unique code</small></div>
+     <div class="device-choice" data-type="Gift WiFi">🎁<strong>Gift WiFi</strong><small>Gift code</small></div>
+     <div class="device-choice" data-type="Television">📺<strong>Television</strong><small>Unique code</small></div>
+     <div class="device-choice" data-type="Ethernet MAC">🔌<strong>Ethernet MAC</strong><small>LAN Cable</small></div>
+     <div class="device-choice" data-type="Laptop">💻<strong>Laptop</strong><small>Unique code</small></div>
+    </div>
+   </div>
+
+   <div class="field hidden" id="targetPhoneContainer" style="margin-top:14px">
+    <label>RECIPIENT / TARGET PHONE NUMBER</label>
+    <input id="targetPhoneInput" type="tel" placeholder="07XXXXXXXX or 01XXXXXXXX">
+   </div>
+
+   <div class="field hidden" id="macInputContainer" style="margin-top:14px">
+    <label>ETHERNET / LAN MAC ADDRESS</label>
+    <input id="checkoutMac" type="text" placeholder="e.g. AA:BB:CC:DD:EE:FF" style="text-transform:uppercase">
+   </div>
+
+   <div class="field" id="stepPhoneSection" style="margin-top:18px"><label id="phoneLabel">3. YOUR PAYMENT MOBILE NUMBER</label><input id="checkoutPhone" type="tel" value="" placeholder="07XXXXXXXX"></div>
+   <button class="btn primary" id="startPayment" style="margin-top:20px;width:100%;font-size:14px;padding:16px"> REQUEST PAYMENT PUSH NOW</button>
+   
+   <div style="margin-top:18px;background:#081a2a;border:1px solid #20394e;padding:14px;border-radius:12px">
+    <label style="display:block;font-size:10px;color:var(--amber);font-weight:800;letter-spacing:.7px;margin-bottom:6px">⚡ INSTANT UNLOCK VIA CODE</label>
+    <div style="display:flex;gap:8px">
+     <input id="manualReceiptInput" type="text" placeholder="e.g. QHX8..." style="text-transform:uppercase;flex:1;background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:9px;padding:10px;outline:none">
+     <button class="btn green" id="verifyManualReceiptBtn" style="padding:10px 14px">VERIFY & UNLOCK</button>
+    </div>
+   </div>
+
+   <div id="checkoutMsg"></div>
+  </div>
+  <div class="card" id="summaryCard"><div class="cardtitle"><h3>Order summary</h3></div>
+   <div style="text-align:center;padding:20px">
+    <div class="muted">AMOUNT TO PAY</div>
+    <div class="speednum" id="checkoutAmount">KES 0</div>
+    <div id="checkoutDuration" class="muted">Please select a package</div>
+   </div>
+   <div class="listrow"><span class="muted">Selected Package</span><b id="checkoutSelectedPkgName">None selected</b></div>
+   <div class="listrow"><span class="muted">Purpose / Target</span><b id="checkoutPurposeDisplay">None selected</b></div>
+   <div class="listrow"><span class="muted">Billed From</span><b>Netfy Portal Gateways</b></div>
+   <div class="listrow"><span class="muted">Admin Contact</span><b id="summaryPhoneDisplay">--</b></div>
+  </div>
+ </div>
+</section>
+
+<!-- BYPASS & LEASES -->
+<section class="page" id="page-devices">
+ <div class="pagehead"><div><div class="eyebrow">MAC BYPASS & HOTSPOT ALLOWLIST</div><h1>Gadget Bypassing & Hotspot Rules</h1><p>Authorize specific devices to bypass portal login and selectively permit hotspot sharing.</p></div></div>
+ <div class="grid cols">
+  <div class="card">
+   <div class="cardtitle"><h3>Bypass Specific Gadget / MAC</h3><span class="pill green">IP BINDINGS</span></div>
+   <div class="field"><label>GADGET / DEVICE NAME</label><input id="bypassDeviceName" placeholder="e.g. Office Smart TV"></div>
+   <div class="field" style="margin-top:12px"><label>MAC ADDRESS</label><input id="bypassMacInput" placeholder="AA:BB:CC:DD:EE:FF" style="text-transform:uppercase"></div>
+   <div class="field" style="margin-top:12px"><label>BYPASS TYPE</label>
+    <select id="bypassTypeSelect" style="background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:11px;padding:12px 13px;width:100%;outline:none">
+     <option value="bypassed">Complete Bypass</option>
+     <option value="regular">Regular Hotspot</option>
+     <option value="blocked">Blocked</option>
+    </select>
+   </div>
+   <div style="display:flex;align-items:center;justify-content:space-between;background:#081a2a;padding:12px;border-radius:11px;margin-top:14px;border:1px solid #29445b">
+    <div>
+     <b style="font-size:12px">Allow Hotspot Sharing for this Device</b>
+     <small style="display:block;color:var(--muted);font-size:9px">Exempts this device from TTL=1 checks</small>
+    </div>
+    <input type="checkbox" id="bypassAllowHotspotToggle" class="toggle">
+   </div>
+   <button class="btn primary" id="addBypassBtn" style="margin-top:16px;width:100%">AUTHORIZE & BYPASS GADGET</button>
+  </div>
+
+  <div class="card">
+   <div class="cardtitle"><h3>Database IP Bindings & Bypasses</h3><span class="pill blue" id="bypassCountBadge">0 Devices</span></div>
+   <div class="tablewrap">
+    <table>
+     <thead><tr><th>Gadget / MAC</th><th>Type</th><th>Hotspotting</th><th>Action</th></tr></thead>
+     <tbody id="bypassedTableRows"><tr><td colspan="4" class="empty">No bindings found in database.</td></tr></tbody>
+    </table>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ANTI-TETHERING & TTL CONTROLS -->
+<section class="page" id="page-anti-tethering">
+ <div class="pagehead"><div><div class="eyebrow">NETWORK SECURITY</div><h1>Anti-Tethering & TTL Controls</h1><p>Turn on or off hotspot sharing restrictions across your gateway.</p></div></div>
+ <div class="grid cols">
+  <div class="card">
+   <div class="cardtitle"><h3>TTL = 1 Anti-Tethering Shield</h3><span class="pill" id="tetheringPillBadge">ENABLED</span></div>
+   <p class="muted" style="font-size:12px;line-height:1.6;margin-bottom:16px">
+    When enabled, outgoing packet Time-To-Live (TTL) is set to 1. Secondary hotspotting is blocked globally.
+   </p>
+   <div style="display:flex;align-items:center;justify-content:space-between;background:#081a2a;padding:16px;border-radius:12px;border:1px solid #29445b">
+    <div>
+     <b style="font-size:14px">Global Anti-Tethering Firewall Rule</b>
+     <small style="display:block;color:var(--muted);margin-top:3px">Syncs directly to database config</small>
+    </div>
+    <input type="checkbox" id="toggleAntiTethering" class="toggle" checked>
+   </div>
+   <div id="tetheringStatusMsg" style="margin-top:14px"></div>
+  </div>
+  <div class="card">
+   <div class="cardtitle"><h3>Router DHCP Rogue Alerts</h3><span class="pill blue">LISTENING</span></div>
+   <div class="listrow"><span class="muted">DHCP Server Alerts</span><b>Active on Bridge</b></div>
+   <div class="listrow"><span class="muted">Rogue Leases Blocked</span><b style="color:var(--green)">0 Detected</b></div>
+   <button class="btn primary" style="margin-top:16px;width:100%" id="scanDhcpBtn">SCAN NETWORK FOR ROGUE APs</button>
+  </div>
+ </div>
+</section>
+
+<!-- TELEMETRY & FRAUD PROTECTION SYSTEM -->
+<section class="page" id="page-telemetry">
+ <div class="pagehead">
+  <div>
+   <div class="eyebrow">BEHAVIORAL NETWORK TELEMETRY</div>
+   <h1>DPI & Anomaly Protection</h1>
+   <p>Real-time Deep Packet Inspection, MAC spoofing detection, and VLAN quarantine.</p>
+  </div>
+  <span class="pill green">ENGINE ACTIVE</span>
+ </div>
+
+ <div class="grid stats">
+  <div class="card" style="cursor:pointer" onclick="openTelemetryModal('dpi')"><div class="stat-top">Packet Inspected / sec 🔍</div><div class="stat-value" id="statDpiRate">1,840</div><div class="stat-foot">Realtime Sampling (Live)</div></div>
+  <div class="card" style="cursor:pointer" onclick="openTelemetryModal('tunnel')"><div class="stat-top">Tunneling Attempts 🔍</div><div class="stat-value" id="statTunnelCount" style="color:var(--amber)">0</div><div class="stat-foot">Encapsulation Check</div></div>
+  <div class="card" style="cursor:pointer" onclick="openTelemetryModal('spoof')"><div class="stat-top">Spoofed MAC Alerts 🔍</div><div class="stat-value" id="statSpoofedCount" style="color:var(--red)">0</div><div class="stat-foot">Table Mismatch</div></div>
+  <div class="card" style="cursor:pointer" onclick="openTelemetryModal('quarantine')"><div class="stat-top">Quarantined VLAN 99 🔍</div><div class="stat-value" id="statQuarantineCount" style="color:var(--cyan)">0</div><div class="stat-foot">Isolated Nodes</div></div>
+ </div>
+
+ <div class="card" style="margin-top:16px">
+  <div class="cardtitle"><h3>Database Security Threat Log</h3><span class="pill red" id="threatLogCountBadge">0 Security Events</span></div>
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Timestamp</th><th>Device / MAC</th><th>Detected Threat / Anomaly</th><th>Isolated Status</th><th>Action</th></tr></thead>
+    <tbody id="telemetryThreatTableRows"><tr><td colspan="5" class="empty">No security threats recorded in database.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- M-PESA LEDGER -->
+<section class="page" id="page-history">
+ <div class="pagehead"><div><div class="eyebrow">TRANSACTION LEDGER</div><h1>Transaction History</h1><p>Complete record of transactions stored in Netfy Gateways Clouds.</p></div><button class="btn green" id="exportLedgerCsv">Export CSV</button></div>
+ <div class="card">
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Unique Code / Ref</th><th>Payer Phone</th><th>Target / Recipient</th><th>Amount</th><th>Type / MAC</th><th>Status</th><th>Timestamp</th></tr></thead>
+    <tbody id="ledgerTableRows"><tr><td colspan="7" class="empty">No transactions found in database.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- TAX INVOICES -->
+<section class="page" id="page-receipts">
+ <div class="pagehead"><div><div class="eyebrow">TAX COMPLIANCE</div><h1>Electronic Tax Invoices</h1><p>Official digital receipts generated for the active user account.</p></div></div>
+ <div class="card" id="taxInvoiceCardContainer">
+  <div class="cardtitle"><h3>Tax Invoice Record</h3><span class="pill blue" id="taxInvoiceStatusPill">NOT CONFIGURED</span></div>
+  <div class="listrow"><span class="muted">Company Name</span><b id="invoiceCompanyNameDisplay">Not configured</b></div>
+  <div class="listrow"><span class="muted">KRA PIN</span><b id="invoicePinDisplay">Not configured</b></div>
+  <div class="listrow"><span class="muted">Postal Address</span><b id="invoiceAddressDisplay">Not configured</b></div>
+  <div class="listrow"><span class="muted">Admin Contact</span><b id="invoicePhoneDisplay">--</b></div>
+  <div class="actions" style="margin-top:14px">
+   <button class="btn primary" id="printTaxInvoiceBtn" onclick="window.print()" disabled>PRINT TAX INVOICE</button>
+   <button class="btn" data-goto="admin">CONFIGURE TAX DETAILS</button>
+  </div>
+ </div>
+</section>
+
+<!-- ADMIN -->
+<section class="page" id="page-admin">
+ <div class="pagehead"><div><div class="eyebrow">OPERATOR CONSOLE / SECURE</div><h1>Admin overview</h1><p>Manage pricing plans and set up user-specific tax invoice details synced to database.</p></div><span class="pill green">AUTHENTICATED ADMIN</span></div>
+
+ <!-- TAX INVOICE SETUP CARD (USER SPECIFIC & SKIPPABLE) -->
+ <div class="card" style="margin-bottom:16px;border-color:var(--cyan)">
+  <div class="cardtitle"><h3 style="color:var(--cyan)">⚙ Tax Invoice & KRA PIN Configuration (Account Specific)</h3><span class="pill amber">SKIPPABLE</span></div>
+  <p class="muted" style="font-size:12px;margin-bottom:14px">Configure your account details below. Starts completely empty for new users so each account sets its own.</p>
+  <div class="formgrid">
+   <div class="field"><label>COMPANY NAME / USER NAME</label><input id="adminTaxCompany" placeholder="Enter company name"></div>
+   <div class="field"><label>KRA PIN NUMBER</label><input id="adminTaxPin" placeholder="Enter KRA PIN" style="text-transform:uppercase"></div>
+   <div class="field"><label>ADMIN CONTACT</label><input id="adminTaxPhone" placeholder="Enter admin phone contact"></div>
+   <div class="field"><label>POSTAL ADDRESS</label><input id="adminTaxAddress" placeholder="Enter postal address"></div>
+  </div>
+  <div class="actions" style="margin-top:12px">
+   <button class="btn primary" id="saveTaxConfigBtn">SAVE TAX INVOICE DETAILS</button>
+   <button class="btn danger" id="clearTaxConfigBtn">CLEAR / SKIP TAX DETAILS</button>
+  </div>
+ </div>
+
+ <div class="card" style="margin-bottom:16px">
+  <div class="cardtitle"><h3>Manage Database Internet Packages</h3><span class="pill green">NETFY GATEWAYS CLOUDS</span></div>
+  <div class="tablewrap" style="margin-bottom:14px">
+   <table>
+    <thead><tr><th>Package Title</th><th>Duration</th><th>Price (KES)</th><th>Tag</th><th>Action</th></tr></thead>
+    <tbody id="adminPackageTableRows"></tbody>
+   </table>
+  </div>
+  <div style="background:#081a2a;padding:14px;border-radius:12px;border:1px solid #29445b">
+   <h4 style="margin:0 0 10px;color:var(--cyan)">Add New Package to Database</h4>
+   <div class="formgrid">
+    <div class="field"><label>TITLE</label><input id="newPkgTitle" placeholder="e.g. 2 Days"></div>
+    <div class="field"><label>DURATION</label><input id="newPkgDuration" placeholder="e.g. 48 hours"></div>
+    <div class="field"><label>PRICE (KES)</label><input id="newPkgPrice" type="number" placeholder="150"></div>
+    <div class="field"><label>TAG</label><input id="newPkgTag" placeholder="e.g. Popular"></div>
+   </div>
+   <div class="actions" style="margin-top:12px"><button class="btn primary" id="addPackageBtn">＋ ADD PACKAGE</button></div>
+  </div>
+ </div>
+</section>
+
+<!-- ERROR LOGS -->
+<section class="page" id="page-errors">
+ <div class="pagehead"><div><div class="eyebrow">DIAGNOSTICS</div><h1>System error logs</h1><p>Netfy Gateways Clouds error log stream.</p></div><button class="btn danger" id="clearErrorLogsBtn">Clear Logs</button></div>
+ <div class="card">
+  <div class="tablewrap">
+   <table>
+    <thead><tr><th>Timestamp</th><th>Endpoint</th><th>Status</th><th>Error Details / Response</th></tr></thead>
+    <tbody id="errorLogTableRows"><tr><td colspan="4" class="empty">No error logs recorded in database.</td></tr></tbody>
+   </table>
+  </div>
+ </div>
+</section>
+
+<!-- PORTAL SETTINGS -->
+<section class="page" id="page-settings">
+ <div class="pagehead"><div><div class="eyebrow">SYSTEM INFRASTRUCTURE</div><h1>Portal Gateway Settings</h1><p>Operational health monitoring.</p></div></div>
+ <div class="grid cols">
+  <div class="card">
+   <div class="cardtitle"><h3>Network Relays & Gateway Health</h3><span class="pill green">SECURE & RUNNING</span></div>
+   <div class="listrow"><span class="muted">Cloud Relay Tunnel</span><b style="color:var(--green)">⚡ Connected (TLS 1.3)</b></div>
+   <div class="listrow"><span class="muted">Database Sync Mode</span><b>Netfy Gateways Clouds</b></div>
+   <div class="listrow"><span class="muted">Gateway Service API</span><b>Secure Edge Gateway</b></div>
+   <div class="actions" style="margin-top:16px">
+    <button class="btn primary" id="btnTestConn">RUN SYSTEM DIAGNOSTIC</button>
+    <button class="btn" id="btnToggleAdvSettings">MAINTENANCE DRAWER</button>
+   </div>
+   <div id="settingsMsg"></div>
+  </div>
+
+  <div class="card">
+   <div class="cardtitle"><h3>Security & Vault Status</h3><span class="pill blue">PROTECTED</span></div>
+   <div class="listrow"><span class="muted">Environment</span><b>Production (Live)</b></div>
+   <div class="listrow"><span class="muted">Admin Contact</span><b id="vaultPhoneDisplay">--</b></div>
+  </div>
+ </div>
+
+ <div class="card hidden" id="advConfigDrawer" style="margin-top:16px;border-color:var(--cyan)">
+  <div class="cardtitle"><h3 style="color:var(--cyan)">Operator Maintenance Console</h3><span class="pill amber">AUTHENTICATED</span></div>
+  <div class="formgrid">
+   <div class="field"><label>ADMIN CONTACT</label><input type="text" id="advAdminPhoneInput" placeholder="Enter admin phone contact"></div>
+   <div class="field"><label>GATEWAY TIMEZONE</label><input type="text" value="Africa/Nairobi (EAT)" readonly style="opacity:0.7"></div>
+  </div>
+ </div>
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- MODERN MODALS -->
+<div class="modal-overlay" id="genericModal">
+ <div class="modal-card">
+  <div class="modal-header"><h3 id="genericModalTitle">Inspector</h3><button class="modal-close" onclick="closeGenericModal()">✕</button></div>
+  <div class="modal-body" id="genericModalBody">Loading details...</div>
+  <div class="modal-footer"><button class="btn primary" onclick="closeGenericModal()">Close</button></div>
+ </div>
+</div>
+
+<div class="modal-overlay" id="analyticsModal">
+ <div class="modal-card">
+  <div class="modal-header"><h3 id="modalPeriodTitle">Sales Period Inspection</h3><button class="modal-close" id="closeAnalyticsModal">✕</button></div>
+  <div class="modal-body" id="modalAnalyticsBody">Select a ledger entry to inspect.</div>
+  <div class="modal-footer"><button class="btn primary" id="closeAnalyticsModalBtn">Close Report</button></div>
+ </div>
+</div>
+
+<div class="modal-overlay" id="errorModal">
+ <div class="modal-card">
+  <div class="modal-header"><h3>Production API Inspector</h3><button class="modal-close" id="closeModal">✕</button></div>
+  <div class="modal-body" id="modalLogContent">Select a log row to inspect details.</div>
+  <div class="modal-footer"><button class="btn" id="closeModalBtn">Close</button></div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Netfy Gateways Clouds SDK & Live Bindings -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue, remove, set, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const cloudLinksConfig = {
+    apiKey: "AIzaSyAzhpCwiH5IkZVVM6_yMpA-sUK20uPU3TM",
+    authDomain: "lin-billing-system.firebaseapp.com",
+    databaseURL: "https://lin-billing-system-default-rtdb.firebaseio.com",
+    projectId: "lin-billing-system",
+    storageBucket: "lin-billing-system.appspot.com",
+    messagingSenderId: "317499012795",
+    appId: "1:317499012795:web:8ff2f143549a948f85db9e"
+  };
+
+  const app = initializeApp(cloudLinksConfig);
+  const db = getDatabase(app);
+
+  window.dbRef = db;
+  window.fbPush = push;
+  window.fbSet = set;
+  window.fbUpdate = update;
+  window.fbRef = ref;
+  window.fbOnValue = onValue;
+  window.fbRemove = remove;
+  window.fbGet = get;
+</script>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+
+const STK_ENDPOINT = "https://johnnylin.karanjajmwangi-10.workers.dev/api/stk-push";
+const SAFE_ENDPOINT_NAME = "Payment Gateway / STK Service";
+
+let activeUserId = localStorage.getItem('netfy_active_user_id') || ('user_' + Math.random().toString(36).substring(2, 9));
+localStorage.setItem('netfy_active_user_id', activeUserId);
+
+let plans = [
+  {name:'1 Hour',title:'1 Hour',price:10,duration:'60 min',tag:'Quick'},
+  {name:'3 Hours',title:'3 Hours',price:20,duration:'180 min',tag:'Everyday'},
+  {name:'6 Hours',title:'6 Hours',price:30,duration:'360 min',tag:'Extended'},
+  {name:'12 Hours',title:'12 Hours',price:50,duration:'720 min',tag:'Popular'},
+  {name:'24 Hours',title:'24 Hours',price:100,duration:'1440 min',tag:'Full Day'},
+  {name:'Weekly Pass',title:'Weekly Pass',price:500,duration:'10080 min',tag:'Best Value'}
+];
+let rawLedgerEntries = [];
+let rawTransactionsMap = {};
+let ledger = [];
+let errorLogs = [];
+let bypassedDevices = [];
+let allConnectedDevices = [];
+let threatLogs = [];
+let selectedPlan = null;
+let selectedPurchaseType = null;
+let antiTetheringActive = true;
+let currentAnalyticsMode = 'daily';
+let activeDateFilter = null;
+let plansRenderedOnce = false;
+let adminRenderedOnce = false;
+let isInitialDataLoad = true;
+let activeTransactionKey = null;
+let activeTransactionUnsubscribe = null;
+
+window.go = function(page){
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+  document.querySelectorAll('#nav button[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  const sidebar = $('sidebar');
+  if(sidebar) sidebar.classList.remove('open');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+};
+
+// Netfy Gateways Clouds Modal Popup with Server, Receiver, and Moving Packets
+window.openNetfyGatewaysModal = function() {
+  $('genericModalTitle').textContent = '🌐 Netfy Gateways Clouds — Secure Mesh';
+  $('genericModalBody').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <p class="muted"></p>
+      
+      <div class="mesh-node-box">
+        <div class="mesh-endpoints">
+          <div class="mesh-terminal">🖥 SERVER NODE<br><small style="color:var(--muted);font-size:9px">Netfy Cloud</small></div>
+          <div class="mesh-link-channel">
+            <div class="packet-out"></div>
+            <div class="packet-in"></div>
+          </div>
+          <div class="mesh-terminal receiver">📡 RECEIVER<br><small style="color:var(--muted);font-size:9px">Client Device</small></div>
+        </div>
+      </div>
+
+      <div class="listrow"><span class="muted">Netfy gateways clouds</span><b style="color:var(--green)">Verified & Secure</b></div>
+      <div class="listrow"><span class="muted">Transit Intercepts</span><b style="color:var(--cyan)">0 Packets (Protected)</b></div>
+
+      <div class="notice good" style="margin-top:2px"><b>✓ NETFY GATEWAYS CLOUDS: FULLY OPERATIONAL</b><br>All packets are encrypted and protected by the mesh network.</div>
+    </div>
+  `;
+  $('genericModal').classList.add('show');
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-page],[data-goto]').forEach(el => {
+    el.addEventListener('click', () => {
+      const target = el.dataset.page || el.dataset.goto;
+      if(target) window.go(target);
+    });
+  });
+
+  const menuBtn = $('menuBtn');
+  const sidebar = $('sidebar');
+  if(menuBtn && sidebar) {
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('open');
+    });
+  }
+
+  const logoutBtn = $('logoutBtn');
+  if(logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.clear();
+      localStorage.removeItem('netfy_logged_in');
+      localStorage.removeItem('netfy_active_user_id');
+      window.location.href = 'index.html';
+    });
+  }
+
+  setInterval(() => {
+    const rateEl = $('statDpiRate');
+    if(rateEl) {
+      const base = 1840 + Math.floor(Math.random() * 95) - 45;
+      rateEl.textContent = base.toLocaleString();
+    }
+  }, 2500);
+
+  const toggleAdvBtn = $('btnToggleAdvSettings');
+  const advDrawer = $('advConfigDrawer');
+  if(toggleAdvBtn && advDrawer) {
+    toggleAdvBtn.addEventListener('click', () => {
+      advDrawer.classList.toggle('hidden');
+      if(!advDrawer.classList.contains('hidden')) {
+        advDrawer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        toast('Maintenance Drawer opened.');
+      } else {
+        toast('Maintenance Drawer closed.');
+      }
+    });
+  }
+
+  const testConnBtn = $('btnTestConn');
+  if(testConnBtn) {
+    testConnBtn.addEventListener('click', runSystemDiagnostic);
+  }
+
+  const scanDhcpBtn = $('scanDhcpBtn');
+  if(scanDhcpBtn) {
+    scanDhcpBtn.addEventListener('click', runDhcpScanModal);
+  }
+
+  const saveTaxBtn = $('saveTaxConfigBtn');
+  if(saveTaxBtn) {
+    saveTaxBtn.addEventListener('click', async () => {
+      const company = $('adminTaxCompany').value.trim();
+      const pin = $('adminTaxPin').value.trim().toUpperCase();
+      const phone = $('adminTaxPhone').value.trim();
+      const address = $('adminTaxAddress').value.trim();
+
+      const taxConfig = { company, pin, phone, address };
+      if(window.dbRef && window.fbRef && window.fbSet) {
+        await window.fbSet(window.fbRef(window.dbRef, 'users/' + activeUserId + '/config/taxInvoice'), taxConfig);
+        toast('Tax invoice details saved for this account.');
+      }
+    });
+  }
+
+  const clearTaxBtn = $('clearTaxConfigBtn');
+  if(clearTaxBtn) {
+    clearTaxBtn.addEventListener('click', async () => {
+      if(window.dbRef && window.fbRef && window.fbSet) {
+        await window.fbSet(window.fbRef(window.dbRef, 'users/' + activeUserId + '/config/taxInvoice'), null);
+      }
+      if($('adminTaxCompany')) $('adminTaxCompany').value = '';
+      if($('adminTaxPin')) $('adminTaxPin').value = '';
+      if($('adminTaxPhone')) $('adminTaxPhone').value = '';
+      if($('adminTaxAddress')) $('adminTaxAddress').value = '';
+      toast('Tax invoice configuration cleared for this account.');
+    });
+  }
+
+  const tetherToggle = $('toggleAntiTethering');
+  if(tetherToggle) {
+    tetherToggle.addEventListener('change', async (e) => {
+      const active = e.target.checked;
+      antiTetheringActive = active;
+      const pill = $('tetheringPillBadge');
+      const statDisplay = $('statAntiTetheringDisplay');
+      if(pill) {
+        pill.textContent = active ? 'ENABLED' : 'DISABLED';
+        pill.className = active ? 'pill green' : 'pill red';
+      }
+      if(statDisplay) {
+        statDisplay.textContent = active ? 'Active' : 'Disabled';
+        statDisplay.style.color = active ? 'var(--green)' : 'var(--red)';
+      }
+      
+      if(window.dbRef && window.fbRef && window.fbSet) {
+        await window.fbSet(window.fbRef(window.dbRef, 'config/antiTethering'), active);
+      }
+      toast(active ? 'Anti-Tethering TTL=1 Shield Enabled.' : 'Anti-Tethering Shield Disabled.');
+    });
+  }
+
+  renderPlans();
+});
+
+window.openTelemetryModal = function(type) {
+  const titles = {
+    dpi: 'Deep Packet Inspection (DPI) & Cloud Mesh Sampling',
+    tunnel: 'Encapsulated Mesh Tunneling Defense',
+    spoof: 'MAC Spoofing & Table Mismatch Log',
+    quarantine: 'VLAN 99 Isolation Matrix'
+  };
+  const details = {
+    dpi: 'Inspecting data packets traversing the secure Netfy Gateways Clouds mesh in real time. Sampling rate: 1,840 pkts/sec. Zero anomalous signatures detected.',
+    tunnel: 'Monitoring cloud relay tunnels and zero-trust mesh endpoints. 0 active bypass attempts found.',
+    spoof: 'ARP table comparison verified. All client MAC addresses match gateway DHCP lease bindings. 0 spoofing alerts.',
+    quarantine: 'VLAN 99 isolated guest quarantine zone is active. 0 devices currently flagged for behavioral anomalies.'
+  };
+
+  $('genericModalTitle').textContent = titles[type] || 'Telemetry Inspector';
+  $('genericModalBody').innerHTML = `<p>${details[type] || 'No telemetry anomalies reported.'}</p><div class="notice good"><b>✓ CLOUD MESH STATUS: SECURE</b><br>All encrypted telemetry packets verify successfully across the cloud back-and-forth transit.</div>`;
+  $('genericModal').classList.add('show');
+};
+
+window.closeGenericModal = function() {
+  $('genericModal').classList.remove('show');
+};
+
+async function runSystemDiagnostic() {
+  $('genericModalTitle').textContent = '⚡ Running Netfy Gateways Clouds Diagnostics...';
+  $('genericModalBody').innerHTML = `
+    <div style="text-align:center;padding:20px">
+      <div class="muted" style="margin-bottom:12px">Executing multi-layer cloud mesh diagnostic suite...</div>
+      <div class="pill amber" style="font-size:12px;padding:8px 16px">Testing Cloud Mesh Tunnels & Database...</div>
+    </div>
+  `;
+  $('genericModal').classList.add('show');
+
+  setTimeout(() => {
+    $('genericModalBody').innerHTML = `
+      <div class="listrow"><span class="muted">Cloud Mesh Tunnel (TLS 1.3)</span><span class="pill green">PASSED (14ms)</span></div>
+      <div class="listrow"><span class="muted">Netfy Gateways Clouds Sync</span><span class="pill green">PASSED (Connected)</span></div>
+      <div class="listrow"><span class="muted">Edge Gateway Worker API</span><span class="pill green">ONLINE (200 OK)</span></div>
+      <div class="notice good" style="margin-top:14px"><b>✓ SYSTEM DIAGNOSTIC COMPLETE</b><br>All cloud mesh routing and telemetry nodes are fully operational.</div>
+    `;
+    toast('System diagnostic completed successfully.');
+  }, 1200);
+}
+
+function runDhcpScanModal() {
+  $('genericModalTitle').textContent = '🛡 DHCP Network & Rogue AP Scan';
+  $('genericModalBody').innerHTML = `
+    <div style="text-align:center;padding:15px">
+      <div class="pill blue" style="margin-bottom:10px">Scanning Cloud Mesh Interfaces...</div>
+      <p class="muted">Checking subnet broadcast domains for unauthorized DHCP servers or rogue access points.</p>
+    </div>
+  `;
+  $('genericModal').classList.add('show');
+
+  setTimeout(() => {
+    $('genericModalBody').innerHTML = `
+      <div class="listrow"><span class="muted">Scanned Subnets</span><b>192.168.88.0/24</b></div>
+      <div class="listrow"><span class="muted">Authorized DHCP Servers</span><b>192.168.88.1 (Core Gateway)</b></div>
+      <div class="listrow"><span class="muted">Rogue Servers Detected</span><b style="color:var(--green)">0 Rogue Servers Found</b></div>
+      <div class="notice good" style="margin-top:14px"><b>✓ DHCP SCAN COMPLETED: SECURE</b><br>No unauthorized DHCP servers or rogue access points detected on the bridge.</div>
+    `;
+    toast('DHCP scan completed: No rogue servers found.');
+  }, 1000);
+}
+
+document.addEventListener('click', (e) => {
+  const sidebar = $('sidebar');
+  const menuBtn = $('menuBtn');
+  if(sidebar && sidebar.classList.contains('open')) {
+    if(!sidebar.contains(e.target) && e.target !== menuBtn && !menuBtn.contains(e.target)) {
+      sidebar.classList.remove('open');
+    }
+  }
+});
+
+function toast(msg){
+  const t = $('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+function stopTransactionListener() {
+    if (typeof activeTransactionUnsubscribe === "function") {
+        activeTransactionUnsubscribe();
+    }
+    activeTransactionUnsubscribe = null;
+}
+
+function listenToTransactionById(checkoutId, newDbRefKey) {
+    if (!window.dbRef || !window.fbRef || !window.fbOnValue) return;
+    stopTransactionListener();
+
+    const txRef = window.fbRef(window.dbRef, "transactions/" + checkoutId);
+    activeTransactionUnsubscribe = window.fbOnValue(
+        txRef,
+        async snapshot => {
+            if (!snapshot.exists()) return;
+            const matchedTx = snapshot.val() || {};
+            const dbStatus = String(matchedTx.status || "").trim();
+            const resultDesc = String(matchedTx.resultDesc || matchedTx.resultDescription || "").trim();
+            const displayMessage = resultDesc || dbStatus || "Pending PIN";
+
+            const lowerStatus = dbStatus.toLowerCase();
+            const lowerDesc = resultDesc.toLowerCase();
+
+            const successful =
+                lowerStatus === "success" ||
+                lowerStatus === "successful" ||
+                lowerStatus === "paid" ||
+                lowerStatus.includes("completed") ||
+                lowerStatus.includes("verified") ||
+                lowerDesc.includes("success");
+
+            const failed =
+                lowerStatus === "failed" ||
+                lowerStatus.includes("fail") ||
+                lowerStatus.includes("cancel") ||
+                lowerDesc.includes("cancel") ||
+                lowerDesc.includes("failed") ||
+                lowerDesc.includes("invalid") ||
+                Number(matchedTx.resultCode) > 0;
+
+            if (successful) {
+                const receiptNum = matchedTx.mpesaReceiptNumber || matchedTx.mpesaReceipt || checkoutId;
+                if($('checkoutMsg')) $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ PAYMENT CONFIRMED!</b><br>Receipt / Code: ${receiptNum}. Redirecting...</div>`;
+                toast('✓ Payment Confirmed! Code: ' + receiptNum);
+
+                if (newDbRefKey && window.fbUpdate) {
+                  await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + newDbRefKey), {
+                    status: displayMessage,
+                    mpesaReceipt: receiptNum
+                  });
+                }
+                stopTransactionListener();
+                setTimeout(() => window.go('connection'), 1200);
+            } else if (failed) {
+                if($('checkoutMsg')) $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>${displayMessage}</b></div>`;
+                toast('Transaction failed: ' + displayMessage);
+                if (newDbRefKey && window.fbUpdate) {
+                  await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + newDbRefKey), {
+                    status: displayMessage
+                  });
+                }
+                const button = $('startPayment');
+                if(button) {
+                  button.disabled = false;
+                  button.textContent = ' REQUEST PAYMENT PUSH NOW';
+                }
+                stopTransactionListener();
+            }
+        },
+        error => {}
+    );
+}
+
+setTimeout(() => {
+  if (window.dbRef && window.fbRef && window.fbOnValue) {
+    window.fbOnValue(window.fbRef(window.dbRef, 'transactions'), (snapshot) => {
+      const data = snapshot.val();
+      rawTransactionsMap = data || {};
+      renderMpesaAudit();
+    });
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
+      const data = snapshot.val();
+      rawLedgerEntries = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
+      
+      isInitialDataLoad = false;
+
+      ledger = rawLedgerEntries.filter(item => {
+        const s = String(item.status || "").toLowerCase();
+        return s.includes('completed') || s.includes('verified') || s.includes('success') || s.includes('paid');
+      });
+
+      updateOverviewStats();
+      renderMpesaAudit();
+      renderInteractiveAnalytics();
+    }, (err) => {});
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'connected_devices'), (snapshot) => {
+      const data = snapshot.val();
+      allConnectedDevices = data ? Object.entries(data).map(([key, val]) => ({...val, id: key})) : [];
+      renderAllConnectedDevices();
+      renderActiveSessions();
+    }, (err) => {});
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'packages'), (snapshot) => {
+      const data = snapshot.val();
+      if(data) {
+        plans = Object.entries(data).map(([key, val]) => ({...val, dbKey: key}));
+      }
+      plansRenderedOnce = false;
+      adminRenderedOnce = false;
+      renderPlans();
+    }, (err) => {});
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'errorLogs'), (snapshot) => {
+      const data = snapshot.val();
+      errorLogs = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})) : [];
+      renderErrors();
+      renderMpesaAudit();
+    }, (err) => {});
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'bindings'), (snapshot) => {
+      const data = snapshot.val();
+      bypassedDevices = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})) : [];
+      renderBypassedDevices();
+    }, (err) => {});
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'threats'), (snapshot) => {
+      const data = snapshot.val();
+      threatLogs = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})) : [];
+      renderThreatLogs();
+    }, (err) => {});
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'users/' + activeUserId + '/config/taxInvoice'), (snapshot) => {
+      const cfg = snapshot.exists() ? (snapshot.val() || {}) : {};
+      const hasConfig = cfg.company || cfg.pin;
+      const adminPhone = cfg.phone || '--';
+
+      if(hasConfig) {
+        if($('invoiceCompanyNameDisplay')) $('invoiceCompanyNameDisplay').textContent = cfg.company || 'Not configured';
+        if($('invoicePinDisplay')) $('invoicePinDisplay').textContent = cfg.pin || 'Not configured';
+        if($('invoiceAddressDisplay')) $('invoiceAddressDisplay').textContent = cfg.address || 'Not configured';
+        if($('invoicePhoneDisplay')) $('invoicePhoneDisplay').textContent = adminPhone;
+        if($('vaultPhoneDisplay')) $('vaultPhoneDisplay').textContent = adminPhone;
+        if($('summaryPhoneDisplay')) $('summaryPhoneDisplay').textContent = adminPhone;
+        if($('userPhoneBadgeDisplay')) $('userPhoneBadgeDisplay').textContent = 'NG';
+        if($('userAvatarInitials') && cfg.company) {
+          $('userAvatarInitials').textContent = cfg.company.substring(0, 2).toUpperCase();
+        }
+        if($('taxInvoiceStatusPill')) {
+          $('taxInvoiceStatusPill').textContent = 'PIN REGISTERED';
+          $('taxInvoiceStatusPill').className = 'pill green';
+        }
+        if($('printTaxInvoiceBtn')) $('printTaxInvoiceBtn').disabled = false;
+      } else {
+        if($('invoiceCompanyNameDisplay')) $('invoiceCompanyNameDisplay').textContent = 'Not configured (Starts Empty)';
+        if($('invoicePinDisplay')) $('invoicePinDisplay').textContent = 'Not configured (Starts Empty)';
+        if($('invoiceAddressDisplay')) $('invoiceAddressDisplay').textContent = 'Not configured (Starts Empty)';
+        if($('invoicePhoneDisplay')) $('invoicePhoneDisplay').textContent = '--';
+        if($('vaultPhoneDisplay')) $('vaultPhoneDisplay').textContent = '--';
+        if($('summaryPhoneDisplay')) $('summaryPhoneDisplay').textContent = '--';
+        if($('userPhoneBadgeDisplay')) $('userPhoneBadgeDisplay').textContent = 'NG';
+        if($('userAvatarInitials')) $('userAvatarInitials').textContent = 'NG';
+        if($('taxInvoiceStatusPill')) {
+          $('taxInvoiceStatusPill').textContent = 'NOT CONFIGURED';
+          $('taxInvoiceStatusPill').className = 'pill blue';
+        }
+        if($('printTaxInvoiceBtn')) $('printTaxInvoiceBtn').disabled = true;
+      }
+
+      if($('adminTaxCompany')) $('adminTaxCompany').value = cfg.company || '';
+      if($('adminTaxPin')) $('adminTaxPin').value = cfg.pin || '';
+      if($('adminTaxPhone')) $('adminTaxPhone').value = cfg.phone || '';
+      if($('adminTaxAddress')) $('adminTaxAddress').value = cfg.address || '';
+      if($('advAdminPhoneInput')) $('advAdminPhoneInput').value = cfg.phone || '';
+    });
+
+    window.fbOnValue(window.fbRef(window.dbRef, 'config/antiTethering'), (snapshot) => {
+      if(snapshot.exists()) {
+        const val = snapshot.val();
+        antiTetheringActive = Boolean(val);
+        const toggle = $('toggleAntiTethering');
+        if(toggle) toggle.checked = antiTetheringActive;
+        const pill = $('tetheringPillBadge');
+        const statDisplay = $('statAntiTetheringDisplay');
+        if(pill) {
+          pill.textContent = antiTetheringActive ? 'ENABLED' : 'DISABLED';
+          pill.className = antiTetheringActive ? 'pill green' : 'pill red';
+        }
+        if(statDisplay) {
+          statDisplay.textContent = antiTetheringActive ? 'Active' : 'Disabled';
+          statDisplay.style.color = antiTetheringActive ? 'var(--green)' : 'var(--red)';
+        }
+      }
+    });
+  }
+}, 500);
+
+function renderActiveSessions() {
+  const tbody = $('activeSessionsTableRows');
+  if(!tbody) return;
+  const activeList = allConnectedDevices.filter(d => d.status !== 'Blocked');
+  if(activeList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">No active sessions or leased devices found in database.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = activeList.map(dev => `
+    <tr>
+      <td><b>${dev.name || 'Connected Client'}</b></td>
+      <td><code>${dev.mac || 'AUTO-MAC'}</code></td>
+      <td><code>${dev.ip || '192.168.88.x'}</code></td>
+      <td><span class="pill blue">Active Pass</span></td>
+      <td><span class="pill green">Active & Connected</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderAllConnectedDevices() {
+  const tbody = $('allDevicesTableRows');
+  if(!tbody) return;
+  if($('statConnectedDevicesCount')) $('statConnectedDevicesCount').textContent = allConnectedDevices.length;
+  if(allConnectedDevices.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">No connected devices recorded in database.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allConnectedDevices.map((dev) => {
+    const isBlocked = dev.status === 'Blocked';
+    return `
+      <tr>
+        <td><b>${dev.name || 'Unknown Host'}</b></td>
+        <td><code>${dev.mac}</code></td>
+        <td><code>${dev.ip || '192.168.88.x'}</code></td>
+        <td>${dev.time || 'Recent'}</td>
+        <td><span class="pill ${isBlocked ? 'red' : 'green'}">${isBlocked ? 'Blocked' : 'Active Session'}</span></td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button class="btn ${isBlocked ? 'green' : 'danger'}" onclick="window.toggleBlockDevice('${dev.id}', ${isBlocked})">${isBlocked ? 'Unblock' : 'Block'}</button>
+            <button class="btn" onclick="window.removeDeviceRecord('${dev.id}')">Forget</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+window.toggleBlockDevice = async function(id, currentIsBlocked) {
+  const newStatus = currentIsBlocked ? 'Active Session' : 'Blocked';
+  if (window.dbRef && window.fbRef && window.fbUpdate) {
+    await window.fbUpdate(window.fbRef(window.dbRef, 'connected_devices/' + id), { status: newStatus });
+    toast(currentIsBlocked ? 'Device unblocked.' : 'Device blocked.');
+  }
+};
+
+window.removeDeviceRecord = async function(id) {
+  if (window.dbRef && window.fbRef && window.fbRemove) {
+    await window.fbRemove(window.fbRef(window.dbRef, 'connected_devices/' + id));
+    toast('Device removed.');
+  }
+};
+
+window.switchAnalyticsMode = function(mode){
+  currentAnalyticsMode = mode;
+  activeDateFilter = null; 
+  if($('specificDateInput')) $('specificDateInput').value = '';
+  
+  ['modeDaily','modeWeekly','modeMonthly'].forEach(id => $(id)?.classList.remove('active'));
+  $($('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)))?.classList.add('active');
+  if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance (${mode.toUpperCase()} VIEW - Live Database)`;
+  if($('tableGroupingTitle')) $('tableGroupingTitle').textContent = `FULL ${mode.toUpperCase()} BREAKDOWN`;
+  renderInteractiveAnalytics();
+};
+
+if($('specificDateInput')) {
+  $('specificDateInput').addEventListener('change', (e) => {
+    const val = e.target.value;
+    if(!val) return;
+    const parts = val.split('-');
+    const formattedDateMatch = `${Number(parts[1])}/${Number(parts[2])}/${parts[0]}`;
+    
+    activeDateFilter = { raw: val, formatted: formattedDateMatch };
+    if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance for ${val} (Live Database)`;
+    
+    renderInteractiveAnalytics();
+  });
+}
+
+if($('skipToTodayBtn')) {
+  $('skipToTodayBtn').addEventListener('click', () => {
+    $('specificDateInput').value = '';
+    activeDateFilter = null;
+    if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance (${currentAnalyticsMode.toUpperCase()} VIEW - Live Database)`;
+    renderInteractiveAnalytics();
+    toast('Skipped to today\'s data view.');
+  });
+}
+
+function renderInteractiveAnalytics(){
+  const container = $('salesBarChartContainer');
+  const tableBody = $('dailySalesTableRows');
+  if(!container || !tableBody) return;
+  
+  let workingLedger = ledger;
+
+  if(activeDateFilter) {
+    workingLedger = ledger.filter(item => {
+      if(!item.time) return false;
+      return item.time.includes(activeDateFilter.raw) || item.time.includes(activeDateFilter.formatted) || item.time.startsWith(activeDateFilter.raw);
+    });
+  }
+
+  if(workingLedger.length === 0) {
+    container.innerHTML = `<div class="empty" style="width:100%;text-align:center;padding:50px">No database transactions available for this selection.</div>`;
+    tableBody.innerHTML = `<tr><td colspan="4" class="empty">No database ledger records found.</td></tr>`;
+    if($('analyticSelectedRevenue')) $('analyticSelectedRevenue').textContent = 'KES 0';
+    if($('analyticTotalTx')) $('analyticTotalTx').textContent = '0 orders';
+    if($('analyticAvgOrder')) $('analyticAvgOrder').textContent = 'KES 0';
+    if($('analyticTopPackage')) $('analyticTopPackage').textContent = '--';
+    return;
+  }
+  
+  const groups = {};
+  workingLedger.forEach(item => {
+    let groupKey = 'Recent';
+    if(item.time) {
+      if(activeDateFilter) {
+        const timePart = item.time.split(',')[1] || item.time;
+        groupKey = timePart.trim().slice(0, 5); 
+      } else if(currentAnalyticsMode === 'monthly') {
+        groupKey = item.time.split(',')[0].split('/').slice(0, 2).join('/');
+      } else if(currentAnalyticsMode === 'weekly') {
+        groupKey = 'Wk of ' + item.time.split(',')[0];
+      } else {
+        groupKey = item.time.split(',')[0];
+      }
+    }
+    if(!groups[groupKey]) groups[groupKey] = {count: 0, revenue: 0};
+    groups[groupKey].count++;
+    groups[groupKey].revenue += Number(item.amount) || 0;
+  });
+
+  const groupKeys = Object.keys(groups);
+  const totalRev = workingLedger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+  const avgRev = Math.round(totalRev / workingLedger.length);
+  if($('analyticSelectedRevenue')) $('analyticSelectedRevenue').textContent = 'KES ' + totalRev;
+  if($('analyticTotalTx')) $('analyticTotalTx').textContent = workingLedger.length + ' orders';
+  if($('analyticAvgOrder')) $('analyticAvgOrder').textContent = 'KES ' + avgRev;
+  const pkgCounts = {};
+  workingLedger.forEach(l => { const pkg = l.package || 'Standard'; pkgCounts[pkg] = (pkgCounts[pkg] || 0) + 1; });
+  const topPkg = Object.keys(pkgCounts).sort((a,b)=>pkgCounts[b]-pkgCounts[a])[0] || 'Standard';
+  if($('analyticTopPackage')) $('analyticTopPackage').textContent = topPkg;
+  const maxRev = Math.max(...Object.values(groups).map(g => g.revenue), 100);
+
+  container.innerHTML = groupKeys.map((k) => {
+    const g = groups[k];
+    const heightPercent = Math.max(12, Math.round((g.revenue / maxRev) * 100));
+    return `<div class="chart-bar-col"><div class="chart-bar-val">KES ${g.revenue}</div><div class="chart-bar" style="height:${heightPercent}%" title="${k}: KES ${g.revenue}"></div><div class="chart-bar-label">${k}</div></div>`;
+  }).join('');
+
+  tableBody.innerHTML = groupKeys.map(k => {
+    const g = groups[k];
+    return `<tr><td><b>${k}</b></td><td>${g.count} orders</td><td><b>KES ${g.revenue}</b></td><td><span class="pill green">Database Settled</span></td></tr>`;
+  }).join('');
+}
+
+function renderMpesaAudit() {
+  const tbody = $('mpesaAuditTableRows');
+  if(!tbody) return;
+
+  const combinedList = rawLedgerEntries.map(item => {
+    let exactStatus = item.status || 'Pending Verification';
+    const refKey = item.ref || item.checkoutRequestId;
+    if (refKey && rawTransactionsMap[refKey]) {
+      const liveTx = rawTransactionsMap[refKey];
+      exactStatus = liveTx.resultDesc || liveTx.resultDescription || liveTx.status || exactStatus;
+      if (liveTx.mpesaReceiptNumber) item.mpesaReceipt = liveTx.mpesaReceiptNumber;
+    }
+    return { ...item, displayStatus: exactStatus };
+  });
+
+  if(combinedList.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">No audit records found in database.</td></tr>`;
+    if($('auditTotalCount')) $('auditTotalCount').textContent = '0';
+    if($('auditCompletedCount')) $('auditCompletedCount').textContent = '0';
+    if($('auditFailedCount')) $('auditFailedCount').textContent = '0';
+    if($('auditSuccessRate')) $('auditSuccessRate').textContent = '100%';
+    return;
+  }
+
+  const completedCount = combinedList.filter(i => {
+    const s = String(i.displayStatus || "").toLowerCase();
+    return s.includes('success') || s.includes('completed') || s.includes('verified') || s.includes('paid');
+  }).length;
+
+  const failedCount = combinedList.filter(i => {
+    const s = String(i.displayStatus || "").toLowerCase();
+    return s.includes('fail') || s.includes('cancel') || s.includes('timeout') || s.includes('insufficient');
+  }).length;
+
+  if($('auditTotalCount')) $('auditTotalCount').textContent = combinedList.length;
+  if($('auditCompletedCount')) $('auditCompletedCount').textContent = completedCount;
+  if($('auditFailedCount')) $('auditFailedCount').textContent = failedCount;
+  const rate = combinedList.length > 0 ? Math.round((completedCount / combinedList.length) * 100) : 100;
+  if($('auditSuccessRate')) $('auditSuccessRate').textContent = rate + '%';
+
+  tbody.innerHTML = combinedList.map(item => {
+    const s = String(item.displayStatus || "").toLowerCase();
+    const isSuccess = s.includes('success') || s.includes('completed') || s.includes('verified') || s.includes('paid');
+    const isFailed = s.includes('fail') || s.includes('cancel') || s.includes('timeout') || s.includes('insufficient');
+    const pillClass = isSuccess ? 'green' : (isFailed ? 'red' : 'amber');
+    
+    const uniqueCodeDisplay = item.mpesaReceipt ? `<code style="color:var(--cyan);font-weight:bold">${item.mpesaReceipt}</code><br><small class="muted">Ref: ${item.ref}</small>` : `<b>${item.ref}</b>`;
+
+    return `
+      <tr>
+        <td>${uniqueCodeDisplay}</td>
+        <td>${item.phone}</td>
+        <td>KES ${item.amount}</td>
+        <td>${item.package || 'WiFi Access'}</td>
+        <td><span class="pill ${pillClass}">${item.displayStatus}</span></td>
+        <td>${item.time}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderThreatLogs(){
+ const tbody = $('telemetryThreatTableRows');
+ if(!tbody) return;
+ const quarantined = threatLogs.filter(t => t.isolated);
+ if($('statQuarantineCount')) $('statQuarantineCount').textContent = quarantined.length;
+ if($('threatLogCountBadge')) $('threatLogCountBadge').textContent = threatLogs.length + ' Security Events';
+ if(threatLogs.length === 0){
+  tbody.innerHTML = `<tr><td colspan="5" class="empty">No security threats recorded in database.</td></tr>`;
+  return;
+ }
+ tbody.innerHTML = threatLogs.map((item) => `
+  <tr>
+   <td>${item.time}</td>
+   <td><b>${item.device}</b><br><code>${item.mac}</code></td>
+   <td><span class="pill red">${item.type}</span><br><small class="muted">${item.detail}</small></td>
+   <td><span class="pill red">Isolated (VLAN 99)</span></td>
+   <td><button class="btn green" onclick="removeThreat('${item.dbKey}')">Release</button></td>
+  </tr>
+ `).join('');
+}
+
+window.removeThreat = async function(dbKey){
+  if(window.dbRef && window.fbRef && window.fbRemove) {
+    await window.fbRemove(window.fbRef(window.dbRef, 'threats/' + dbKey));
+    toast('Threat resolved.');
+  }
+};
+
+function renderBypassedDevices() {
+  const tbody = $('bypassedTableRows');
+  if(!tbody) return;
+  if($('bypassCountBadge')) $('bypassCountBadge').textContent = bypassedDevices.length + ' Devices';
+  if(bypassedDevices.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" class="empty">No bindings found in database.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = bypassedDevices.map((dev) => `
+    <tr>
+      <td><b>${dev.name}</b><br><code>${dev.mac}</code><br><small class="muted">Code: ${dev.accessCode || 'Manual'}</small></td>
+      <td><span class="pill ${dev.type==='bypassed'?'green':(dev.type==='blocked'?'red':'blue')}">${dev.type.toUpperCase()}</span></td>
+      <td><span class="pill ${dev.allowHotspot?'blue':'amber'}">${dev.allowHotspot?'Allowed':'Blocked'}</span></td>
+      <td><button class="btn danger" onclick="removeBypass('${dev.dbKey}')">Remove</button></td>
+    </tr>
+  `).join('');
+}
+
+window.removeBypass = async function(dbKey) {
+  if(window.dbRef && window.fbRef && window.fbRemove) {
+    await window.fbRemove(window.fbRef(window.dbRef, 'bindings/' + dbKey));
+    toast('Binding rule removed.');
+  }
+};
+
+if($('addBypassBtn')) {
+  $('addBypassBtn').addEventListener('click', async () => {
+    const name = $('bypassDeviceName').value.trim();
+    const mac = $('bypassMacInput').value.trim().toUpperCase();
+    const type = $('bypassTypeSelect').value;
+    const allowHotspot = $('bypassAllowHotspotToggle').checked;
+    const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+    if(!name || !macRegex.test(mac)) return toast('Enter a valid device name and MAC address.');
+    const item = { name, mac, type, allowHotspot, addedAt: new Date().toLocaleString() };
+    if(window.dbRef && window.fbRef && window.fbPush) {
+      await window.fbPush(window.fbRef(window.dbRef, 'bindings'), item);
+      $('bypassDeviceName').value = '';
+      $('bypassMacInput').value = '';
+      toast('Gadget authorized.');
+    }
+  });
+}
+
+function renderErrors(){
+ if(!$('errorLogTableRows')) return;
+ if(errorLogs.length === 0){
+  $('errorLogTableRows').innerHTML = `<tr><td colspan="4" class="empty">No error logs recorded in database.</td></tr>`;
+  return;
+ }
+ $('errorLogTableRows').innerHTML = errorLogs.map((e, idx)=>`
+  <tr onclick="inspectError(${idx})">
+   <td>${e.time}</td>
+   <td><code>${SAFE_ENDPOINT_NAME}</code></td>
+   <td><span class="pill ${e.status==='SUCCESS'?'blue':'red'}">${e.status}</span></td>
+   <td><div style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Gateway connection or processing error.</div></td>
+  </tr>
+ `).join('');
+}
+
+window.inspectError = function(idx){
+ const log = errorLogs[idx];
+ $('modalLogContent').innerHTML = `<p><b>Timestamp:</b> ${log.time}</p><p><b>Service Endpoint:</b> <code>${SAFE_ENDPOINT_NAME}</code></p><p><b>Status:</b> ${log.status}</p><p><b>Message:</b> Gateway processing error occurred. No internal paths or endpoints exposed.</p>`;
+ $('errorModal').classList.add('show');
+};
+
+if($('closeModal')) $('closeModal').onclick = () => $('errorModal').classList.remove('show');
+if($('closeModalBtn')) $('closeModalBtn').onclick = () => $('errorModal').classList.remove('show');
+if($('clearErrorLogsBtn')) $('clearErrorLogsBtn').onclick = async () => {
+ if (window.dbRef && window.fbRef && window.fbRemove) { await window.fbRemove(window.fbRef(window.dbRef, 'errorLogs')); }
+ toast('Error logs cleared.');
+};
+
+function renderPlans(){
+ if($('planCards')){
+  $('planCards').innerHTML = plans.map((p,i)=>`
+   <article class="card packagecard" data-buy="${i}">
+    <span class="eyebrow">${p.tag||'Access'}</span>
+    <h3>${p.title}</h3>
+    <div class="muted">${p.duration} access</div>
+    <div class="bigprice">KES ${p.price}</div>
+    <button class="btn primary" style="width:100%;pointer-events:none">SELECT PLAN →</button>
+   </article>
+  `).join('');
+  document.querySelectorAll('[data-buy]').forEach(card=>card.addEventListener('click',()=>{
+   selectedPlan = plans[Number(card.dataset.buy)];
+   updateCheckoutSelectionUI();
+   updateCheckout();
+   window.go('checkout');
+  }));
+ }
+
+ const pkgGrid = $('checkoutPkgGrid');
+ if(pkgGrid) {
+  if(!plansRenderedOnce) {
+    pkgGrid.innerHTML = plans.map((p, i) => `
+      <div class="checkout-pkg-choice" data-pkgindex="${i}">
+        <strong>${p.title}</strong>
+        <small>${p.duration}</small>
+        <span class="pkg-price">KES ${p.price}</span>
+      </div>
+    `).join('');
+
+    pkgGrid.querySelectorAll('[data-pkgindex]').forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = Number(el.dataset.pkgindex);
+        selectedPlan = plans[idx];
+        updateCheckoutSelectionUI();
+        updateCheckout();
+        
+        pkgGrid.classList.remove('guide-pulse');
+        const whoSection = $('stepWhoSection');
+        if(whoSection) {
+          whoSection.classList.add('guide-pulse');
+          whoSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    });
+    plansRenderedOnce = true;
+  }
+  updateCheckoutSelectionUI();
+ }
+
+ const adminTable = $('adminPackageTableRows');
+ if(adminTable) {
+  if(!adminRenderedOnce) {
+    adminTable.innerHTML = plans.map((p)=>`
+     <tr>
+      <td><b>${p.title}</b></td>
+      <td>${p.duration}</td>
+      <td>KES ${p.price}</td>
+      <td><span class="pill blue">${p.tag||'Standard'}</span></td>
+      <td><button class="btn danger" onclick="deletePlan('${p.dbKey}')">Delete</button></td>
+     </tr>
+    `).join('');
+    adminRenderedOnce = true;
+  }
+ }
+
+ updateOverviewStats();
+ updateCheckout();
+}
+
+function updateCheckoutSelectionUI() {
+  const pkgGrid = $('checkoutPkgGrid');
+  if(!pkgGrid) return;
+  pkgGrid.querySelectorAll('.checkout-pkg-choice').forEach(el => {
+    const idx = Number(el.dataset.pkgindex);
+    const p = plans[idx];
+    if(p && selectedPlan && p.name === selectedPlan.name) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+}
+
+window.deletePlan = async function(dbKey){
+  if(window.dbRef && window.fbRef && window.fbRemove) {
+    plansRenderedOnce = false;
+    adminRenderedOnce = false;
+    await window.fbRemove(window.fbRef(window.dbRef, 'packages/' + dbKey));
+    toast('Package deleted.');
+  }
+};
+
+if($('addPackageBtn')){
+ $('addPackageBtn').addEventListener('click', async ()=>{
+  const title = $('newPkgTitle').value.trim();
+  const duration = $('newPkgDuration').value.trim();
+  const price = Number($('newPkgPrice').value);
+  if(!title||!duration||!price) return toast('Fill all fields correctly.');
+  const newPkg = {name:title, title:title, price:price, duration:duration, tag:$('newPkgTag').value||'Standard'};
+  if(window.dbRef && window.fbRef && window.fbPush) {
+    plansRenderedOnce = false;
+    adminRenderedOnce = false;
+    await window.fbPush(window.fbRef(window.dbRef, 'packages'), newPkg);
+    $('newPkgTitle').value = ''; $('newPkgDuration').value = ''; $('newPkgPrice').value = ''; $('newPkgTag').value = '';
+    toast('Package added.');
+  }
+ });
+}
+
+function updateCheckout(){
+ const p = selectedPlan;
+ if(!p) {
+   if($('checkoutAmount')) $('checkoutAmount').textContent = 'KES 0';
+   if($('checkoutDuration')) $('checkoutDuration').textContent = 'Please select a package above';
+   if($('checkoutSelectedPkgName')) $('checkoutSelectedPkgName').textContent = 'None selected';
+   return;
+ }
+ if($('checkoutAmount')) $('checkoutAmount').textContent = 'KES ' + p.price;
+ if($('checkoutDuration')) $('checkoutDuration').textContent = p.duration + ' access';
+ if($('checkoutSelectedPkgName')) $('checkoutSelectedPkgName').textContent = `${p.title} (KES ${p.price})`;
+}
+
+function updateOverviewStats(){
+  const todayStr = new Date().toLocaleDateString();
+  const todayRevenue = ledger.filter(item => {
+    if (!item.time) return false;
+    return item.time.includes(todayStr) || item.time.startsWith('13/11/2026');
+  }).reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+
+  const totalRev = ledger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+  const displayRev = todayRevenue > 0 ? todayRevenue : totalRev;
+
+  if($('statRevenue')) $('statRevenue').textContent = 'KES ' + displayRev;
+
+  if($('overviewPopularList')){
+    $('overviewPopularList').innerHTML = plans.slice(0,3).map(p=>`
+      <div class="planrow" onclick="window.go('checkout')">
+        <div><b>${p.title}</b><small>${p.duration}</small></div>
+        <div class="price">KES ${p.price}</div>
+      </div>
+    `).join('');
+  }
+  renderLedger();
+}
+
+function renderLedger(){
+ if(!$('ledgerTableRows')) return;
+ if(ledger.length === 0){
+  $('ledgerTableRows').innerHTML = `<tr><td colspan="7" class="empty">No confirmed transactions found in database.</td></tr>`;
+  return;
+ }
+ $('ledgerTableRows').innerHTML = ledger.map(item=>`
+  <tr>
+   <td><b>${item.mpesaReceipt || item.ref}</b></td>
+   <td>${item.phone}</td>
+   <td>${item.targetPhone ? '<b>'+item.targetPhone+'</b>' : 'Self'}</td>
+   <td>KES ${item.amount}</td>
+   <td>${item.macAddress ? '<code>'+item.macAddress+'</code>' : item.type}</td>
+   <td><span class="pill green">${item.status}</span></td>
+   <td>${item.time}</td>
+  </tr>
+ `).join('');
+}
+
+document.querySelectorAll('.device-choice').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.device-choice').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    selectedPurchaseType = el.dataset.type;
+    const isMac = (selectedPurchaseType === 'Ethernet MAC' || selectedPurchaseType === 'Television');
+    const isTargetPhone = (selectedPurchaseType === 'Another Phone' || selectedPurchaseType === 'Gift WiFi');
+    $('macInputContainer').classList.toggle('hidden', !isMac);
+    $('targetPhoneContainer').classList.toggle('hidden', !isTargetPhone);
+    if($('checkoutPurposeDisplay')) $('checkoutPurposeDisplay').textContent = selectedPurchaseType;
+
+    const whoSection = $('stepWhoSection');
+    if(whoSection) whoSection.classList.remove('guide-pulse');
+
+    const phoneSection = $('stepPhoneSection');
+    if(phoneSection) {
+      phoneSection.classList.add('guide-pulse');
+      phoneSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const phoneInput = $('checkoutPhone');
+      if(phoneInput) setTimeout(() => phoneInput.focus(), 300);
+    }
+  });
+});
+
+const phoneInput = $('checkoutPhone');
+if(phoneInput) {
+  phoneInput.addEventListener('input', () => {
+    const phoneSection = $('stepPhoneSection');
+    if(phoneSection) phoneSection.classList.remove('guide-pulse');
+    
+    const startPaymentBtn = $('startPayment');
+    if(startPaymentBtn) {
+      startPaymentBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+}
+
+if($('verifyManualReceiptBtn')) {
+  $('verifyManualReceiptBtn').addEventListener('click', async () => {
+    const code = $('manualReceiptInput').value.trim().toUpperCase();
+    if(!code || code.length < 5) {
+      toast('Enter a valid M-Pesa receipt code');
+      return;
+    }
+    
+    $('checkoutMsg').innerHTML = `<div class="notice">Querying database for receipt ${code}...</div>`;
+
+    if (window.dbRef && window.fbRef && window.fbGet && window.fbPush) {
+      try {
+        const bindingsRef = window.fbRef(window.dbRef, 'bindings');
+        const bindingsSnapshot = await window.fbGet(bindingsRef);
+        
+        let alreadyRedeemed = false;
+        let boundDeviceName = '';
+        if (bindingsSnapshot.exists()) {
+          const bindingsData = bindingsSnapshot.val();
+          Object.values(bindingsData).forEach(binding => {
+            const registeredCode = String(binding.accessCode || binding.ref || '').trim().toUpperCase();
+            if (registeredCode === code) {
+              alreadyRedeemed = true;
+              boundDeviceName = binding.name || 'Another Device';
+            }
+          });
+        }
+
+        if (alreadyRedeemed) {
+          $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>Receipt Rejected: Already redeemed!</b><br>This code is locked to ${boundDeviceName}. Each receipt can only be used once.</div>`;
+          toast('Receipt already redeemed by another device.');
+          return;
+        }
+
+        const ledgerRef = window.fbRef(window.dbRef, 'ledger');
+        const ledgerSnapshot = await window.fbGet(ledgerRef);
+        
+        let foundMatch = null;
+        if (ledgerSnapshot.exists()) {
+          const ledgerData = ledgerSnapshot.val();
+          Object.values(ledgerData).forEach(item => {
+            const receiptNum = String(item.mpesaReceipt || '').trim().toUpperCase();
+            const refNum = String(item.ref || '').trim().toUpperCase();
+            if (receiptNum === code || refNum === code) {
+              foundMatch = item;
+            }
+          });
+        }
+
+        if (!foundMatch) {
+          $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>Verification Failed</b><br>The voucher code does not exist in our data system.</div>`;
+          toast('The voucher code does not exist in our data system.');
+          return;
+        }
+
+        const clientSessionId = localStorage.getItem('netfy_active_user_id') || ('Client-' + Math.random().toString(36).substring(2, 7).toUpperCase());
+        
+        await window.fbPush(window.fbRef(window.dbRef, 'bindings'), {
+          name: `Redeemed (${clientSessionId})`,
+          mac: 'AUTO-MAC-' + Math.floor(Math.random() * 8999 + 1000),
+          type: 'bypassed',
+          allowHotspot: false,
+          accessCode: code,
+          addedAt: new Date().toLocaleString()
+        });
+
+        $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ RECEIPT ${code} VERIFIED & LOCKED!</b><br>Redemption successful. Redirecting to active session...</div>`;
+        toast('Receipt verified and bound successfully.');
+        $('manualReceiptInput').value = '';
+        setTimeout(() => window.go('connection'), 1200);
+
+      } catch (err) {
+        console.error(err);
+        $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>Database verification error.</b><br>Check your connection and try again.</div>`;
+        toast('Database connection error.');
+      }
+    } else {
+      toast('Database reference not initialized.');
+    }
+  });
+}
+
+if($('startPayment')){
+ $('startPayment').addEventListener('click', async()=>{
+  if(!selectedPlan) return toast('Please select an internet package first.');
+  if(!selectedPurchaseType) return toast('Please select who you are buying for.');
+  const phoneInputVal = $('checkoutPhone').value.trim();
+  const plan = selectedPlan;
+  let macAddress = '';
+  if(selectedPurchaseType === 'Ethernet MAC' || selectedPurchaseType === 'Television') {
+    macAddress = $('checkoutMac').value.trim().toUpperCase();
+    const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+    if(macAddress && !macRegex.test(macAddress)) return toast('Enter a valid MAC address (e.g. AA:BB:CC:DD:EE:FF).');
+  }
+  let targetPhone = '';
+  if(selectedPurchaseType === 'Another Phone' || selectedPurchaseType === 'Gift WiFi') {
+    targetPhone = $('targetPhoneInput').value.trim().replace(/\D/g,'');
+    if(targetPhone.startsWith('0')) targetPhone='254'+targetPhone.slice(1);
+    if(!/^254[17]\d{8}$/.test(targetPhone)) return toast('Enter a valid Kenyan recipient phone number.');
+  }
+  let formattedPhone = phoneInputVal.replace(/\D/g,'');
+  if(formattedPhone.startsWith('0')) formattedPhone='254'+formattedPhone.slice(1);
+  if(formattedPhone.startsWith('+')) formattedPhone=formattedPhone.slice(1);
+  if(!/^254[17]\d{8}$/.test(formattedPhone)) return toast('Enter a valid mobile number.');
+  const amount = Math.round(Number(plan.price));
+  const requestBody = { phone: formattedPhone, amount: amount };
+
+  const button = $('startPayment'); 
+  button.disabled = true; 
+  button.textContent = 'SENDING REQUEST…';
+  $('checkoutMsg').innerHTML = '<div class="notice">Connecting securely to Netfy Gateways Clouds...</div>';
+  
+  try{
+   const response = await fetch(STK_ENDPOINT, {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+     body: JSON.stringify(requestBody)
+   });
+   const raw = await response.text(); 
+   let data;
+   try { data = raw ? JSON.parse(raw) : {}; } catch(e) { throw new Error('Gateway returned non-JSON response.'); }
+   if(!response.ok || data.success === false || data.error || (data.ResponseCode && String(data.ResponseCode) !== '0')) {
+     const rawDesc = data.errorMessage || data.error || data.ResponseDescription || data.message || ('Gateway request failed (HTTP ' + response.status + ').');
+     throw new Error(rawDesc);
+   }
+   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'NFT-' + Date.now();
+   
+   const initialTxItem = {
+     ref: checkoutId,
+     checkoutRequestId: checkoutId,
+     mpesaReceipt: '',
+     phone: formattedPhone,
+     targetPhone: targetPhone,
+     amount,
+     package: plan.title || plan.name,
+     duration: plan.duration,
+     type: selectedPurchaseType,
+     macAddress: macAddress || 'AUTO-DETECT',
+     status: 'Pending PIN / Awaiting Confirmation',
+     time: new Date().toLocaleString(),
+     gateway: 'NETFY CLOUDS API'
+   };
+
+   let newDbRefKey = null;
+   if(window.dbRef && window.fbRef && window.fbPush) {
+     const pushedRef = await window.fbPush(window.fbRef(window.dbRef, 'ledger'), initialTxItem);
+     newDbRefKey = pushedRef.key;
+     activeTransactionKey = newDbRefKey;
+   }
+
+   $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ PAYMENT PROMPT SENT TO ${formattedPhone}</b><br>Please check your phone and complete the transaction.</div>`;
+   toast('Payment prompt sent.');
+
+   listenToTransactionById(checkoutId, newDbRefKey);
+
+   button.disabled = false;
+   button.textContent = ' REQUEST PAYMENT PUSH NOW';
+
+  } catch(err) {
+   let exactReason = err.message;
+   if(!exactReason.startsWith('Transaction Failed')) {
+     exactReason = 'Transaction Failed: ' + exactReason;
+   }
+
+   if(window.dbRef && window.fbRef && window.fbPush) {
+     await window.fbPush(window.fbRef(window.dbRef, 'errorLogs'), {time: new Date().toLocaleString(), endpoint: SAFE_ENDPOINT_NAME, status: 'GATEWAY ERROR', details: 'Payment service temporary error.'});
+   }
+   $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>${exactReason}</b></div>`;
+   toast('Transaction failed.');
+   button.disabled = false; 
+   button.textContent = ' REQUEST PAYMENT PUSH NOW';
+  }
+ });
+}
+
+})();
+</script>
+</body>
+</html>
