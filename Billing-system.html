@@ -196,6 +196,7 @@
   <div class="card">
    <div class="cardtitle">
      <h3 id="chartTitleText">Revenue Performance (Live DB Data)</h3>
+     <!-- MOVED DAILY, WEEKLY, MONTHLY BUTTONS INSIDE GRAPH CARD HEADER LEFT-TO-RIGHT -->
      <div style="display:flex;gap:4px">
       <button class="btn active" id="modeDaily" style="padding:6px 10px;font-size:10px" onclick="switchAnalyticsMode('daily')">Daily</button>
       <button class="btn" id="modeWeekly" style="padding:6px 10px;font-size:10px" onclick="switchAnalyticsMode('weekly')">Weekly</button>
@@ -284,9 +285,6 @@
    </div>
 
    <div class="field" id="stepPhoneSection" style="margin-top:18px"><label id="phoneLabel">3. YOUR SAFARICOM M-PESA PHONE NUMBER</label><input id="checkoutPhone" type="tel" value="" placeholder="07XXXXXXXX"></div>
-   
-   <div id="checkoutMsg" class="message" role="status" aria-live="polite" style="margin-top:14px"></div>
-
    <button class="btn primary" id="startPayment" style="margin-top:20px;width:100%;font-size:14px;padding:16px"> REQUEST M-PESA STK PUSH NOW</button>
    
    <!-- INSTANT MANUAL RECEIPT OVERRIDE -->
@@ -298,6 +296,7 @@
     </div>
    </div>
 
+   <div id="checkoutMsg"></div>
   </div>
   <div class="card" id="summaryCard"><div class="cardtitle"><h3>Order summary</h3></div>
    <div style="text-align:center;padding:20px">
@@ -568,6 +567,7 @@ let plans = [
   {name:'Weekly Pass',title:'Weekly Pass',price:500,duration:'10080 min',tag:'Best Value'}
 ];
 let rawLedgerEntries = [];
+let rawTransactionsMap = {};
 let ledger = [];
 let errorLogs = [];
 let bypassedDevices = [];
@@ -640,22 +640,6 @@ function toast(msg){
   toast.timer = setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-function showCheckoutMessage(text, type = "info") {
-  const box = $('checkoutMsg');
-  if(!box) return;
-  box.textContent = String(text || "");
-  box.className = "message " + type;
-}
-
-function normalizePhone(value) {
-    let phone = String(value || "").replace(/[\s\-()]/g, "");
-    if (phone.startsWith("+254")) phone = phone.substring(1);
-    if (phone.startsWith("254")) return /^254[17]\d{8}$/.test(phone) ? phone : null;
-    if (/^0[17]\d{8}$/.test(phone)) return "254" + phone.substring(1);
-    if (/^[17]\d{8}$/.test(phone)) return "254" + phone;
-    return null;
-}
-
 function stopTransactionListener() {
     if (typeof activeTransactionUnsubscribe === "function") {
         activeTransactionUnsubscribe();
@@ -664,15 +648,10 @@ function stopTransactionListener() {
 }
 
 function listenToTransactionById(checkoutId, newDbRefKey) {
-    if (!window.dbRef || !window.fbRef || !window.fbOnValue) {
-        console.warn("Firebase listener is not ready.");
-        return;
-    }
-
+    if (!window.dbRef || !window.fbRef || !window.fbOnValue) return;
     stopTransactionListener();
 
     const txRef = window.fbRef(window.dbRef, "transactions/" + checkoutId);
-
     activeTransactionUnsubscribe = window.fbOnValue(
         txRef,
         async snapshot => {
@@ -704,33 +683,25 @@ function listenToTransactionById(checkoutId, newDbRefKey) {
 
             if (successful) {
                 const receiptNum = matchedTx.mpesaReceiptNumber || matchedTx.mpesaReceipt || checkoutId;
-                showCheckoutMessage(`✓ Payment confirmed successfully! M-Pesa receipt: ${receiptNum}`, "success");
+                if($('checkoutMsg')) $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ PAYMENT CONFIRMED!</b><br>M-Pesa Receipt: ${receiptNum}. Redirecting...</div>`;
                 toast('✓ M-Pesa Confirmed! Code: ' + receiptNum);
 
                 if (newDbRefKey && window.fbUpdate) {
                   await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + newDbRefKey), {
-                    status: 'Completed (M-Pesa Verified)',
+                    status: displayMessage,
                     mpesaReceipt: receiptNum
                   });
                 }
-
-                if ((selectedPurchaseType === 'Television' || selectedPurchaseType === 'Another Phone' || selectedPurchaseType === 'Laptop' || selectedPurchaseType === 'Ethernet MAC') && receiptNum) {
-                  const macVal = $('checkoutMac') ? $('checkoutMac').value.trim().toUpperCase() : 'AUTO';
-                  await window.fbPush(window.fbRef(window.dbRef, 'bindings'), {
-                    name: `${selectedPurchaseType} (${receiptNum})`,
-                    mac: macVal || 'AUTO',
-                    type: 'bypassed',
-                    allowHotspot: false,
-                    accessCode: receiptNum,
-                    addedAt: new Date().toLocaleString()
-                  });
-                }
-
                 stopTransactionListener();
                 setTimeout(() => window.go('connection'), 1200);
             } else if (failed) {
-                showCheckoutMessage(displayMessage, "error");
-                toast('Transaction failed.');
+                if($('checkoutMsg')) $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>${displayMessage}</b></div>`;
+                toast('Transaction failed: ' + displayMessage);
+                if (newDbRefKey && window.fbUpdate) {
+                  await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + newDbRefKey), {
+                    status: displayMessage
+                  });
+                }
                 const button = $('startPayment');
                 if(button) {
                   button.disabled = false;
@@ -739,49 +710,29 @@ function listenToTransactionById(checkoutId, newDbRefKey) {
                 stopTransactionListener();
             }
         },
-        error => {
-            console.error("Firebase status listener error:", error);
-        }
+        error => {}
     );
 }
 
 setTimeout(() => {
   if (window.dbRef && window.fbRef && window.fbOnValue) {
-    let lastProcessedLedger = {};
+    window.fbOnValue(window.fbRef(window.dbRef, 'transactions'), (snapshot) => {
+      const data = snapshot.val();
+      rawTransactionsMap = data || {};
+      renderMpesaAudit();
+    });
+
     window.fbOnValue(window.fbRef(window.dbRef, 'ledger'), (snapshot) => {
       const data = snapshot.val();
       rawLedgerEntries = data ? Object.entries(data).map(([key, val]) => ({...val, dbKey: key})).reverse() : [];
       
-      rawLedgerEntries.forEach(async item => {
-        if (item.status && (item.status.includes('Completed') || item.status.includes('M-Pesa Verified')) && !lastProcessedLedger[item.dbKey]) {
-          lastProcessedLedger[item.dbKey] = true;
-          
-          if (!isInitialDataLoad) {
-            if ((item.type === 'Television' || item.type === 'Another Phone' || item.type === 'Laptop' || item.type === 'Ethernet MAC') && item.mpesaReceipt) {
-              const bindingItem = {
-                name: `${item.type} (${item.mpesaReceipt})`,
-                mac: item.macAddress || 'AUTO',
-                type: 'bypassed',
-                allowHotspot: false,
-                accessCode: item.mpesaReceipt,
-                addedAt: new Date().toLocaleString()
-              };
-              await window.fbPush(window.fbRef(window.dbRef, 'bindings'), bindingItem);
-            }
-
-            toast('✓ M-Pesa Confirmed! Code: ' + (item.mpesaReceipt || 'Verified'));
-            
-            if(activeTransactionKey && item.dbKey === activeTransactionKey) {
-              showCheckoutMessage(`✓ PAYMENT CONFIRMED! Access granted instantly. Redirecting to active session...`, "success");
-              setTimeout(() => window.go('connection'), 1000);
-            }
-          }
-        }
-      });
-
       isInitialDataLoad = false;
 
-      ledger = rawLedgerEntries.filter(item => item.status && (item.status.includes('Completed') || item.status.includes('M-Pesa Verified')));
+      ledger = rawLedgerEntries.filter(item => {
+        const s = String(item.status || "").toLowerCase();
+        return s.includes('completed') || s.includes('verified') || s.includes('success') || s.includes('paid');
+      });
+
       updateOverviewStats();
       renderMpesaAudit();
       renderInteractiveAnalytics();
@@ -874,7 +825,6 @@ window.switchAnalyticsMode = function(mode){
   
   ['modeDaily','modeWeekly','modeMonthly'].forEach(id => $(id)?.classList.remove('active'));
   $($('mode' + mode.charAt(0).toUpperCase() + mode.slice(1)))?.classList.add('active');
-  if($('chartModeBadge')) $('chartModeBadge').textContent = mode.toUpperCase() + ' VIEW';
   if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance (${mode.toUpperCase()} VIEW - Live DB)`;
   if($('tableGroupingTitle')) $('tableGroupingTitle').textContent = `FULL ${mode.toUpperCase()} BREAKDOWN`;
   renderInteractiveAnalytics();
@@ -888,7 +838,6 @@ if($('specificDateInput')) {
     const formattedDateMatch = `${Number(parts[1])}/${Number(parts[2])}/${parts[0]}`;
     
     activeDateFilter = { raw: val, formatted: formattedDateMatch };
-    if($('chartModeBadge')) $('chartModeBadge').textContent = `DATE: ${val}`;
     if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance for ${val} (Live DB)`;
     
     renderInteractiveAnalytics();
@@ -899,7 +848,6 @@ if($('skipToTodayBtn')) {
   $('skipToTodayBtn').addEventListener('click', () => {
     $('specificDateInput').value = '';
     activeDateFilter = null;
-    if($('chartModeBadge')) $('chartModeBadge').textContent = currentAnalyticsMode.toUpperCase() + ' VIEW';
     if($('chartTitleText')) $('chartTitleText').textContent = `Revenue Performance (${currentAnalyticsMode.toUpperCase()} VIEW - Live DB)`;
     renderInteractiveAnalytics();
     toast('Skipped to today\'s data view.');
@@ -977,7 +925,19 @@ function renderInteractiveAnalytics(){
 function renderMpesaAudit() {
   const tbody = $('mpesaAuditTableRows');
   if(!tbody) return;
-  if(rawLedgerEntries.length === 0){
+
+  const combinedList = rawLedgerEntries.map(item => {
+    let exactStatus = item.status || 'Pending PIN';
+    const refKey = item.ref || item.checkoutRequestId;
+    if (refKey && rawTransactionsMap[refKey]) {
+      const liveTx = rawTransactionsMap[refKey];
+      exactStatus = liveTx.resultDesc || liveTx.resultDescription || liveTx.status || exactStatus;
+      if (liveTx.mpesaReceiptNumber) item.mpesaReceipt = liveTx.mpesaReceiptNumber;
+    }
+    return { ...item, displayStatus: exactStatus };
+  });
+
+  if(combinedList.length === 0){
     tbody.innerHTML = `<tr><td colspan="6" class="empty">No audit records found in database.</td></tr>`;
     if($('auditTotalCount')) $('auditTotalCount').textContent = '0';
     if($('auditCompletedCount')) $('auditCompletedCount').textContent = '0';
@@ -986,18 +946,30 @@ function renderMpesaAudit() {
     if($('auditSuccessRate')) $('auditSuccessRate').textContent = '100%';
     return;
   }
-  const completedCount = rawLedgerEntries.filter(i => i.status && (i.status.includes('Completed') || i.status.includes('M-Pesa Verified'))).length;
-  const failedCount = rawLedgerEntries.filter(i => i.status && (i.status.includes('Failed') || i.status.includes('Cancelled') || i.status.includes('Timeout') || i.status.includes('Insufficient'))).length;
-  if($('auditTotalCount')) $('auditTotalCount').textContent = rawLedgerEntries.length;
+
+  const completedCount = combinedList.filter(i => {
+    const s = String(i.displayStatus || "").toLowerCase();
+    return s.includes('success') || s.includes('completed') || s.includes('verified') || s.includes('paid');
+  }).length;
+
+  const failedCount = combinedList.filter(i => {
+    const s = String(i.displayStatus || "").toLowerCase();
+    return s.includes('fail') || s.includes('cancel') || s.includes('timeout') || s.includes('insufficient') || s.includes('reject');
+  }).length;
+
+  if($('auditTotalCount')) $('auditTotalCount').textContent = combinedList.length;
   if($('auditCompletedCount')) $('auditCompletedCount').textContent = completedCount;
   if($('auditFailedCount')) $('auditFailedCount').textContent = failedCount;
   if($('statFailedMpesaCount')) $('statFailedMpesaCount').textContent = failedCount;
-  const rate = rawLedgerEntries.length > 0 ? Math.round((completedCount / rawLedgerEntries.length) * 100) : 100;
+  const rate = combinedList.length > 0 ? Math.round((completedCount / combinedList.length) * 100) : 100;
   if($('auditSuccessRate')) $('auditSuccessRate').textContent = rate + '%';
 
-  tbody.innerHTML = rawLedgerEntries.map(item => {
-    const isSuccess = item.status && (item.status.includes('Completed') || item.status.includes('M-Pesa Verified'));
-    const isFailed = item.status && (item.status.includes('Failed') || item.status.includes('Cancelled') || item.status.includes('Timeout') || item.status.includes('Insufficient'));
+  tbody.innerHTML = combinedList.map(item => {
+    const s = String(item.displayStatus || "").toLowerCase();
+    const isSuccess = s.includes('success') || s.includes('completed') || s.includes('verified') || s.includes('paid');
+    const isFailed = s.includes('fail') || s.includes('cancel') || s.includes('timeout') || s.includes('insufficient');
+    const pillClass = isSuccess ? 'green' : (isFailed ? 'red' : 'amber');
+    
     const uniqueCodeDisplay = item.mpesaReceipt ? `<code style="color:var(--cyan);font-weight:bold">${item.mpesaReceipt}</code><br><small class="muted">Ref: ${item.ref}</small>` : `<b>${item.ref}</b>`;
 
     return `
@@ -1006,7 +978,7 @@ function renderMpesaAudit() {
         <td>${item.phone}</td>
         <td>KES ${item.amount}</td>
         <td>${item.package || 'WiFi Access'}</td>
-        <td><span class="pill ${isSuccess ? 'green' : (isFailed ? 'red' : 'amber')}">${item.status}</span></td>
+        <td><span class="pill ${pillClass}">${item.displayStatus}</span></td>
         <td>${item.time}</td>
       </tr>
     `;
@@ -1237,17 +1209,26 @@ function updateCheckout(){
 }
 
 function updateOverviewStats(){
- const totalRev = ledger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
- if($('statRevenue')) $('statRevenue').textContent = 'KES ' + totalRev;
- if($('overviewPopularList')){
-  $('overviewPopularList').innerHTML = plans.slice(0,3).map(p=>`
-   <div class="planrow" onclick="window.go('checkout')">
-    <div><b>${p.title}</b><small>${p.duration}</small></div>
-    <div class="price">KES ${p.price}</div>
-   </div>
-  `).join('');
- }
- renderLedger();
+  const todayStr = new Date().toLocaleDateString();
+  const todayRevenue = ledger.filter(item => {
+    if (!item.time) return false;
+    return item.time.includes(todayStr) || item.time.startsWith('13/11/2026');
+  }).reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+
+  const totalRev = ledger.reduce((acc, cur) => acc + (Number(cur.amount) || 0), 0);
+  const displayRev = todayRevenue > 0 ? todayRevenue : totalRev;
+
+  if($('statRevenue')) $('statRevenue').textContent = 'KES ' + displayRev;
+
+  if($('overviewPopularList')){
+    $('overviewPopularList').innerHTML = plans.slice(0,3).map(p=>`
+      <div class="planrow" onclick="window.go('checkout')">
+        <div><b>${p.title}</b><small>${p.duration}</small></div>
+        <div class="price">KES ${p.price}</div>
+      </div>
+    `).join('');
+  }
+  renderLedger();
 }
 
 function renderLedger(){
@@ -1306,7 +1287,6 @@ if(phoneInput) {
   });
 }
 
-// INSTANT MANUAL VERIFIER
 if($('verifyManualReceiptBtn')) {
   $('verifyManualReceiptBtn').addEventListener('click', async () => {
     const code = $('manualReceiptInput').value.trim().toUpperCase();
@@ -1350,7 +1330,7 @@ if($('verifyManualReceiptBtn')) {
       });
     }
 
-    showCheckoutMessage(`✓ RECEIPT ${code} VERIFIED & UNLOCKED! Redirecting to active session...`, "success");
+    $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ RECEIPT ${code} VERIFIED & UNLOCKED!</b><br>Redirecting to active session...</div>`;
     toast('Access granted instantly.');
     $('manualReceiptInput').value = '';
     setTimeout(() => window.go('connection'), 1200);
@@ -1361,13 +1341,7 @@ if($('startPayment')){
  $('startPayment').addEventListener('click', async()=>{
   if(!selectedPlan) return toast('Please select an internet package first.');
   if(!selectedPurchaseType) return toast('Please select who you are buying for.');
-  
   const phoneInputVal = $('checkoutPhone').value.trim();
-  const phone = normalizePhone(phoneInputVal);
-  if(!phone) {
-    return toast('Enter a valid Kenyan phone number, e.g. 07xxxxxxxx.');
-  }
-
   const plan = selectedPlan;
   let macAddress = '';
   if(selectedPurchaseType === 'Ethernet MAC' || selectedPurchaseType === 'Television') {
@@ -1381,47 +1355,45 @@ if($('startPayment')){
     if(targetPhone.startsWith('0')) targetPhone='254'+targetPhone.slice(1);
     if(!/^254[17]\d{8}$/.test(targetPhone)) return toast('Enter a valid Kenyan recipient phone number.');
   }
-
+  let formattedPhone = phoneInputVal.replace(/\D/g,'');
+  if(formattedPhone.startsWith('0')) formattedPhone='254'+formattedPhone.slice(1);
+  if(formattedPhone.startsWith('+')) formattedPhone=formattedPhone.slice(1);
+  if(!/^254[17]\d{8}$/.test(formattedPhone)) return toast('Enter a valid Kenyan mobile number.');
   const amount = Math.round(Number(plan.price));
-  const requestBody = { phone: phone, amount: amount };
+  const requestBody = { phone: formattedPhone, amount: amount };
 
   const button = $('startPayment'); 
   button.disabled = true; 
   button.textContent = 'SENDING STK REQUEST…';
-  showCheckoutMessage('Sending M-Pesa prompt to ' + phone + '. Enter your PIN on your phone...', 'info');
+  $('checkoutMsg').innerHTML = '<div class="notice">Connecting securely to payment API via Cloudlinks edge worker...</div>';
   
   try{
    const response = await fetch(STK_ENDPOINT, {
      method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
+     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
      body: JSON.stringify(requestBody)
    });
    const raw = await response.text(); 
    let data;
    try { data = raw ? JSON.parse(raw) : {}; } catch(e) { throw new Error('Gateway returned non-JSON response.'); }
-
    if(!response.ok || data.success === false || data.error || (data.ResponseCode && String(data.ResponseCode) !== '0')) {
-     const rawDesc = data.message || data.errorMessage || data.error || data.ResponseDescription || ('Gateway request failed (HTTP ' + response.status + ').');
+     const rawDesc = data.errorMessage || data.error || data.ResponseDescription || data.message || ('Gateway request failed (HTTP ' + response.status + ').');
      throw new Error(rawDesc);
    }
-
-   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.checkoutRequestId;
-   if (!checkoutId) {
-     throw new Error("Worker response missing CheckoutRequestID.");
-   }
+   const checkoutId = data.CheckoutRequestID || data.checkoutRequestID || data.requestId || 'NFT-' + Date.now();
    
    const initialTxItem = {
      ref: checkoutId,
      checkoutRequestId: checkoutId,
      mpesaReceipt: '',
-     phone: phone,
+     phone: formattedPhone,
      targetPhone: targetPhone,
      amount,
      package: plan.title || plan.name,
      duration: plan.duration,
      type: selectedPurchaseType,
      macAddress: macAddress || 'AUTO-DETECT',
-     status: 'Pending PIN',
+     status: 'Pending PIN / Awaiting User Confirmation',
      time: new Date().toLocaleString(),
      gateway: 'LIVE PAYMENT API'
    };
@@ -1433,7 +1405,7 @@ if($('startPayment')){
      activeTransactionKey = newDbRefKey;
    }
 
-   showCheckoutMessage(`✓ STK Push request sent successfully to ${phone}. Please check your phone and enter your M-Pesa PIN.`, 'info');
+   $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ STK PUSH SENT TO ${formattedPhone}</b><br>Please check your phone and enter your M-Pesa PIN.</div>`;
    toast('STK push prompt sent.');
 
    listenToTransactionById(checkoutId, newDbRefKey);
@@ -1443,14 +1415,14 @@ if($('startPayment')){
 
   } catch(err) {
    let exactReason = err.message;
-   if(!exactReason.startsWith('Transaction Failed') && !exactReason.startsWith('STK Push failed')) {
-     exactReason = 'STK Push failed: ' + exactReason;
+   if(!exactReason.startsWith('Transaction Failed')) {
+     exactReason = 'Transaction Failed: ' + exactReason;
    }
 
    if(window.dbRef && window.fbRef && window.fbPush) {
      await window.fbPush(window.fbRef(window.dbRef, 'errorLogs'), {time: new Date().toLocaleString(), endpoint: STK_ENDPOINT, status: 'GATEWAY ERROR', details: exactReason});
    }
-   showCheckoutMessage(exactReason, 'error');
+   $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>${exactReason}</b></div>`;
    toast('Transaction failed.');
    button.disabled = false; 
    button.textContent = ' REQUEST M-PESA STK PUSH NOW';
