@@ -360,7 +360,7 @@
    <div style="margin-top:18px;background:#081a2a;border:1px solid #20394e;padding:14px;border-radius:12px">
     <label style="display:block;font-size:10px;color:var(--amber);font-weight:800;letter-spacing:.7px;margin-bottom:6px">⚡ INSTANT UNLOCK VIA CODE</label>
     <div style="display:flex;gap:8px">
-     <input id="manualReceiptInput" type="text" placeholder="e.g. UKBI81VT80" style="text-transform:uppercase;flex:1;background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:9px;padding:10px;outline:none">
+     <input id="manualReceiptInput" type="text" placeholder="e.g. QHX8..." style="text-transform:uppercase;flex:1;background:#061320;color:#f0f7ff;border:1px solid #29445b;border-radius:9px;padding:10px;outline:none">
      <button class="btn green" id="verifyManualReceiptBtn" style="padding:10px 14px">VERIFY & UNLOCK</button>
     </div>
    </div>
@@ -376,7 +376,7 @@
    <div class="listrow"><span class="muted">Selected Package</span><b id="checkoutSelectedPkgName">None selected</b></div>
    <div class="listrow"><span class="muted">Purpose / Target</span><b id="checkoutPurposeDisplay">None selected</b></div>
    <div class="listrow"><span class="muted">Billed From</span><b>Netfy Portal Gateways</b></div>
-   <div class="listrow"><span class="muted">Servers Admin</span><b id="summaryPhoneDisplay">--</b></div>
+   <div class="listrow"><span class="muted">Admin Contact</span><b id="summaryPhoneDisplay">--</b></div>
   </div>
  </div>
 </section>
@@ -1064,6 +1064,7 @@ setTimeout(() => {
         if($('invoiceAddressDisplay')) $('invoiceAddressDisplay').textContent = cfg.address || 'Not configured';
         if($('invoicePhoneDisplay')) $('invoicePhoneDisplay').textContent = adminPhone;
         if($('vaultPhoneDisplay')) $('vaultPhoneDisplay').textContent = adminPhone;
+        if($('summaryPhoneDisplay')) $('summaryPhoneDisplay').textContent = adminPhone;
         if($('userPhoneBadgeDisplay')) $('userPhoneBadgeDisplay').textContent = 'NG';
         if($('userAvatarInitials') && cfg.company) {
           $('userAvatarInitials').textContent = cfg.company.substring(0, 2).toUpperCase();
@@ -1079,6 +1080,7 @@ setTimeout(() => {
         if($('invoiceAddressDisplay')) $('invoiceAddressDisplay').textContent = 'Not configured (Starts Empty)';
         if($('invoicePhoneDisplay')) $('invoicePhoneDisplay').textContent = '--';
         if($('vaultPhoneDisplay')) $('vaultPhoneDisplay').textContent = '--';
+        if($('summaryPhoneDisplay')) $('summaryPhoneDisplay').textContent = '--';
         if($('userPhoneBadgeDisplay')) $('userPhoneBadgeDisplay').textContent = 'NG';
         if($('userAvatarInitials')) $('userAvatarInitials').textContent = 'NG';
         if($('taxInvoiceStatusPill')) {
@@ -1648,50 +1650,86 @@ if(phoneInput) {
 if($('verifyManualReceiptBtn')) {
   $('verifyManualReceiptBtn').addEventListener('click', async () => {
     const code = $('manualReceiptInput').value.trim().toUpperCase();
-    if(!code || code.length < 5) return toast('Enter a valid receipt or access code (e.g. UKBI81VT80)');
-    
-    const amountVal = selectedPlan ? selectedPlan.price : 10;
-    const phoneVal = $('checkoutPhone').value.trim() || '';
-
-    const verifiedItem = {
-      ref: 'MNT-' + Date.now(),
-      mpesaReceipt: code,
-      phone: phoneVal,
-      targetPhone: '',
-      amount: amountVal,
-      package: selectedPlan ? selectedPlan.title : 'WiFi Access',
-      duration: selectedPlan ? selectedPlan.duration : '60 min',
-      type: selectedPurchaseType || 'Myself',
-      macAddress: 'AUTO',
-      status: 'Completed (Verified)',
-      time: new Date().toLocaleString(),
-      gateway: 'MANUAL OVERRIDE'
-    };
-
-    if(window.dbRef && window.fbRef && window.fbPush) {
-      if(activeTransactionKey) {
-        await window.fbUpdate(window.fbRef(window.dbRef, 'ledger/' + activeTransactionKey), {
-          status: 'Completed (Verified)',
-          mpesaReceipt: code
-        });
-      } else {
-        await window.fbPush(window.fbRef(window.dbRef, 'ledger'), verifiedItem);
-      }
-
-      await window.fbPush(window.fbRef(window.dbRef, 'bindings'), {
-        name: `Verified (${code})`,
-        mac: 'AUTO',
-        type: 'bypassed',
-        allowHotspot: false,
-        accessCode: code,
-        addedAt: new Date().toLocaleString()
-      });
+    if(!code || code.length < 5) {
+      toast('Enter a valid M-Pesa receipt code');
+      return;
     }
+    
+    $('checkoutMsg').innerHTML = `<div class="notice">Querying database for receipt ${code}...</div>`;
 
-    $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ RECEIPT ${code} VERIFIED & UNLOCKED!</b><br>Redirecting to active session...</div>`;
-    toast('Access granted instantly.');
-    $('manualReceiptInput').value = '';
-    setTimeout(() => window.go('connection'), 1200);
+    if (window.dbRef && window.fbRef && window.fbGet && window.fbPush) {
+      try {
+        // 1. Strict Check: Has this code already been redeemed in the database bindings?
+        const bindingsRef = window.fbRef(window.dbRef, 'bindings');
+        const bindingsSnapshot = await window.fbGet(bindingsRef);
+        
+        let alreadyRedeemed = false;
+        let boundDeviceName = '';
+        if (bindingsSnapshot.exists()) {
+          const bindingsData = bindingsSnapshot.val();
+          Object.values(bindingsData).forEach(binding => {
+            const registeredCode = String(binding.accessCode || binding.ref || '').trim().toUpperCase();
+            if (registeredCode === code) {
+              alreadyRedeemed = true;
+              boundDeviceName = binding.name || 'Another Device';
+            }
+          });
+        }
+
+        if (alreadyRedeemed) {
+          $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>Receipt Rejected: Already redeemed!</b><br>This code is locked to ${boundDeviceName}. Each receipt can only be used once.</div>`;
+          toast('Receipt already redeemed by another device.');
+          return;
+        }
+
+        // 2. Strict Check: Does the receipt actually exist in the database ledger?
+        const ledgerRef = window.fbRef(window.dbRef, 'ledger');
+        const ledgerSnapshot = await window.fbGet(ledgerRef);
+        
+        let foundMatch = null;
+        if (ledgerSnapshot.exists()) {
+          const ledgerData = ledgerSnapshot.val();
+          Object.values(ledgerData).forEach(item => {
+            const receiptNum = String(item.mpesaReceipt || '').trim().toUpperCase();
+            const refNum = String(item.ref || '').trim().toUpperCase();
+            if (receiptNum === code || refNum === code) {
+              foundMatch = item;
+            }
+          });
+        }
+
+        if (!foundMatch) {
+          // Exact required error message when code is not in the system
+          $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>Verification Failed</b><br>The voucher code does not exist in our  system.</div>`;
+          toast('The voucher code does not exist in our data system.');
+          return;
+        }
+
+        // 3. Valid and unused! Lock and bind it permanently to this device session
+        const clientSessionId = localStorage.getItem('netfy_active_user_id') || ('Client-' + Math.random().toString(36).substring(2, 7).toUpperCase());
+        
+        await window.fbPush(window.fbRef(window.dbRef, 'bindings'), {
+          name: `Redeemed (${clientSessionId})`,
+          mac: 'AUTO-MAC-' + Math.floor(Math.random() * 8999 + 1000),
+          type: 'bypassed',
+          allowHotspot: false,
+          accessCode: code,
+          addedAt: new Date().toLocaleString()
+        });
+
+        $('checkoutMsg').innerHTML = `<div class="notice good"><b>✓ RECEIPT ${code} VERIFIED & LOCKED!</b><br>Redemption successful. Redirecting to active session...</div>`;
+        toast('Receipt verified and bound successfully.');
+        $('manualReceiptInput').value = '';
+        setTimeout(() => window.go('connection'), 1200);
+
+      } catch (err) {
+        console.error(err);
+        $('checkoutMsg').innerHTML = `<div class="notice" style="background:#40232d;border-color:#713949;color:#ffb6c1"><b>Database verification error.</b><br>Check your connection and try again.</div>`;
+        toast('Database connection error.');
+      }
+    } else {
+      toast('Database reference not initialized.');
+    }
   });
 }
 
